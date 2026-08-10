@@ -1,0 +1,592 @@
+// Glitter Hits — Prisma schema
+// SQLite for local/dev; switch provider to postgresql for production.
+// Credits are ALWAYS integer Glitter Hits units — never floats / never Glitter Coins.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth / Users ───────────────────────────────────────────────────────────
+
+enum UserRole {
+  member
+  moderator
+  admin
+  founder
+}
+
+enum MembershipTier {
+  free
+  plus
+  premium
+  vip
+}
+
+model User {
+  id               String         @id @default(cuid())
+  name             String?
+  email            String         @unique
+  emailVerified    DateTime?
+  passwordHash     String?
+  image            String?
+  role             UserRole       @default(member)
+  membership       MembershipTier @default(free)
+  bio              String?
+  countryCode      String?
+  // Integer Glitter Hits balance (promotional credits, NOT crypto / NOT Glitter Coins)
+  creditBalance    Int            @default(0)
+  lifetimeEarned   Int            @default(0)
+  lifetimeSpent    Int            @default(0)
+  levelSlug        String         @default("newcomer")
+  levelPoints      Int            @default(0)
+  streakDays       Int            @default(0)
+  longestStreak    Int            @default(0)
+  lastSurfDate     DateTime?
+  referralCode     String         @unique
+  referredById     String?
+  referredBy       User?          @relation("Referrals", fields: [referredById], references: [id])
+  referrals        User[]         @relation("Referrals")
+  riskScore        Int            @default(0)
+  isSuspended      Boolean        @default(false)
+  suspendedReason  String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  accounts         Account[]
+  sessions         Session[]
+  websites         Website[]
+  campaigns        Campaign[]
+  ledgerEntries    CreditLedger[]
+  surfSessions     SurfSession[]
+  visitsGiven      Visit[]        @relation("VisitorVisits")
+  visitsReceived   Visit[]        @relation("OwnerVisits")
+  achievements     UserAchievement[]
+  referralsMade    ReferralEvent[] @relation("ReferrerEvents")
+  referralsAsUser  ReferralEvent[] @relation("ReferredEvents")
+  reportsFiled     SiteReport[]   @relation("Reporter")
+  adminLogs        AdminAuditLog[]
+  dailyRewards     DailyRewardClaim[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Credits ────────────────────────────────────────────────────────────────
+
+enum CreditTxnType {
+  earned_surf
+  earned_automated
+  earned_bonus
+  earned_daily
+  earned_weekly
+  earned_streak
+  earned_achievement
+  earned_referral
+  earned_promo
+  spent_campaign
+  spent_featured
+  spent_boost
+  admin_adjustment
+  purchase // future monetization — architecture only until enabled
+  refund
+}
+
+model CreditLedger {
+  id            String        @id @default(cuid())
+  userId        String
+  // Positive = credit, negative = debit. Integer only.
+  amount        Int
+  balanceAfter  Int
+  type          CreditTxnType
+  description   String
+  // Optional references (stored as strings for SQLite flexibility)
+  campaignId    String?
+  visitId       String?
+  referralId    String?
+  achievementId String?
+  metadataJson  String        @default("{}")
+  createdAt     DateTime      @default(now())
+  createdById   String? // admin actor when adjustment
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([type, createdAt])
+}
+
+// ─── Categories / Tags / Brands ─────────────────────────────────────────────
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  icon        String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  isAdult     Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  websites    Website[]
+}
+
+model Tag {
+  id       String        @id @default(cuid())
+  slug     String        @unique
+  name     String
+  websites WebsiteTag[]
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  url         String
+  description String?
+  logoUrl     String?
+  category    String?
+  network     String   @default("founder") // founder | partner | community
+  isFeatured  Boolean  @default(false)
+  isEnabled   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Websites & Campaigns ───────────────────────────────────────────────────
+
+enum ModerationStatus {
+  pending
+  approved
+  rejected
+  suspended
+  blocked
+}
+
+enum CampaignStatus {
+  draft
+  active
+  paused
+  exhausted
+  archived
+  deleted
+}
+
+enum DeliveryMode {
+  fastest
+  evenly
+  custom
+}
+
+enum PriorityTier {
+  standard
+  boosted
+  featured
+  premium
+}
+
+enum DeviceTarget {
+  all
+  desktop
+  mobile
+  tablet
+}
+
+model Website {
+  id               String           @id @default(cuid())
+  userId           String
+  url              String
+  title            String
+  description      String?
+  thumbnailUrl     String?
+  faviconUrl       String?
+  categoryId       String?
+  moderationStatus ModerationStatus @default(pending)
+  moderationNotes  String?
+  isQueerdomPick   Boolean          @default(false)
+  isFeatured       Boolean          @default(false)
+  isTrending       Boolean          @default(false)
+  discoverCount    Int              @default(0)
+  reportCount      Int              @default(0)
+  httpsOk          Boolean          @default(false)
+  lastCheckedAt    DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  Category?      @relation(fields: [categoryId], references: [id])
+  tags      WebsiteTag[]
+  campaigns Campaign[]
+  reports   SiteReport[]
+  placements FeaturedPlacement[]
+
+  @@index([userId])
+  @@index([moderationStatus])
+  @@index([isQueerdomPick])
+  @@index([isFeatured])
+}
+
+model WebsiteTag {
+  websiteId String
+  tagId     String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([websiteId, tagId])
+}
+
+model Campaign {
+  id              String         @id @default(cuid())
+  userId          String
+  websiteId       String
+  name            String
+  status          CampaignStatus @default(draft)
+  // Credits allocated to this campaign (integer)
+  creditBalance   Int            @default(0)
+  creditsSpent    Int            @default(0)
+  visitDurationSec Int           @default(15)
+  maxVisits       Int?
+  dailyVisitCap   Int?
+  hourlyVisitCap  Int?
+  frequencyCapHours Int          @default(24) // same viewer cooldown
+  priority        PriorityTier   @default(standard)
+  deliveryMode    DeliveryMode   @default(evenly)
+  // Targeting stored as JSON strings for SQLite
+  geoTargetsJson  String         @default("[\"WW\"]") // WW = worldwide, or ISO country codes
+  regionTargetsJson String       @default("[]")
+  deviceTarget    DeviceTarget   @default(all)
+  scheduleJson    String         @default("{\"mode\":\"always\"}")
+  startAt         DateTime?
+  endAt           DateTime?
+  visitsDelivered Int            @default(0)
+  uniqueVisitors  Int            @default(0)
+  estimatedDaily  Int? // network-based estimate, not a guarantee
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  visits  Visit[]
+
+  @@index([status, priority])
+  @@index([userId])
+  @@index([websiteId])
+}
+
+// ─── Surf / Delivery / Visits ───────────────────────────────────────────────
+
+enum ViewerType {
+  human_exchange
+  automated_viewer
+  admin_test
+}
+
+enum VisitQuality {
+  human_exchange
+  automated_viewer
+  suspicious
+  blocked
+  admin_test
+}
+
+enum SurfSessionStatus {
+  active
+  paused
+  completed
+  aborted
+}
+
+model SurfSession {
+  id              String            @id @default(cuid())
+  userId          String
+  status          SurfSessionStatus @default(active)
+  viewerType      ViewerType        @default(human_exchange)
+  creditsEarned   Int               @default(0)
+  sitesViewed     Int               @default(0)
+  sitesSkipped    Int               @default(0)
+  startedAt       DateTime          @default(now())
+  endedAt         DateTime?
+  lastHeartbeatAt DateTime          @default(now())
+  ipHash          String?
+  userAgentHash   String?
+  deviceHint      String? // desktop | mobile | tablet
+  countryCode     String?
+  riskFlagsJson   String            @default("[]")
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  visits Visit[]
+
+  @@index([userId, startedAt])
+  @@index([status])
+}
+
+model Visit {
+  id              String       @id @default(cuid())
+  campaignId      String
+  websiteId       String
+  ownerUserId     String
+  visitorUserId   String?
+  surfSessionId   String?
+  quality         VisitQuality @default(human_exchange)
+  viewerType      ViewerType   @default(human_exchange)
+  requiredDurationSec Int
+  actualDurationSec   Int      @default(0)
+  completed       Boolean      @default(false)
+  credited        Boolean      @default(false)
+  creditsCharged  Int          @default(0)
+  creditsEarned   Int          @default(0)
+  countryCode     String?
+  deviceHint      String?
+  sourceLabel     String       @default("glitter_hits_exchange") // honest labeling
+  skipped         Boolean      @default(false)
+  reported        Boolean      @default(false)
+  startedAt       DateTime     @default(now())
+  completedAt     DateTime?
+
+  campaign    Campaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  owner       User         @relation("OwnerVisits", fields: [ownerUserId], references: [id], onDelete: Cascade)
+  visitor     User?        @relation("VisitorVisits", fields: [visitorUserId], references: [id], onDelete: SetNull)
+  surfSession SurfSession? @relation(fields: [surfSessionId], references: [id], onDelete: SetNull)
+
+  @@index([campaignId, startedAt])
+  @@index([visitorUserId, campaignId, startedAt])
+  @@index([ownerUserId, startedAt])
+  @@index([quality, startedAt])
+}
+
+// Frequency tracking: last time a viewer saw a campaign
+model CampaignViewerCooldown {
+  id           String   @id @default(cuid())
+  campaignId   String
+  viewerUserId String
+  lastSeenAt   DateTime @default(now())
+
+  @@unique([campaignId, viewerUserId])
+  @@index([viewerUserId, lastSeenAt])
+}
+
+// ─── Gamification ───────────────────────────────────────────────────────────
+
+model LevelDefinition {
+  id          String @id @default(cuid())
+  slug        String @unique
+  name        String
+  minPoints   Int
+  sortOrder   Int    @default(0)
+  badgeEmoji  String?
+  description String?
+}
+
+model AchievementDefinition {
+  id           String            @id @default(cuid())
+  slug         String            @unique
+  name         String
+  description  String
+  icon         String?
+  creditReward Int               @default(0)
+  pointsReward Int               @default(0)
+  isActive     Boolean           @default(true)
+  criteriaJson String            @default("{}")
+  users        UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime @default(now())
+
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement AchievementDefinition @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+}
+
+model DailyRewardClaim {
+  id        String   @id @default(cuid())
+  userId    String
+  claimDate String // YYYY-MM-DD UTC
+  amount    Int
+  streakDay Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, claimDate])
+}
+
+// ─── Referrals ──────────────────────────────────────────────────────────────
+
+enum ReferralStatus {
+  clicked
+  registered
+  activated
+  qualified
+  rejected
+}
+
+model ReferralEvent {
+  id              String         @id @default(cuid())
+  referrerId      String
+  referredUserId  String?
+  code            String
+  status          ReferralStatus @default(clicked)
+  creditsAwarded  Int            @default(0)
+  ipHash          String?
+  createdAt       DateTime       @default(now())
+  activatedAt     DateTime?
+  qualifiedAt     DateTime?
+
+  referrer User  @relation("ReferrerEvents", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred User? @relation("ReferredEvents", fields: [referredUserId], references: [id], onDelete: SetNull)
+
+  @@index([referrerId, status])
+  @@index([code])
+}
+
+// ─── Featured / Promotional inventory ───────────────────────────────────────
+
+enum PlacementType {
+  featured_site
+  homepage_spotlight
+  category_spotlight
+  trending_placement
+  banner_ad
+  text_ad
+  newsletter
+  sponsored_discovery
+}
+
+enum PlacementStatus {
+  draft
+  scheduled
+  active
+  paused
+  expired
+  disabled
+}
+
+model FeaturedPlacement {
+  id         String          @id @default(cuid())
+  websiteId  String?
+  brandId    String?
+  type       PlacementType
+  status     PlacementStatus @default(disabled)
+  title      String?
+  body       String?
+  imageUrl   String?
+  targetUrl  String?
+  creditCost Int             @default(0)
+  startAt    DateTime?
+  endAt      DateTime?
+  sortOrder  Int             @default(0)
+  metadataJson String        @default("{}")
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  website Website? @relation(fields: [websiteId], references: [id], onDelete: SetNull)
+
+  @@index([type, status])
+}
+
+// ─── Moderation ─────────────────────────────────────────────────────────────
+
+enum ReportStatus {
+  open
+  reviewing
+  resolved
+  dismissed
+}
+
+model SiteReport {
+  id          String       @id @default(cuid())
+  websiteId   String
+  reporterId  String
+  reason      String
+  details     String?
+  status      ReportStatus @default(open)
+  resolution  String?
+  createdAt   DateTime     @default(now())
+  resolvedAt  DateTime?
+
+  website  Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  reporter User    @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+}
+
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  actorId    String
+  action     String
+  targetType String?
+  targetId   String?
+  detailsJson String  @default("{}")
+  createdAt  DateTime @default(now())
+
+  actor User @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+}
+
+// ─── System settings (admin-configurable economics) ─────────────────────────
+
+model SystemSetting {
+  key       String   @id
+  valueJson String
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}
+
+model Announcement {
+  id        String    @id @default(cuid())
+  title     String
+  body      String
+  isActive  Boolean   @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model MonetizationFeature {
+  key         String  @id
+  name        String
+  description String?
+  enabled     Boolean @default(false)
+  configJson  String  @default("{}")
+}
