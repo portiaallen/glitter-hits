@@ -142,14 +142,15 @@ export async function POST(req: Request) {
         })
         .parse(body.brand);
 
-      const brand = data.id
-        ? await prisma.brand.update({ where: { id: data.id }, data })
-        : await prisma.brand.create({ data });
+      const { id, ...brandFields } = data;
+      const brand = id
+        ? await prisma.brand.update({ where: { id }, data: brandFields })
+        : await prisma.brand.create({ data: brandFields });
 
       await prisma.adminAuditLog.create({
         data: {
           actorId: user.id,
-          action: data.id ? "brand.update" : "brand.create",
+          action: id ? "brand.update" : "brand.create",
           targetType: "brand",
           targetId: brand.id,
           detailsJson: JSON.stringify(brand),

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const LINKS = [
+const LINKS: { href: string; label: string; exact?: boolean }[] = [
   { href: "/admin", label: "Overview", exact: true },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/sites", label: "Sites" },
@@ -14,7 +14,7 @@ const LINKS = [
   { href: "/admin/brands", label: "Brands" },
   { href: "/admin/analytics", label: "Analytics" },
   { href: "/admin/settings", label: "Settings" },
-] as const;
+];
 
 export function AdminNav() {
   const pathname = usePathname();

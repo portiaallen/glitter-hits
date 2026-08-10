@@ -21,6 +21,7 @@ export const authConfig = {
         pathname.startsWith("/achievements") ||
         pathname.startsWith("/profile") ||
         pathname.startsWith("/settings") ||
+        pathname.startsWith("/invite") ||
         pathname.startsWith("/admin") ||
         (pathname.startsWith("/rewards") && !pathname.startsWith("/rewards/public"));
       const isAdmin = pathname.startsWith("/admin");

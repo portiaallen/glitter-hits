@@ -1,7 +1,9 @@
 import NextAuth from "next-auth";
 import { authConfig } from "@/lib/auth.config";
 
-export default NextAuth(authConfig).auth;
+const { auth } = NextAuth(authConfig);
+
+export const proxy = auth;
 
 export const config = {
   matcher: [
@@ -14,6 +16,7 @@ export const config = {
     "/achievements/:path*",
     "/profile/:path*",
     "/settings/:path*",
+    "/invite/:path*",
     "/admin/:path*",
     "/login",
     "/signup",
