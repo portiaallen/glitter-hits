@@ -217,6 +217,14 @@ export async function completeSurfVisit(params: {
     if (!result.alreadyCredited) {
       await touchStreak(params.userId);
       await checkAchievements(params.userId);
+      if ("earned" in result && result.earned && result.earned > 0) {
+        const { awardReferralShare } = await import("@/lib/rewards/launch");
+        await awardReferralShare({
+          earnerUserId: params.userId,
+          earnedAmount: result.earned,
+          visitId: result.visit.id,
+        });
+      }
     }
     return result;
   });

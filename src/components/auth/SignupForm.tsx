@@ -76,6 +76,11 @@ export function SignupForm({ referralCode }: { referralCode?: string }) {
           placeholder="friend-ABC123"
         />
       </div>
+      {/* Honeypot — hidden from humans */}
+      <div className="absolute -left-[9999px] opacity-0" aria-hidden tabIndex={-1}>
+        <label htmlFor="company">Company</label>
+        <input id="company" name="company" type="text" autoComplete="off" tabIndex={-1} />
+      </div>
       {error && (
         <p className="rounded-xl border border-[var(--danger)]/40 bg-[var(--danger)]/10 px-3 py-2 text-sm text-[var(--danger)]">
           {error}

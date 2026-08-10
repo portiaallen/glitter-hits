@@ -218,6 +218,10 @@ async function main() {
   const lgbtq = await prisma.category.findUnique({ where: { slug: "lgbtq" } });
   const entertainment = await prisma.category.findUnique({ where: { slug: "entertainment" } });
 
+  const creators = await prisma.category.findUnique({ where: { slug: "creators" } });
+  const tech = await prisma.category.findUnique({ where: { slug: "technology" } });
+  const communities = await prisma.category.findUnique({ where: { slug: "communities" } });
+
   const sampleSites = [
     {
       userId: admin.id,
@@ -231,6 +235,25 @@ async function main() {
       isFeatured: true,
     },
     {
+      userId: admin.id,
+      url: "https://www.wikipedia.org",
+      title: "Wikipedia",
+      description: "Open knowledge — useful Surf inventory for launch testing.",
+      categoryId: communities?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+      isFeatured: false,
+    },
+    {
+      userId: admin.id,
+      url: "https://developer.mozilla.org",
+      title: "MDN Web Docs",
+      description: "Builder-friendly discovery inventory for the network.",
+      categoryId: tech?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+    },
+    {
       userId: demo.id,
       url: "https://example.com",
       title: "Example Discovery Site",
@@ -239,6 +262,15 @@ async function main() {
       moderationStatus: "approved" as const,
       httpsOk: true,
       isQueerdomPick: true,
+    },
+    {
+      userId: demo.id,
+      url: "https://www.w3.org",
+      title: "W3C",
+      description: "Web standards — secondary demo campaign.",
+      categoryId: creators?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
     },
   ];
 
@@ -264,7 +296,7 @@ async function main() {
           status: "active",
           creditBalance: site.userId === admin.id ? 500 : 40,
           visitDurationSec: 12,
-          priority: site.isFeatured ? "featured" : "standard",
+          priority: "isFeatured" in site && site.isFeatured ? "featured" : "standard",
           geoTargetsJson: JSON.stringify(["WW"]),
           deviceTarget: "all",
         },

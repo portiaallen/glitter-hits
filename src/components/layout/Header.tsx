@@ -5,6 +5,7 @@ import { logoutAction } from "@/lib/actions/logout";
 const nav = [
   { href: "/browse", label: "Browse" },
   { href: "/how-it-works", label: "How it works" },
+  { href: "/leaderboards", label: "Leaderboards" },
   { href: "/queerdom-picks", label: "Queerdom Picks" },
   { href: "/founder-network", label: "Founder Network" },
   { href: "/pricing", label: "Pricing" },

@@ -20,6 +20,7 @@ export function Footer() {
           <ul className="space-y-2 text-sm text-[var(--text-muted)]">
             <li><Link href="/browse">Directory</Link></li>
             <li><Link href="/trending">Trending</Link></li>
+            <li><Link href="/leaderboards">Leaderboards</Link></li>
             <li><Link href="/featured">Featured</Link></li>
             <li><Link href="/queerdom-picks">Queerdom Picks</Link></li>
             <li><Link href="/founder-network">Founder Network</Link></li>

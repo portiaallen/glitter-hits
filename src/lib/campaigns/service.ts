@@ -3,6 +3,9 @@ import { prisma } from "@/lib/db";
 import { allocateCreditsToCampaign } from "@/lib/credits/ledger";
 import { getEconomySettings } from "@/lib/settings/economy";
 import { checkAchievements } from "@/lib/rewards/achievements";
+import { validateWebsiteUrl } from "@/lib/moderation/site-check";
+
+export { validateWebsiteUrl };
 
 export const websiteInputSchema = z.object({
   url: z.string().url().max(2048),
@@ -37,70 +40,13 @@ export const campaignInputSchema = z.object({
   creditAllocation: z.number().int().min(0).optional(),
 });
 
-function isHttps(url: string) {
-  try {
-    return new URL(url).protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
-/** Basic reachability + safety checks. Soft-fails to pending for admin review. */
-export async function validateWebsiteUrl(url: string): Promise<{
-  ok: boolean;
-  httpsOk: boolean;
-  status: "approved" | "pending" | "rejected";
-  notes: string[];
-}> {
-  const notes: string[] = [];
-  let httpsOk = isHttps(url);
-  if (!httpsOk) notes.push("URL is not HTTPS.");
-
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch(url, {
-      method: "HEAD",
-      redirect: "manual",
-      signal: controller.signal,
-      headers: { "User-Agent": "GlitterHits-SiteChecker/1.0" },
-    }).catch(async () =>
-      fetch(url, {
-        method: "GET",
-        redirect: "manual",
-        signal: controller.signal,
-        headers: { "User-Agent": "GlitterHits-SiteChecker/1.0" },
-      }),
-    );
-    clearTimeout(timer);
-
-    if (res.status >= 300 && res.status < 400) {
-      notes.push(`Redirect detected (${res.status}).`);
-      const loc = res.headers.get("location");
-      if (loc && !isHttps(loc) && !loc.startsWith("/")) {
-        notes.push("Redirect target is not HTTPS.");
-        httpsOk = false;
-      }
-    }
-    if (res.status >= 400) {
-      notes.push(`URL returned HTTP ${res.status}.`);
-      return { ok: false, httpsOk, status: "pending", notes };
-    }
-  } catch {
-    notes.push("Could not reach URL — queued for admin review.");
-    return { ok: false, httpsOk, status: "pending", notes };
-  }
-
-  // Auto-approve clean HTTPS sites; otherwise pending
-  if (httpsOk && notes.length === 0) {
-    return { ok: true, httpsOk, status: "approved", notes };
-  }
-  return { ok: true, httpsOk, status: "pending", notes };
-}
-
 export async function createWebsite(userId: string, raw: z.infer<typeof websiteInputSchema>) {
   const data = websiteInputSchema.parse(raw);
   const check = await validateWebsiteUrl(data.url);
+
+  if (check.status === "rejected") {
+    throw new Error(check.notes.join(" ") || "Website URL was rejected.");
+  }
 
   const website = await prisma.website.create({
     data: {

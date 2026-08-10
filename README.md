@@ -56,7 +56,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - [Architecture](./docs/ARCHITECTURE.md)
 - [API](./docs/API.md)
+- [Deploy / launch checklist](./docs/DEPLOY.md)
 
 ## Production notes
 
 Set `DATABASE_URL` to Postgres, set a strong `AUTH_SECRET`, and enable monetization features individually in Admin → Settings when ready. Payment processing is architected but not required to launch the free exchange.
+
+Launch hardening included: password reset, rate limits, signup honeypot, hardened site checker, referral earn-share, weekly bonus, leaderboards, profile editing.

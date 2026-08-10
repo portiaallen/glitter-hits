@@ -59,6 +59,11 @@ export function LoginForm() {
         {pending ? "Signing in…" : "Log in"}
       </button>
       <p className="text-center text-sm text-[var(--text-muted)]">
+        <Link href="/forgot-password" className="text-[var(--neon-cyan)] hover:underline">
+          Forgot password?
+        </Link>
+      </p>
+      <p className="text-center text-sm text-[var(--text-muted)]">
         New here?{" "}
         <Link href="/signup" className="text-[var(--neon-cyan)] hover:underline">
           Create an account
