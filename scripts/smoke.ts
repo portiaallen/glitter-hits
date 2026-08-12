@@ -1,5 +1,5 @@
 /**
- * Launch smoke checks against the local seeded DB.
+ * Launch smoke checks against the seeded DB.
  * Run: npm run smoke
  */
 import assert from "node:assert/strict";
@@ -10,13 +10,17 @@ import { createPasswordResetToken, resetPasswordWithToken } from "../src/lib/aut
 import { validateWebsiteUrl } from "../src/lib/moderation/site-check";
 import { claimDailyReward } from "../src/lib/rewards/streaks";
 import { startSurfSession, nextSurfSite, completeSurfVisit } from "../src/lib/surf/session";
+import { getInbox, sendSoloMail } from "../src/lib/mail/service";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("▶ smoke: seed users");
   const demo = await prisma.user.findUniqueOrThrow({ where: { email: "demo@glitterhits.gay" } });
-  const admin = await prisma.user.findUniqueOrThrow({ where: { email: "admin@glitterhits.gay" } });
+  const admin =
+    (await prisma.user.findUnique({ where: { email: "admin@glitterhits.gay" } })) ??
+    (await prisma.user.findFirst({ where: { role: { in: ["admin", "founder"] } } }));
+  assert.ok(admin, "admin/founder user missing — run db:seed");
 
   console.log("▶ smoke: site checker rejects localhost");
   const bad = await validateWebsiteUrl("http://localhost:3000");
@@ -41,7 +45,6 @@ async function main() {
   if (pick) assert.notEqual(pick.userId, demo.id);
 
   console.log("▶ smoke: surf earn loop");
-  // Ensure admin campaign has credits so demo can surf it
   await prisma.campaign.updateMany({
     where: { userId: admin.id, status: "active" },
     data: { creditBalance: 50 },
@@ -87,6 +90,33 @@ async function main() {
     type: "admin_adjustment",
     description: "smoke rollback",
   });
+
+  console.log("▶ smoke: network mail + paid solo upgrade");
+  const demoNow = await prisma.user.findUniqueOrThrow({ where: { id: demo.id } });
+  if (demoNow.creditBalance < 300) {
+    await moveCredits({
+      userId: demo.id,
+      amount: 300,
+      type: "admin_adjustment",
+      description: "smoke mail funding",
+    });
+  }
+  const mail = await sendSoloMail({
+    senderId: demo.id,
+    subject: "Smoke network mail",
+    body: "Testing credit mailing and paid solo upgrade path.",
+    tier: "standard",
+    paidSoloUpgrade: true,
+    ctaUrl: "https://example.com",
+    ctaLabel: "Visit",
+  });
+  assert.ok(mail.recipientCount > 0);
+  assert.equal(mail.isPaidSolo, true);
+  assert.ok(mail.upgradeCreditCost > 0);
+  const inbox = await getInbox(admin.id);
+  assert.ok(inbox.some((r) => r.mailId === mail.id));
+  const notes = await prisma.notification.count({ where: { type: "mail_received" } });
+  assert.ok(notes > 0);
 
   console.log("✓ smoke passed");
 }

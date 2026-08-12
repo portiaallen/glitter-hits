@@ -158,6 +158,8 @@ export async function completeSurfVisit(params: {
     }
 
     const earn = visit.creditsEarned;
+    const remainingAfter = visit.campaign.creditBalance - charge;
+    const willExhaust = remainingAfter < charge;
 
     await tx.campaign.update({
       where: { id: visit.campaignId },
@@ -165,6 +167,7 @@ export async function completeSurfVisit(params: {
         creditBalance: { decrement: charge },
         creditsSpent: { increment: charge },
         visitsDelivered: { increment: 1 },
+        ...(willExhaust ? { status: "exhausted" as const } : {}),
       },
     });
 
@@ -212,7 +215,15 @@ export async function completeSurfVisit(params: {
       data: { discoverCount: { increment: 1 } },
     });
 
-    return { alreadyCredited: false as const, visit: updated, earned: earn };
+    return {
+      alreadyCredited: false as const,
+      visit: updated,
+      earned: earn,
+      exhausted: willExhaust,
+      ownerUserId: visit.ownerUserId,
+      campaignId: visit.campaignId,
+      campaignName: visit.campaign.name,
+    };
   }).then(async (result) => {
     if (!result.alreadyCredited) {
       await touchStreak(params.userId);
@@ -223,6 +234,16 @@ export async function completeSurfVisit(params: {
           earnerUserId: params.userId,
           earnedAmount: result.earned,
           visitId: result.visit.id,
+        });
+      }
+      if ("exhausted" in result && result.exhausted && result.ownerUserId) {
+        const { notifyUser } = await import("@/lib/notifications/service");
+        await notifyUser({
+          userId: result.ownerUserId,
+          type: "campaign_exhausted",
+          title: "Campaign out of hits",
+          body: `"${result.campaignName}" has no hits remaining. Allocate more Glitter Hits to keep delivering.`,
+          href: "/campaigns",
         });
       }
     }

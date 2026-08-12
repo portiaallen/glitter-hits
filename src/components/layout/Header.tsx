@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { logoutAction } from "@/lib/actions/logout";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const nav = [
   { href: "/browse", label: "Browse" },
@@ -37,6 +38,10 @@ export async function Header() {
         <div className="flex items-center gap-2">
           {session?.user ? (
             <>
+              <NotificationBell />
+              <Link href="/store" className="gh-btn gh-btn-ghost px-3 py-2 text-sm">
+                Store
+              </Link>
               <Link href="/dashboard" className="gh-btn gh-btn-ghost px-3 py-2 text-sm">
                 Dashboard
               </Link>

@@ -9,10 +9,12 @@ const links = [
   { href: "/surf", label: "Surf" },
   { href: "/websites", label: "Websites" },
   { href: "/campaigns", label: "Campaigns" },
-  { href: "/analytics", label: "Analytics" },
+  { href: "/mail", label: "Mail" },
+  { href: "/store", label: "Store" },
   { href: "/credits", label: "Credits" },
   { href: "/achievements", label: "Achievements" },
   { href: "/invite", label: "Invite" },
+  { href: "/notifications", label: "Alerts" },
   { href: "/settings", label: "Settings" },
 ];
 

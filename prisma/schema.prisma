@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -54,6 +54,7 @@ model User {
   riskScore        Int            @default(0)
   isSuspended      Boolean        @default(false)
   suspendedReason  String?
+  onboardingDoneAt DateTime?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
@@ -71,6 +72,9 @@ model User {
   reportsFiled     SiteReport[]   @relation("Reporter")
   adminLogs        AdminAuditLog[]
   dailyRewards     DailyRewardClaim[]
+  notifications    Notification[]
+  mailsSent        MailCampaign[] @relation("MailSender")
+  mailReceipts     MailReceipt[]  @relation("MailRecipient")
 }
 
 model Account {
@@ -122,8 +126,10 @@ enum CreditTxnType {
   spent_campaign
   spent_featured
   spent_boost
+  spent_mail
+  spent_mail_upgrade
   admin_adjustment
-  purchase // future monetization — architecture only until enabled
+  purchase // cash pack purchases when Stripe enabled
   refund
 }
 
@@ -589,4 +595,95 @@ model MonetizationFeature {
   description String?
   enabled     Boolean @default(false)
   configJson  String  @default("{}")
+}
+
+// ─── Notifications ──────────────────────────────────────────────────────────
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+}
+
+// ─── Credit store packs (cash checkout when enabled) ────────────────────────
+
+model CreditPack {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String?
+  credits     Int
+  priceCents  Int
+  badge       String?
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+  createdAt   DateTime @default(now())
+}
+
+// ─── Member mailing / solo ads ──────────────────────────────────────────────
+
+enum MailTier {
+  standard
+  boosted
+  featured
+  premium_solo
+}
+
+enum MailStatus {
+  draft
+  queued
+  sent
+  cancelled
+}
+
+model MailCampaign {
+  id              String     @id @default(cuid())
+  senderId        String
+  subject         String
+  body            String
+  ctaUrl          String?
+  ctaLabel        String?
+  tier            MailTier   @default(standard)
+  status          MailStatus @default(draft)
+  creditCost      Int        @default(0)
+  upgradeCreditCost Int      @default(0)
+  recipientCount  Int        @default(0)
+  readCount       Int        @default(0)
+  // Paid solo upgrade purchased with credits (cash Stripe hook later)
+  isPaidSolo      Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  sentAt          DateTime?
+
+  sender     User          @relation("MailSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receipts   MailReceipt[]
+
+  @@index([senderId, createdAt])
+  @@index([status, createdAt])
+  @@index([tier, sentAt])
+}
+
+model MailReceipt {
+  id          String    @id @default(cuid())
+  mailId      String
+  recipientId String
+  isFeatured  Boolean   @default(false)
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  mail      MailCampaign @relation(fields: [mailId], references: [id], onDelete: Cascade)
+  recipient User         @relation("MailRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([mailId, recipientId])
+  @@index([recipientId, createdAt])
+  @@index([recipientId, readAt])
 }

@@ -35,9 +35,20 @@ src/lib/
   brands/             Admin-managed Founder Network / Brand Directory
   moderation/         Site review, reports, statuses
   settings/           Admin-configurable exchange ratios & feature flags
+  mail/               Credit network mail + paid solo upgrades + store catalog
+  notifications/      In-app alerts (moderation, mail, exhaustion)
+  onboarding/         Launch checklist + delivery estimates
 ```
 
 ## Credit economy
+
+Glitter Hits are **integer promotional credits** (not Glitter Coins, not crypto).
+
+Additional spend types:
+- `spent_mail` — network mailing
+- `spent_mail_upgrade` — paid solo inbox upgrade
+
+Membership upgrades can also be purchased with credits via `/store` when cash checkout is off.
 
 - Unit: **Glitter Hits** (integer promotional credits)
 - Separate from Glitter Coins (casino currency) — never mixed

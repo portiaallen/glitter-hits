@@ -99,16 +99,68 @@ const FOUNDER_BRANDS = [
 ];
 
 const MONETIZATION = [
-  { key: "premium_memberships", name: "Premium Memberships", enabled: false },
+  { key: "premium_memberships", name: "Premium Memberships", enabled: true },
   { key: "credit_purchases", name: "Promotional Credit Purchases", enabled: false },
   { key: "featured_placements", name: "Featured Placements", enabled: true },
   { key: "banner_advertising", name: "Banner Advertising", enabled: false },
   { key: "sponsored_listings", name: "Sponsored Listings", enabled: false },
   { key: "priority_campaigns", name: "Priority Campaigns", enabled: true },
-  { key: "extra_website_slots", name: "Extra Website Slots", enabled: false },
+  { key: "extra_website_slots", name: "Extra Website Slots", enabled: true },
   { key: "premium_analytics", name: "Premium Analytics", enabled: false },
   { key: "brand_packages", name: "Brand Promotion Packages", enabled: false },
 ];
+
+const CREDIT_PACKS = [
+  {
+    slug: "starter-100",
+    name: "Starter Pack",
+    description: "100 promotional Glitter Hits",
+    credits: 100,
+    priceCents: 499,
+    badge: null as string | null,
+    sortOrder: 1,
+  },
+  {
+    slug: "boost-500",
+    name: "Boost Pack",
+    description: "500 hits for campaign bursts",
+    credits: 500,
+    priceCents: 1999,
+    badge: "Popular",
+    sortOrder: 2,
+  },
+  {
+    slug: "launch-1500",
+    name: "Launch Pack",
+    description: "1,500 hits for bigger campaigns",
+    credits: 1500,
+    priceCents: 4999,
+    badge: "Best value",
+    sortOrder: 3,
+  },
+  {
+    slug: "empire-5000",
+    name: "Empire Pack",
+    description: "5,000 hits for network-scale pushes",
+    credits: 5000,
+    priceCents: 14999,
+    badge: null,
+    sortOrder: 4,
+  },
+];
+
+const MAIL_ECONOMY = {
+  standardCost: 25,
+  boostedCost: 75,
+  featuredCost: 150,
+  premiumSoloCost: 400,
+  paidSoloUpgradeCost: 200,
+  maxRecipientsStandard: 50,
+  maxRecipientsBoosted: 150,
+  maxRecipientsFeatured: 400,
+  maxRecipientsPremiumSolo: 2000,
+  minAccountAgeHours: 0,
+};
 
 async function main() {
   console.log("Seeding Glitter Hits…");
@@ -118,6 +170,28 @@ async function main() {
     create: { key: "economy", valueJson: JSON.stringify(DEFAULT_ECONOMY) },
     update: { valueJson: JSON.stringify(DEFAULT_ECONOMY) },
   });
+
+  await prisma.systemSetting.upsert({
+    where: { key: "mail_economy" },
+    create: { key: "mail_economy", valueJson: JSON.stringify(MAIL_ECONOMY) },
+    update: { valueJson: JSON.stringify(MAIL_ECONOMY) },
+  });
+
+  for (const pack of CREDIT_PACKS) {
+    await prisma.creditPack.upsert({
+      where: { slug: pack.slug },
+      create: pack,
+      update: {
+        name: pack.name,
+        description: pack.description,
+        credits: pack.credits,
+        priceCents: pack.priceCents,
+        badge: pack.badge,
+        sortOrder: pack.sortOrder,
+        isActive: true,
+      },
+    });
+  }
 
   for (const cat of CATEGORIES) {
     await prisma.category.upsert({
@@ -170,7 +244,7 @@ async function main() {
         enabled: feature.enabled,
         description: "Admin-toggleable revenue stream",
       },
-      update: { name: feature.name },
+      update: { name: feature.name, enabled: feature.enabled },
     });
   }
 
@@ -208,12 +282,40 @@ async function main() {
       passwordHash: demoHash,
       role: "member",
       referralCode: "DEMO-SURF",
-      creditBalance: 50,
-      lifetimeEarned: 50,
+      creditBalance: 500,
+      lifetimeEarned: 500,
       levelSlug: "newcomer",
     },
-    update: { passwordHash: demoHash },
+    update: { passwordHash: demoHash, creditBalance: 500 },
   });
+
+  // Extra network members so mailing has recipients beyond demo/admin
+  const networkMembers = [
+    { email: "nova@glitterhits.gay", name: "Nova", code: "NOVA-01" },
+    { email: "rio@glitterhits.gay", name: "Rio", code: "RIO-02" },
+    { email: "sage@glitterhits.gay", name: "Sage", code: "SAGE-03" },
+    { email: "kai@glitterhits.gay", name: "Kai", code: "KAI-04" },
+    { email: "lux@glitterhits.gay", name: "Lux", code: "LUX-05" },
+  ];
+  const memberHash = await bcrypt.hash("networkmember1", 12);
+  for (const m of networkMembers) {
+    await prisma.user.upsert({
+      where: { email: m.email },
+      create: {
+        email: m.email,
+        name: m.name,
+        passwordHash: memberHash,
+        role: "member",
+        referralCode: m.code,
+        creditBalance: 75,
+        lifetimeEarned: 75,
+        levelSlug: "explorer",
+        levelPoints: 60,
+        lastSurfDate: new Date(),
+      },
+      update: { lastSurfDate: new Date() },
+    });
+  }
 
   const lgbtq = await prisma.category.findUnique({ where: { slug: "lgbtq" } });
   const entertainment = await prisma.category.findUnique({ where: { slug: "entertainment" } });
@@ -236,6 +338,46 @@ async function main() {
     },
     {
       userId: admin.id,
+      url: "https://www.glitterpersona.gay",
+      title: "Glitter Persona",
+      description: "Identity and expression from the Founder Network.",
+      categoryId: creators?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+      isQueerdomPick: true,
+      isFeatured: true,
+    },
+    {
+      userId: admin.id,
+      url: "https://www.sacredluck.gay",
+      title: "Sacred Luck",
+      description: "Mystic chance meets modern play.",
+      categoryId: entertainment?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+      isFeatured: true,
+    },
+    {
+      userId: admin.id,
+      url: "https://www.venturemap.gay",
+      title: "VentureMap",
+      description: "Find the business path that's right for you.",
+      categoryId: tech?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+      isQueerdomPick: true,
+    },
+    {
+      userId: admin.id,
+      url: "https://www.libertyvault.gay",
+      title: "LibertyVault",
+      description: "Privacy-forward digital vault.",
+      categoryId: tech?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+    },
+    {
+      userId: admin.id,
       url: "https://www.wikipedia.org",
       title: "Wikipedia",
       description: "Open knowledge — useful Surf inventory for launch testing.",
@@ -250,6 +392,24 @@ async function main() {
       title: "MDN Web Docs",
       description: "Builder-friendly discovery inventory for the network.",
       categoryId: tech?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+    },
+    {
+      userId: admin.id,
+      url: "https://www.nasa.gov",
+      title: "NASA",
+      description: "Space exploration inventory for denser Surf rotation.",
+      categoryId: tech?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+    },
+    {
+      userId: admin.id,
+      url: "https://www.archive.org",
+      title: "Internet Archive",
+      description: "Digital library — network discovery filler.",
+      categoryId: communities?.id,
       moderationStatus: "approved" as const,
       httpsOk: true,
     },
@@ -269,6 +429,15 @@ async function main() {
       title: "W3C",
       description: "Web standards — secondary demo campaign.",
       categoryId: creators?.id,
+      moderationStatus: "approved" as const,
+      httpsOk: true,
+    },
+    {
+      userId: demo.id,
+      url: "https://web.dev",
+      title: "web.dev",
+      description: "Modern web guidance for demo Surf density.",
+      categoryId: tech?.id,
       moderationStatus: "approved" as const,
       httpsOk: true,
     },

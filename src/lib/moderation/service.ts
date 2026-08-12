@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import type { ModerationStatus } from "@prisma/client";
+import { notifyUser } from "@/lib/notifications/service";
 
 export async function setWebsiteModeration(params: {
   websiteId: string;
@@ -28,6 +29,34 @@ export async function setWebsiteModeration(params: {
       detailsJson: JSON.stringify({ notes: params.notes, queerdomPick: params.queerdomPick }),
     },
   });
+
+  if (params.status === "approved") {
+    await notifyUser({
+      userId: website.userId,
+      type: "site_approved",
+      title: "Website approved",
+      body: `"${website.title}" is live for Surf discovery.`,
+      href: "/websites",
+    });
+  } else if (params.status === "rejected") {
+    await notifyUser({
+      userId: website.userId,
+      type: "site_rejected",
+      title: "Website needs changes",
+      body: params.notes?.trim()
+        ? `"${website.title}" was rejected: ${params.notes}`
+        : `"${website.title}" was rejected. Update and resubmit.`,
+      href: "/websites",
+    });
+  } else if (params.status === "suspended" || params.status === "blocked") {
+    await notifyUser({
+      userId: website.userId,
+      type: "site_suspended",
+      title: "Website moderation update",
+      body: `"${website.title}" is now ${params.status}.`,
+      href: "/websites",
+    });
+  }
 
   return website;
 }

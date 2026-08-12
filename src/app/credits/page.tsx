@@ -36,6 +36,13 @@ export default async function CreditsPage() {
         </div>
       </div>
       <DailyRewardButton />
+      <p className="mt-4 text-sm text-[var(--text-muted)]">
+        Need more hits or membership unlocks?{" "}
+        <a href="/store" className="text-[var(--neon-cyan)]">
+          Visit the Store
+        </a>
+        .
+      </p>
       <div className="gh-glass mt-6 p-5">
         <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold">
           Transaction history
