@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { PageHero } from "@/components/layout/PageHero";
 import { WebsiteCard } from "@/components/sites/WebsiteCard";
+import { SponsoredRail } from "@/components/layout/SponsoredRail";
 
 export const metadata: Metadata = {
   title: "Browse",
@@ -104,27 +105,32 @@ export default async function BrowsePage({
           ))}
         </div>
 
-        {websites.length === 0 ? (
-          <p className="text-[var(--text-muted)]">No sites match that filter yet.</p>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {websites.map((site) => (
-              <WebsiteCard
-                key={site.id}
-                title={site.title}
-                url={site.url}
-                description={site.description}
-                categoryName={site.category?.name}
-                categorySlug={site.category?.slug}
-                discoverCount={site.discoverCount}
-                badges={[
-                  ...(site.isFeatured ? ["Featured"] : []),
-                  ...(site.isQueerdomPick ? ["Queerdom Pick"] : []),
-                ]}
-              />
-            ))}
+        <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+          <div>
+            {websites.length === 0 ? (
+              <p className="text-[var(--text-muted)]">No sites match that filter yet.</p>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {websites.map((site) => (
+                  <WebsiteCard
+                    key={site.id}
+                    title={site.title}
+                    url={site.url}
+                    description={site.description}
+                    categoryName={site.category?.name}
+                    categorySlug={site.category?.slug}
+                    discoverCount={site.discoverCount}
+                    badges={[
+                      ...(site.isFeatured ? ["Featured"] : []),
+                      ...(site.isQueerdomPick ? ["Queerdom Pick"] : []),
+                    ]}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        )}
+          <SponsoredRail />
+        </div>
       </div>
     </div>
   );

@@ -62,6 +62,8 @@ export function SurfConsole() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"iframe" | "external">("iframe");
+  const [iframeBroken, setIframeBroken] = useState(false);
   const [stats, setStats] = useState<SessionStats>({
     creditsEarned: 0,
     sitesViewed: 0,
@@ -73,6 +75,7 @@ export function SurfConsole() {
   const startedAtRef = useRef<number | null>(null);
   const pausedAccumRef = useRef(0);
   const pauseStartedRef = useRef<number | null>(null);
+  const iframeTimerRef = useRef<number | null>(null);
 
   const loadNext = useCallback(async (sessionId: string) => {
     setBusy(true);
@@ -113,6 +116,13 @@ export function SurfConsole() {
       pausedAccumRef.current = 0;
       pauseStartedRef.current = null;
       setPaused(false);
+      setViewMode("iframe");
+      setIframeBroken(false);
+      if (iframeTimerRef.current) window.clearTimeout(iframeTimerRef.current);
+      // Many sites block iframes — after a short grace, nudge external mode
+      iframeTimerRef.current = window.setTimeout(() => {
+        setIframeBroken(true);
+      }, 4500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load next site");
     } finally {
@@ -256,7 +266,10 @@ export function SurfConsole() {
 
   async function reportSite() {
     if (!session || !site) return;
-    const reason = window.prompt("Why are you reporting this site?", "inappropriate");
+    const reason = window.prompt(
+      "Why are you reporting this site?\n(spam, malware, broken, inappropriate, other)",
+      "broken",
+    );
     if (!reason) return;
     setBusy(true);
     setError(null);
@@ -274,6 +287,14 @@ export function SurfConsole() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function openExternal() {
+    if (!site) return;
+    window.open(site.website.url, "_blank", "noopener,noreferrer");
+    setViewMode("external");
+    setIframeBroken(false);
+    setMessage("Opened externally — keep this tab focused while the timer runs.");
   }
 
   async function endSurf() {
@@ -405,22 +426,74 @@ export function SurfConsole() {
                 type="button"
                 className="gh-btn gh-btn-ghost px-3 py-2 text-sm"
                 disabled={busy}
+                onClick={() => openExternal()}
+              >
+                Open externally
+              </button>
+              <button
+                type="button"
+                className="gh-btn gh-btn-ghost px-3 py-2 text-sm"
+                disabled={busy}
                 onClick={() => void reportSite()}
               >
                 Report
               </button>
             </div>
+            {iframeBroken && viewMode === "iframe" ? (
+              <p className="mt-3 text-sm text-[var(--text-muted)]">
+                Preview may be blocked by the site.{" "}
+                <button
+                  type="button"
+                  className="text-[var(--neon-cyan)] underline"
+                  onClick={() => openExternal()}
+                >
+                  Open externally
+                </button>{" "}
+                and keep surfing — the timer still counts here.
+              </p>
+            ) : null}
           </div>
 
-          <div className="gh-glass overflow-hidden p-1">
-            <iframe
-              title={site.website.title}
-              src={site.website.url}
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-              referrerPolicy="no-referrer"
-              className="h-[55vh] w-full rounded-[1.1rem] bg-black/40 sm:h-[65vh]"
-            />
-          </div>
+          {viewMode === "external" ? (
+            <div className="gh-glass p-8 text-center">
+              <p className="font-[family-name:var(--font-syne)] text-xl font-semibold">
+                External discovery mode
+              </p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-[var(--text-muted)]">
+                The site opened in a new tab. Stay on this page so the countdown can credit
+                your visit — many sites refuse iframes.
+              </p>
+              <a
+                href={site.website.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="gh-btn gh-btn-primary mt-5 inline-flex"
+              >
+                Re-open site
+              </a>
+              <button
+                type="button"
+                className="gh-btn gh-btn-ghost mt-3 ml-2 inline-flex text-sm"
+                onClick={() => setViewMode("iframe")}
+              >
+                Try iframe again
+              </button>
+            </div>
+          ) : (
+            <div className="gh-glass overflow-hidden p-1">
+              <iframe
+                title={site.website.title}
+                src={site.website.url}
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+                referrerPolicy="no-referrer"
+                className="h-[55vh] w-full rounded-[1.1rem] bg-black/40 sm:h-[65vh]"
+                onLoad={() => {
+                  setIframeBroken(false);
+                  if (iframeTimerRef.current) window.clearTimeout(iframeTimerRef.current);
+                }}
+              />
+            </div>
+          )}
         </>
       ) : session ? (
         <div className="gh-glass p-8 text-center">

@@ -9,6 +9,7 @@ const LINKS: { href: string; label: string; exact?: boolean }[] = [
   { href: "/admin/sites", label: "Sites" },
   { href: "/admin/campaigns", label: "Campaigns" },
   { href: "/admin/moderation", label: "Moderation" },
+  { href: "/admin/placements", label: "Placements" },
   { href: "/admin/credits", label: "Credits" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/brands", label: "Brands" },

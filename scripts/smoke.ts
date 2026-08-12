@@ -118,6 +118,33 @@ async function main() {
   const notes = await prisma.notification.count({ where: { type: "mail_received" } });
   assert.ok(notes > 0);
 
+  console.log("▶ smoke: featured placement purchase");
+  const { purchasePlacement } = await import("../src/lib/placements/service");
+  const site = await prisma.website.findFirstOrThrow({
+    where: { userId: demo.id, moderationStatus: "approved" },
+  });
+  const funded = await prisma.user.findUniqueOrThrow({ where: { id: demo.id } });
+  if (funded.creditBalance < 200) {
+    await moveCredits({
+      userId: demo.id,
+      amount: 200,
+      type: "admin_adjustment",
+      description: "smoke placement funding",
+    });
+  }
+  const placement = await purchasePlacement({
+    userId: demo.id,
+    websiteId: site.id,
+    type: "text_ad",
+  });
+  assert.equal(placement.status, "active");
+  assert.ok(placement.creditCost > 0);
+
+  console.log("▶ smoke: membership priority entitlement");
+  const { membershipAllowsPriority } = await import("../src/lib/membership/entitlements");
+  assert.equal(membershipAllowsPriority("free", "premium"), false);
+  assert.equal(membershipAllowsPriority("vip", "premium"), true);
+
   console.log("✓ smoke passed");
 }
 

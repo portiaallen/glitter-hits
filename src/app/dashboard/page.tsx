@@ -80,6 +80,9 @@ export default async function DashboardPage() {
             <Link href="/mail" className="gh-btn gh-btn-ghost text-sm">
               Network Mail
             </Link>
+            <Link href="/promote" className="gh-btn gh-btn-ghost text-sm">
+              Promote
+            </Link>
             <Link href="/store" className="gh-btn gh-btn-ghost text-sm">
               Store
             </Link>

@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     }
   }
 
-  const [users, activeCampaigns, visitsWeek] = await Promise.all([
+  const [users, activeCampaigns, visitsWeek, expiredPlacements] = await Promise.all([
     prisma.user.count(),
     prisma.campaign.count({ where: { status: "active" } }),
     prisma.visit.count({
@@ -24,6 +24,7 @@ export async function GET(req: Request) {
         startedAt: { gte: new Date(Date.now() - 7 * 86_400_000) },
       },
     }),
+    import("@/lib/placements/service").then((m) => m.expireDuePlacements()),
   ]);
 
   const key = `cron:weekly:${new Date().toISOString().slice(0, 10)}`;
@@ -31,10 +32,10 @@ export async function GET(req: Request) {
     where: { key },
     create: {
       key,
-      valueJson: JSON.stringify({ users, activeCampaigns, visitsWeek }),
+      valueJson: JSON.stringify({ users, activeCampaigns, visitsWeek, expiredPlacements }),
     },
     update: {
-      valueJson: JSON.stringify({ users, activeCampaigns, visitsWeek }),
+      valueJson: JSON.stringify({ users, activeCampaigns, visitsWeek, expiredPlacements }),
     },
   });
 
@@ -43,6 +44,7 @@ export async function GET(req: Request) {
     users,
     activeCampaigns,
     visitsWeek,
+    expiredPlacements,
     note: "Weekly member bonuses are claimed in-app after 5 discoveries.",
   });
 }

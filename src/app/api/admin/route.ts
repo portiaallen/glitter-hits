@@ -179,6 +179,66 @@ export async function POST(req: Request) {
       return NextResponse.json({ feature });
     }
 
+    if (action === "set_user_suspended") {
+      const data = z
+        .object({
+          userId: z.string(),
+          suspended: z.boolean(),
+          reason: z.string().optional(),
+        })
+        .parse(body);
+      const updated = await prisma.user.update({
+        where: { id: data.userId },
+        data: {
+          isSuspended: data.suspended,
+          suspendedReason: data.suspended ? data.reason || "suspended" : null,
+        },
+      });
+      await prisma.adminAuditLog.create({
+        data: {
+          actorId: user.id,
+          action: data.suspended ? "user.suspend" : "user.unsuspend",
+          targetType: "user",
+          targetId: data.userId,
+          detailsJson: JSON.stringify(data),
+        },
+      });
+      if (data.suspended) {
+        const { notifyUser } = await import("@/lib/notifications/service");
+        await notifyUser({
+          userId: data.userId,
+          type: "account_suspended",
+          title: "Account suspended",
+          body: data.reason || "Your account was suspended by moderation.",
+          href: "/settings",
+        });
+      }
+      return NextResponse.json({ user: updated });
+    }
+
+    if (action === "set_placement_status") {
+      const data = z
+        .object({
+          placementId: z.string(),
+          status: z.enum(["draft", "scheduled", "active", "paused", "expired", "disabled"]),
+        })
+        .parse(body);
+      const placement = await prisma.featuredPlacement.update({
+        where: { id: data.placementId },
+        data: { status: data.status },
+      });
+      await prisma.adminAuditLog.create({
+        data: {
+          actorId: user.id,
+          action: "placement.status",
+          targetType: "placement",
+          targetId: data.placementId,
+          detailsJson: JSON.stringify(data),
+        },
+      });
+      return NextResponse.json({ placement });
+    }
+
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (e) {
     return NextResponse.json(

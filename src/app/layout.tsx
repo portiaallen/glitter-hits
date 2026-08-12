@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Syne } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner";
 import { Providers } from "@/components/providers/Providers";
 import "./globals.css";
 
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="relative flex min-h-full flex-col font-sans text-foreground antialiased">
         <div className="gh-stars" aria-hidden />
         <Providers>
+          <AnnouncementBanner />
           <Header />
           <main className="relative z-10 flex-1">{children}</main>
           <Footer />

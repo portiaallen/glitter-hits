@@ -4,6 +4,10 @@ import { allocateCreditsToCampaign } from "@/lib/credits/ledger";
 import { getEconomySettings } from "@/lib/settings/economy";
 import { checkAchievements } from "@/lib/rewards/achievements";
 import { validateWebsiteUrl } from "@/lib/moderation/site-check";
+import {
+  assertCampaignPriorityAllowed,
+  assertWebsiteSlotAvailable,
+} from "@/lib/membership/entitlements";
 
 export { validateWebsiteUrl };
 
@@ -42,6 +46,7 @@ export const campaignInputSchema = z.object({
 
 export async function createWebsite(userId: string, raw: z.infer<typeof websiteInputSchema>) {
   const data = websiteInputSchema.parse(raw);
+  await assertWebsiteSlotAvailable(userId);
   const check = await validateWebsiteUrl(data.url);
 
   if (check.status === "rejected") {
@@ -94,6 +99,9 @@ export async function createCampaign(
     throw new Error("Website is not eligible for campaigns.");
   }
 
+  const priority = data.priority ?? "standard";
+  await assertCampaignPriorityAllowed(userId, priority);
+
   const campaign = await prisma.campaign.create({
     data: {
       userId,
@@ -105,7 +113,7 @@ export async function createCampaign(
       dailyVisitCap: data.dailyVisitCap ?? null,
       hourlyVisitCap: data.hourlyVisitCap ?? null,
       frequencyCapHours: data.frequencyCapHours ?? 24,
-      priority: data.priority ?? "standard",
+      priority,
       deliveryMode: data.deliveryMode ?? "evenly",
       geoTargetsJson: JSON.stringify(data.geoTargets ?? ["WW"]),
       deviceTarget: data.deviceTarget ?? "all",
