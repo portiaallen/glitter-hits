@@ -39,14 +39,21 @@ export default async function HomePage() {
               How it works
             </Link>
           </div>
-          <p className="mt-10 text-xs uppercase tracking-[0.2em] text-white/40">
-            Network snapshot · not a delivery guarantee
-          </p>
-          <div className="mt-3 flex flex-wrap gap-4 text-sm text-[var(--text-muted)]">
-            <span className="gh-badge">{availability.activeCampaigns} active campaigns</span>
-            <span className="gh-badge">{queerdomCount} Queerdom Picks</span>
-            <span className="gh-badge">{brandCount} Founder brands</span>
-          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+        <h2 className="font-[family-name:var(--font-syne)] text-2xl font-bold">
+          A growing exchange — not a vanity metric
+        </h2>
+        <p className="mt-2 max-w-2xl text-[var(--text-muted)]">
+          Inventory depends on real members and approved campaigns. Numbers below are live
+          snapshots, not delivery guarantees or inflated popularity claims.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-4 text-sm text-[var(--text-muted)]">
+          <span className="gh-badge">{availability.activeCampaigns} active campaigns</span>
+          <span className="gh-badge">{queerdomCount} Queerdom Picks</span>
+          <span className="gh-badge">{brandCount} Founder brands</span>
         </div>
       </section>
 

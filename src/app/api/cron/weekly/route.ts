@@ -8,6 +8,13 @@ import { prisma } from "@/lib/db";
  */
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
+  const isProd = process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+  if (isProd && !secret) {
+    return NextResponse.json(
+      { error: "CRON_SECRET is required in production." },
+      { status: 503 },
+    );
+  }
   if (secret) {
     const auth = req.headers.get("authorization");
     if (auth !== `Bearer ${secret}`) {

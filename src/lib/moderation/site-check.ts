@@ -144,9 +144,15 @@ export async function validateWebsiteUrl(url: string): Promise<SiteCheckResult> 
     return { ok: false, httpsOk, status: "pending", notes };
   }
 
-  // Auto-approve only clean HTTPS with no notes
-  if (httpsOk && notes.length === 0) {
+  // Public launch default: queue for human moderation unless explicitly opted in.
+  // Set MODERATION_AUTO_APPROVE=true only for trusted internal environments.
+  const autoApprove = process.env.MODERATION_AUTO_APPROVE === "true";
+  if (autoApprove && httpsOk && notes.length === 0) {
     return { ok: true, httpsOk, status: "approved", notes };
+  }
+
+  if (httpsOk && notes.length === 0) {
+    notes.push("Queued for human moderation (public launch policy).");
   }
 
   // Soft-reject non-HTTPS with other issues

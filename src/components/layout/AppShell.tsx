@@ -10,7 +10,7 @@ export function AppShell({
   subtitle?: string;
 }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 pb-24 sm:px-6 md:pb-6">
       <AppNav />
       {title ? (
         <header className="mb-6">

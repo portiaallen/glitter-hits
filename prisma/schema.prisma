@@ -614,6 +614,19 @@ model Announcement {
   createdAt DateTime  @default(now())
 }
 
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  ipHash    String?
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([status])
+}
+
 model MonetizationFeature {
   key         String  @id
   name        String

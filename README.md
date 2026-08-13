@@ -1,16 +1,17 @@
 # Glitter Hits
 
-**Get Seen. Get Hits. Get Glitter.**
+**Surf. Spark. Share. Get Lucky.**
 
 A modern, transparent traffic-exchange and website discovery platform for the Queerdom ecosystem.
 
 ## Stack
 
 - Next.js 16 (App Router) + TypeScript
-- Prisma 6 + SQLite (swap to Postgres for production)
+- Prisma 6 + SQLite locally / Postgres in production
 - Auth.js (NextAuth v5) credentials
 - Tailwind CSS 4
 - Integer Glitter Hits credit ledger (never floats; never Glitter Coins)
+- Resend transactional email + Cloudflare Turnstile for launch hardening
 
 ## Quick start
 
@@ -24,12 +25,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Seed accounts
-
-| Role | Email | Password |
-| --- | --- | --- |
-| Founder/Admin | `admin@glitterhits.gay` | `ChangeMeNow!` |
-| Demo member | `demo@glitterhits.gay` | `demo12345` |
+Local seed creates demo accounts when not in production seed mode. **Never use demo passwords in production.** See [docs/DEPLOY.md](./docs/DEPLOY.md).
 
 ## Scripts
 
@@ -38,9 +34,10 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run dev` | Dev server |
 | `npm run build` | Prisma generate + production build |
 | `npm run db:push` | Sync schema |
-| `npm run db:seed` | Seed economy, categories, brands, demo data |
+| `npm run db:seed` | Seed economy, categories, brands, optional demo data |
 | `npm run db:reset` | Reset DB + seed |
 | `npm test` | Unit / integration tests |
+| `npm run smoke` | End-to-end-ish launch smoke against local DB |
 | `npm run typecheck` | TypeScript check |
 
 ## Product pillars
@@ -48,18 +45,16 @@ Open [http://localhost:3000](http://localhost:3000).
 1. **Credit exchange** — surf to earn, campaign to spend
 2. **Smart delivery** — targeting, priority, frequency, caps
 3. **Transparency** — exchange traffic labeled honestly
-4. **Discovery** — directory, Queerdom Picks, Founder Network (admin Brand Directory)
-5. **Gamification** — levels, achievements, streaks, referrals
+4. **Discovery** — directory, Queerdom Picks, Founder Network
+5. **Luck Engine** — quests, wheel, drops, challenges, royalty
 6. **Admin control** — economy ratios, moderation, brands, monetization flags
 
 ## Docs
 
 - [Architecture](./docs/ARCHITECTURE.md)
 - [API](./docs/API.md)
-- [Deploy / launch checklist](./docs/DEPLOY.md)
+- [Deploy / full launch checklist](./docs/DEPLOY.md)
 
-## Production notes
+## Production
 
-Set `DATABASE_URL` to Postgres, set a strong `AUTH_SECRET`, and enable monetization features individually in Admin → Settings when ready. Payment processing is architected but not required to launch the free exchange.
-
-Launch hardening included: password reset, rate limits, signup honeypot, hardened site checker, referral earn-share, weekly bonus, leaderboards, profile editing.
+Follow the full launch checklist in `docs/DEPLOY.md`. Required: Postgres, strong `AUTH_SECRET`, Resend, Turnstile, `CRON_SECRET`, production-safe seed (no demo users), counsel-reviewed Terms/Privacy.

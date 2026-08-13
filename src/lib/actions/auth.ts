@@ -13,21 +13,31 @@ import {
   resetPasswordWithToken,
 } from "@/lib/auth/password-reset";
 import { rateLimit } from "@/lib/anti-abuse/rate-limit";
+import { verifyTurnstileToken } from "@/lib/anti-abuse/turnstile";
 import { AuthError } from "next-auth";
+import { headers } from "next/headers";
 
 const signupSchema = z.object({
   name: z.string().min(2).max(80),
   email: z.string().email(),
   password: z.string().min(8).max(128),
   referralCode: z.string().optional(),
-  // Honeypot — must be empty
   company: z.string().max(0).optional(),
+  turnstileToken: z.string().optional(),
 });
+
+async function clientIp() {
+  const h = await headers();
+  return (
+    h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    h.get("x-real-ip") ||
+    null
+  );
+}
 
 export async function signupAction(formData: FormData) {
   const company = String(formData.get("company") || "");
   if (company) {
-    // Bot filled honeypot — pretend success without creating an account
     return {};
   }
 
@@ -41,6 +51,12 @@ export async function signupAction(formData: FormData) {
     return { error: `Too many signup attempts. Try again in ${rl.retryAfterSec}s.` };
   }
 
+  const captcha = await verifyTurnstileToken(
+    String(formData.get("cf-turnstile-response") || formData.get("turnstileToken") || ""),
+    await clientIp(),
+  );
+  if (!captcha.ok) return { error: captcha.error };
+
   const parsed = signupSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -50,6 +66,10 @@ export async function signupAction(formData: FormData) {
   });
   if (!parsed.success) {
     return { error: "Please check your details and try again." };
+  }
+
+  if (String(formData.get("acceptedTerms") || "") !== "true") {
+    return { error: "You must accept the Terms and Privacy Policy." };
   }
 
   const email = parsed.data.email.toLowerCase();
@@ -136,14 +156,30 @@ export async function requestPasswordResetAction(formData: FormData) {
     return { error: `Too many reset requests. Try again in ${rl.retryAfterSec}s.` };
   }
 
-  const result = await createPasswordResetToken(email);
-  return {
-    message: result.message,
-    // Expose reset URL until transactional email is configured
-    resetUrl: process.env.NODE_ENV === "production" && process.env.SMTP_HOST
-      ? undefined
-      : result.resetUrl,
-  };
+  const captcha = await verifyTurnstileToken(
+    String(formData.get("cf-turnstile-response") || formData.get("turnstileToken") || ""),
+    await clientIp(),
+  );
+  if (!captcha.ok) return { error: captcha.error };
+
+  try {
+    const result = await createPasswordResetToken(email);
+    if (!result.ok) return { error: result.message };
+    return {
+      message: result.message,
+      // Only expose in non-production when email isn't configured
+      resetUrl:
+        process.env.NODE_ENV !== "production" && result.resetUrl
+          ? result.resetUrl
+          : undefined,
+    };
+  } catch (e) {
+    console.error("[password-reset]", e);
+    return {
+      error:
+        "Could not send reset email. Please try again later or contact hello@glitterhits.gay.",
+    };
+  }
 }
 
 export async function resetPasswordAction(formData: FormData) {

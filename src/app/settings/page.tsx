@@ -26,9 +26,8 @@ export default async function SettingsPage() {
             . Password changes apply immediately to future logins.
           </p>
           <p>
-            Desktop / automated viewers use the same Surf APIs with{" "}
-            <code className="text-[var(--neon-cyan)]">viewerType: automated_viewer</code> —
-            never disguised as organic traffic.
+            Surf sessions are human exchange traffic, always labeled honestly — never disguised as
+            organic, search, or social.
           </p>
           <p>
             Forgot your password while logged out? Use{" "}

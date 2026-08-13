@@ -250,6 +250,21 @@ async function main() {
 
   const adminEmail = (process.env.SEED_ADMIN_EMAIL || "admin@glitterhits.gay").toLowerCase();
   const adminPassword = process.env.SEED_ADMIN_PASSWORD || "ChangeMeNow!";
+  const prodLike =
+    process.env.SEED_MODE === "production" ||
+    process.env.VERCEL_ENV === "production" ||
+    process.env.NODE_ENV === "production";
+  const allowDemoSeed = process.env.ALLOW_DEMO_SEED === "true" || !prodLike;
+
+  if (prodLike) {
+    if (!process.env.SEED_ADMIN_PASSWORD) {
+      throw new Error("SEED_ADMIN_PASSWORD is required for production seed.");
+    }
+    if (adminPassword === "ChangeMeNow!" || adminPassword.length < 12) {
+      throw new Error("Refuse weak/default SEED_ADMIN_PASSWORD for production seed.");
+    }
+  }
+
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
   const admin = await prisma.user.upsert({
@@ -267,54 +282,74 @@ async function main() {
       levelPoints: 3000,
     },
     update: {
-      passwordHash,
+      // Do not overwrite production passwords on re-seed unless explicitly requested.
+      ...(process.env.SEED_RESET_ADMIN_PASSWORD === "true" ? { passwordHash } : {}),
       role: "founder",
     },
   });
 
-  // Demo member
-  const demoHash = await bcrypt.hash("demo12345", 12);
-  const demo = await prisma.user.upsert({
-    where: { email: "demo@glitterhits.gay" },
-    create: {
-      email: "demo@glitterhits.gay",
-      name: "Demo Discoverer",
-      passwordHash: demoHash,
-      role: "member",
-      referralCode: "DEMO-SURF",
-      creditBalance: 500,
-      lifetimeEarned: 500,
-      levelSlug: "newcomer",
-    },
-    update: { passwordHash: demoHash, creditBalance: 500 },
-  });
-
-  // Extra network members so mailing has recipients beyond demo/admin
-  const networkMembers = [
-    { email: "nova@glitterhits.gay", name: "Nova", code: "NOVA-01" },
-    { email: "rio@glitterhits.gay", name: "Rio", code: "RIO-02" },
-    { email: "sage@glitterhits.gay", name: "Sage", code: "SAGE-03" },
-    { email: "kai@glitterhits.gay", name: "Kai", code: "KAI-04" },
-    { email: "lux@glitterhits.gay", name: "Lux", code: "LUX-05" },
+  const demoEmails = [
+    "demo@glitterhits.gay",
+    "nova@glitterhits.gay",
+    "rio@glitterhits.gay",
+    "sage@glitterhits.gay",
+    "kai@glitterhits.gay",
+    "lux@glitterhits.gay",
   ];
-  const memberHash = await bcrypt.hash("networkmember1", 12);
-  for (const m of networkMembers) {
-    await prisma.user.upsert({
-      where: { email: m.email },
+
+  let demo: { id: string } | null = null;
+
+  if (allowDemoSeed) {
+    // Demo member
+    const demoHash = await bcrypt.hash("demo12345", 12);
+    demo = await prisma.user.upsert({
+      where: { email: "demo@glitterhits.gay" },
       create: {
-        email: m.email,
-        name: m.name,
-        passwordHash: memberHash,
+        email: "demo@glitterhits.gay",
+        name: "Demo Discoverer",
+        passwordHash: demoHash,
         role: "member",
-        referralCode: m.code,
-        creditBalance: 75,
-        lifetimeEarned: 75,
-        levelSlug: "explorer",
-        levelPoints: 60,
-        lastSurfDate: new Date(),
+        referralCode: "DEMO-SURF",
+        creditBalance: 500,
+        lifetimeEarned: 500,
+        levelSlug: "newcomer",
       },
-      update: { lastSurfDate: new Date() },
+      update: { passwordHash: demoHash, creditBalance: 500, isSuspended: false },
     });
+
+    // Extra network members so mailing has recipients beyond demo/admin
+    const networkMembers = [
+      { email: "nova@glitterhits.gay", name: "Nova", code: "NOVA-01" },
+      { email: "rio@glitterhits.gay", name: "Rio", code: "RIO-02" },
+      { email: "sage@glitterhits.gay", name: "Sage", code: "SAGE-03" },
+      { email: "kai@glitterhits.gay", name: "Kai", code: "KAI-04" },
+      { email: "lux@glitterhits.gay", name: "Lux", code: "LUX-05" },
+    ];
+    const memberHash = await bcrypt.hash("networkmember1", 12);
+    for (const m of networkMembers) {
+      await prisma.user.upsert({
+        where: { email: m.email },
+        create: {
+          email: m.email,
+          name: m.name,
+          passwordHash: memberHash,
+          role: "member",
+          referralCode: m.code,
+          creditBalance: 75,
+          lifetimeEarned: 75,
+          levelSlug: "explorer",
+          levelPoints: 60,
+          lastSurfDate: new Date(),
+        },
+        update: { lastSurfDate: new Date(), isSuspended: false },
+      });
+    }
+  } else {
+    await prisma.user.updateMany({
+      where: { email: { in: demoEmails } },
+      data: { isSuspended: true },
+    });
+    console.log("Production seed: demo/network accounts skipped or suspended.");
   }
 
   const lgbtq = await prisma.category.findUnique({ where: { slug: "lgbtq" } });
@@ -324,7 +359,7 @@ async function main() {
   const tech = await prisma.category.findUnique({ where: { slug: "technology" } });
   const communities = await prisma.category.findUnique({ where: { slug: "communities" } });
 
-  const sampleSites = [
+  const founderSites = [
     {
       userId: admin.id,
       url: "https://www.glittercasino.gay",
@@ -376,72 +411,85 @@ async function main() {
       moderationStatus: "approved" as const,
       httpsOk: true,
     },
-    {
-      userId: admin.id,
-      url: "https://www.wikipedia.org",
-      title: "Wikipedia",
-      description: "Open knowledge — useful Surf inventory for launch testing.",
-      categoryId: communities?.id,
-      moderationStatus: "approved" as const,
-      httpsOk: true,
-      isFeatured: false,
-    },
-    {
-      userId: admin.id,
-      url: "https://developer.mozilla.org",
-      title: "MDN Web Docs",
-      description: "Builder-friendly discovery inventory for the network.",
-      categoryId: tech?.id,
-      moderationStatus: "approved" as const,
-      httpsOk: true,
-    },
-    {
-      userId: admin.id,
-      url: "https://www.nasa.gov",
-      title: "NASA",
-      description: "Space exploration inventory for denser Surf rotation.",
-      categoryId: tech?.id,
-      moderationStatus: "approved" as const,
-      httpsOk: true,
-    },
-    {
-      userId: admin.id,
-      url: "https://www.archive.org",
-      title: "Internet Archive",
-      description: "Digital library — network discovery filler.",
-      categoryId: communities?.id,
-      moderationStatus: "approved" as const,
-      httpsOk: true,
-    },
-    {
-      userId: demo.id,
-      url: "https://example.com",
-      title: "Example Discovery Site",
-      description: "A sample campaign site for local Surf testing.",
-      categoryId: lgbtq?.id,
-      moderationStatus: "approved" as const,
-      httpsOk: true,
-      isQueerdomPick: true,
-    },
-    {
-      userId: demo.id,
-      url: "https://www.w3.org",
-      title: "W3C",
-      description: "Web standards — secondary demo campaign.",
-      categoryId: creators?.id,
-      moderationStatus: "approved" as const,
-      httpsOk: true,
-    },
-    {
-      userId: demo.id,
-      url: "https://web.dev",
-      title: "web.dev",
-      description: "Modern web guidance for demo Surf density.",
-      categoryId: tech?.id,
-      moderationStatus: "approved" as const,
-      httpsOk: true,
-    },
   ];
+
+  const fillerSites = allowDemoSeed
+    ? [
+        {
+          userId: admin.id,
+          url: "https://www.wikipedia.org",
+          title: "Wikipedia",
+          description: "Open knowledge — useful Surf inventory for launch testing.",
+          categoryId: communities?.id,
+          moderationStatus: "approved" as const,
+          httpsOk: true,
+          isFeatured: false,
+        },
+        {
+          userId: admin.id,
+          url: "https://developer.mozilla.org",
+          title: "MDN Web Docs",
+          description: "Builder-friendly discovery inventory for the network.",
+          categoryId: tech?.id,
+          moderationStatus: "approved" as const,
+          httpsOk: true,
+        },
+        {
+          userId: admin.id,
+          url: "https://www.nasa.gov",
+          title: "NASA",
+          description: "Space exploration inventory for denser Surf rotation.",
+          categoryId: tech?.id,
+          moderationStatus: "approved" as const,
+          httpsOk: true,
+        },
+        {
+          userId: admin.id,
+          url: "https://www.archive.org",
+          title: "Internet Archive",
+          description: "Digital library — network discovery filler.",
+          categoryId: communities?.id,
+          moderationStatus: "approved" as const,
+          httpsOk: true,
+        },
+      ]
+    : [];
+
+  const demoSites =
+    allowDemoSeed && demo
+      ? [
+          {
+            userId: demo.id,
+            url: "https://example.com",
+            title: "Example Discovery Site",
+            description: "A sample campaign site for local Surf testing.",
+            categoryId: lgbtq?.id,
+            moderationStatus: "approved" as const,
+            httpsOk: true,
+            isQueerdomPick: true,
+          },
+          {
+            userId: demo.id,
+            url: "https://www.w3.org",
+            title: "W3C",
+            description: "Web standards — secondary demo campaign.",
+            categoryId: creators?.id,
+            moderationStatus: "approved" as const,
+            httpsOk: true,
+          },
+          {
+            userId: demo.id,
+            url: "https://web.dev",
+            title: "web.dev",
+            description: "Modern web guidance for demo Surf density.",
+            categoryId: tech?.id,
+            moderationStatus: "approved" as const,
+            httpsOk: true,
+          },
+        ]
+      : [];
+
+  const sampleSites = [...founderSites, ...fillerSites, ...demoSites];
 
   for (const site of sampleSites) {
     const existing = await prisma.website.findFirst({
@@ -728,18 +776,24 @@ async function main() {
   });
 
   // Give demo a starter spin + luck
-  await prisma.user.update({
-    where: { id: demo.id },
-    data: {
-      wheelSpins: 2,
-      luckPoints: 20,
-      luckLevelSlug: "spark",
-    },
-  });
+  if (demo) {
+    await prisma.user.update({
+      where: { id: demo.id },
+      data: {
+        wheelSpins: 2,
+        luckPoints: 20,
+        luckLevelSlug: "spark",
+      },
+    });
+  }
 
   console.log("Seed complete.");
-  console.log(`  Admin: ${adminEmail} / ${adminPassword}`);
-  console.log("  Demo:  demo@glitterhits.gay / demo12345");
+  console.log(`  Admin: ${adminEmail}`);
+  if (allowDemoSeed) {
+    console.log("  Demo accounts seeded (ALLOW_DEMO_SEED / non-production).");
+  } else {
+    console.log("  Demo accounts not seeded (production-safe).");
+  }
 }
 
 main()

@@ -28,10 +28,13 @@ async function main() {
 
   console.log("▶ smoke: password reset round-trip");
   const reset = await createPasswordResetToken(demo.email);
-  assert.ok(reset.token);
+  assert.ok(reset.ok);
+  assert.ok(reset.resetUrl, "dev reset URL expected when email is not configured");
+  const token = new URL(reset.resetUrl!).searchParams.get("token");
+  assert.ok(token);
   const changed = await resetPasswordWithToken({
     email: demo.email,
-    token: reset.token!,
+    token: token!,
     password: "demo12345",
   });
   assert.equal(changed.ok, true);

@@ -28,8 +28,10 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json().catch(() => ({}));
-  const viewerType =
-    body.viewerType === "automated_viewer" ? "automated_viewer" : "human_exchange";
+  // Public clients may only start human exchange sessions.
+  // automated_viewer is reserved for trusted internal tooling (admin APIs), never self-selected.
+  void body.viewerType;
+  const viewerType = "human_exchange" as const;
 
   const surf = await startSurfSession({
     userId: session.user.id,

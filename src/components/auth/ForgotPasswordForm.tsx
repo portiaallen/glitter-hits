@@ -3,17 +3,22 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { requestPasswordResetAction } from "@/lib/actions/auth";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 
 export function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [resetUrl, setResetUrl] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [pending, startTransition] = useTransition();
 
   function onSubmit(formData: FormData) {
     setError(null);
     setMessage(null);
     setResetUrl(null);
+    if (turnstileToken) {
+      formData.set("cf-turnstile-response", turnstileToken);
+    }
     startTransition(async () => {
       const result = await requestPasswordResetAction(formData);
       if ("error" in result && result.error) setError(result.error);
@@ -39,6 +44,8 @@ export function ForgotPasswordForm() {
           placeholder="you@example.com"
         />
       </div>
+      <TurnstileWidget onToken={(t) => setTurnstileToken(t || "")} />
+      <input type="hidden" name="cf-turnstile-response" value={turnstileToken} />
       {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
       {message && <p className="text-sm text-[var(--success)]">{message}</p>}
       {resetUrl && (

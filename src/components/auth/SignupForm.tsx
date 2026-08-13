@@ -3,13 +3,18 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { signupAction } from "@/lib/actions/auth";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 
 export function SignupForm({ referralCode }: { referralCode?: string }) {
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [pending, startTransition] = useTransition();
 
   function onSubmit(formData: FormData) {
     setError(null);
+    if (turnstileToken) {
+      formData.set("cf-turnstile-response", turnstileToken);
+    }
     startTransition(async () => {
       const result = await signupAction(formData);
       if (result?.error) setError(result.error);
@@ -76,6 +81,22 @@ export function SignupForm({ referralCode }: { referralCode?: string }) {
           placeholder="friend-ABC123"
         />
       </div>
+      <label className="flex items-start gap-2 text-sm text-[var(--text-muted)]">
+        <input name="acceptedTerms" type="checkbox" value="true" className="mt-1" required />
+        <span>
+          I agree to the{" "}
+          <Link href="/terms" className="text-[var(--neon-cyan)] hover:underline">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="text-[var(--neon-cyan)] hover:underline">
+            Privacy Policy
+          </Link>
+          .
+        </span>
+      </label>
+      <TurnstileWidget onToken={(t) => setTurnstileToken(t || "")} />
+      <input type="hidden" name="cf-turnstile-response" value={turnstileToken} />
       {/* Honeypot — hidden from humans */}
       <div className="absolute -left-[9999px] opacity-0" aria-hidden tabIndex={-1}>
         <label htmlFor="company">Company</label>

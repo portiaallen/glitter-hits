@@ -2,28 +2,33 @@ import { randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { sha256Hex } from "@/lib/utils";
+import {
+  emailConfigured,
+  passwordResetEmail,
+  sendTransactionalEmail,
+} from "@/lib/email/send";
 
 const RESET_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export async function createPasswordResetToken(email: string): Promise<{
   ok: boolean;
-  // Dev/launch helper: token returned so UI can show reset link when email isn't configured yet
-  token?: string;
+  emailed: boolean;
+  /** Dev-only helper — never returned to clients in production */
   resetUrl?: string;
   message: string;
 }> {
   const normalized = email.toLowerCase().trim();
   const user = await prisma.user.findUnique({ where: { email: normalized } });
 
-  // Always return generic success to avoid account enumeration
   const generic = {
     ok: true as const,
-    message: "If that email exists, a reset link is ready. Check your inbox or use the link shown in development.",
+    emailed: false,
+    message:
+      "If that email exists in Glitter Hits, we sent password reset instructions.",
   };
 
   if (!user) return generic;
 
-  // Invalidate prior reset tokens for this email
   await prisma.verificationToken.deleteMany({
     where: { identifier: `reset:${normalized}` },
   });
@@ -43,13 +48,40 @@ export async function createPasswordResetToken(email: string): Promise<{
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const resetUrl = `${appUrl}/reset-password?token=${raw}&email=${encodeURIComponent(normalized)}`;
 
-  // When SMTP isn't configured, surface the link for launch/dev (also log for ops)
-  console.info("[password-reset]", normalized, resetUrl);
+  if (emailConfigured()) {
+    const content = passwordResetEmail({ name: user.name, resetUrl });
+    await sendTransactionalEmail({
+      to: normalized,
+      subject: content.subject,
+      html: content.html,
+      text: content.text,
+    });
+    return {
+      ...generic,
+      emailed: true,
+      message: "If that email exists in Glitter Hits, we sent password reset instructions.",
+    };
+  }
 
+  // Development only — never expose reset URLs in production responses
+  if (process.env.NODE_ENV !== "production") {
+    console.info("[password-reset:dev]", normalized, resetUrl);
+    return {
+      ...generic,
+      resetUrl,
+      message:
+        "Email is not configured. Use the development reset link below.",
+    };
+  }
+
+  console.error(
+    "[password-reset] RESEND_API_KEY missing in production — cannot email reset link",
+  );
   return {
-    ...generic,
-    token: raw,
-    resetUrl,
+    ok: false,
+    emailed: false,
+    message:
+      "Password reset is temporarily unavailable. Contact support at hello@glitterhits.gay.",
   };
 }
 
