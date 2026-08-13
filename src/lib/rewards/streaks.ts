@@ -38,22 +38,24 @@ export async function claimDailyReward(userId: string) {
   });
   if (existing) throw new Error("Daily reward already claimed.");
 
-  const user = await touchStreak(userId);
+  // Meaningful activity advances streak server-side
+  const { onMeaningfulActivity } = await import("@/lib/luck/activity");
+  await onMeaningfulActivity({ userId, kind: "daily", silentLuckNotify: true });
+
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
   const streakBonus = Math.min(
     economy.maxStreakBonus,
     Math.max(0, user.streakDays - 1) * economy.streakBonusPerDay,
   );
   const amount = economy.dailyRewardBase + streakBonus;
 
-  await prisma.$transaction(async (tx) => {
-    await tx.dailyRewardClaim.create({
-      data: {
-        userId,
-        claimDate: today,
-        amount,
-        streakDay: user.streakDays,
-      },
-    });
+  await prisma.dailyRewardClaim.create({
+    data: {
+      userId,
+      claimDate: today,
+      amount,
+      streakDay: user.streakDays,
+    },
   });
 
   await moveCredits({
@@ -63,6 +65,9 @@ export async function claimDailyReward(userId: string) {
     description: `Daily reward (streak day ${user.streakDays})`,
     metadata: { streakDay: user.streakDays },
   });
+
+  const { grantDailyLoginSpin } = await import("@/lib/luck/wheel");
+  await grantDailyLoginSpin(userId);
 
   return { amount, streakDay: user.streakDays };
 }

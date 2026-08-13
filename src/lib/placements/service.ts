@@ -176,6 +176,13 @@ export async function purchasePlacement(params: {
     href: "/promote",
   });
 
+  const { onMeaningfulActivity } = await import("@/lib/luck/activity");
+  await onMeaningfulActivity({
+    userId: params.userId,
+    kind: "placement",
+    silentLuckNotify: true,
+  });
+
   return placement;
 }
 

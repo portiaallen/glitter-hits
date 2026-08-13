@@ -24,10 +24,10 @@ export default async function HomePage() {
             Glitter Hits
           </p>
           <h1 className="animate-rise-delay mt-4 max-w-3xl font-[family-name:var(--font-syne)] text-2xl font-semibold text-white/95 sm:text-4xl">
-            Get Seen. Get Hits. Get Glitter.
+            Surf. Spark. Share. Get Lucky.
           </h1>
           <p className="animate-rise-delay mt-5 max-w-xl text-base text-[var(--text-muted)] sm:text-lg">
-            Discover websites. Earn promotional credits. Promote your own.
+            Discover websites. Earn Hits. Grow Luck. Claim Glitter Drops.
             A transparent traffic exchange for the Queerdom — glamorous, fair,
             and never fake.
           </p>

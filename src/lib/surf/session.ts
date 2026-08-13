@@ -8,7 +8,7 @@ import {
 } from "@/lib/delivery/engine";
 import { sha256Hex } from "@/lib/utils";
 import { checkAchievements } from "@/lib/rewards/achievements";
-import { touchStreak } from "@/lib/rewards/streaks";
+import { applyBoostedSurfEarnings } from "@/lib/luck/rewards";
 import type { ViewerType } from "@prisma/client";
 
 export async function startSurfSession(params: {
@@ -157,7 +157,11 @@ export async function completeSurfVisit(params: {
       throw new Error("Campaign ran out of credits.");
     }
 
-    const earn = visit.creditsEarned;
+    const baseEarn = visit.creditsEarned;
+    const earn =
+      visit.viewerType === "automated_viewer"
+        ? baseEarn
+        : await applyBoostedSurfEarnings(params.userId, baseEarn);
     const remainingAfter = visit.campaign.creditBalance - charge;
     const willExhaust = remainingAfter < charge;
 
@@ -185,6 +189,7 @@ export async function completeSurfVisit(params: {
         description: `Earned for discovering a site (${duration}s)`,
         campaignId: visit.campaignId,
         visitId: visit.id,
+        metadata: earn !== baseEarn ? { boostedFrom: baseEarn } : undefined,
       });
     }
 
@@ -226,7 +231,6 @@ export async function completeSurfVisit(params: {
     };
   }).then(async (result) => {
     if (!result.alreadyCredited) {
-      await touchStreak(params.userId);
       await checkAchievements(params.userId);
       if ("earned" in result && result.earned && result.earned > 0) {
         const { awardReferralShare } = await import("@/lib/rewards/launch");
@@ -246,8 +250,18 @@ export async function completeSurfVisit(params: {
           href: "/campaigns",
         });
       }
+
+      const { onMeaningfulActivity } = await import("@/lib/luck/activity");
+      const luckFeedback = await onMeaningfulActivity({
+        userId: params.userId,
+        kind: "surf",
+        visitId: result.visit.id,
+        silentLuckNotify: true,
+      });
+
+      return { ...result, luckFeedback };
     }
-    return result;
+    return { ...result, luckFeedback: null };
   });
 }
 

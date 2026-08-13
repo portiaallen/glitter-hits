@@ -3,13 +3,16 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { AppShell } from "@/components/layout/AppShell";
-import { getUserOverviewStats } from "@/lib/analytics/service";
+import { LuckMeter } from "@/components/luck/LuckMeter";
+import { GlitterDropClaim } from "@/components/luck/GlitterDropClaim";
+import { QuestList } from "@/components/luck/QuestList";
+import { getLuckStatus, listRecentRewardEvents } from "@/lib/luck/engine";
+import { getPendingDrop } from "@/lib/luck/drops";
+import { listUserQuests } from "@/lib/luck/quests";
+import { listActiveChallenges } from "@/lib/luck/challenges";
 import { formatCredits } from "@/lib/utils";
-import {
-  getDashboardDeliverySummary,
-  getOnboardingState,
-} from "@/lib/onboarding/service";
-import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { prisma } from "@/lib/db";
+import { grantDailyLoginSpin } from "@/lib/luck/wheel";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -17,169 +20,170 @@ export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const [stats, onboarding, delivery] = await Promise.all([
-    getUserOverviewStats(session.user.id),
-    getOnboardingState(session.user.id),
-    getDashboardDeliverySummary(session.user.id),
+  await grantDailyLoginSpin(session.user.id);
+
+  const [status, pendingDrop, events, quests, challenges, user] = await Promise.all([
+    getLuckStatus(session.user.id),
+    getPendingDrop(session.user.id),
+    listRecentRewardEvents(session.user.id, 10),
+    listUserQuests(session.user.id),
+    listActiveChallenges(),
+    prisma.user.findUniqueOrThrow({
+      where: { id: session.user.id },
+      include: { persona: true },
+    }),
   ]);
+
+  const levels = await prisma.luckLevelDefinition.findMany({
+    where: { isActive: true },
+    orderBy: { sortOrder: "asc" },
+  });
+  const levelNumber = Math.max(
+    1,
+    levels.findIndex((l) => l.slug === status.level?.slug) + 1,
+  );
+
+  const missions = [
+    { href: "/surf", title: "Surf 10 pages", reward: "+Hits · +Luck" },
+    {
+      href: "/luck/quests",
+      title: "Complete a quest",
+      reward: "Claim ready rewards",
+    },
+    { href: "/websites/new", title: "Promote a website", reward: "+Luck · slots" },
+    { href: "/luck/wheel", title: "Spin the Glitter Wheel", reward: `${status.wheelSpins} spins` },
+  ];
+
+  const activeQuests = quests.filter((q) => q.status !== "claimed").slice(0, 5);
+  const challenge = challenges.find((c) => c.status === "active") ?? challenges[0];
 
   return (
     <AppShell
-      title={`Hey, ${stats.user.name || "Discoverer"}`}
-      subtitle="Your Glitter Hits overview — earn by surfing, spend by promoting."
+      title={`${user.persona?.icon || "✨"} ${user.name || "Discoverer"}`}
+      subtitle={status.mantra}
     >
-      {!onboarding.done ? (
-        <OnboardingChecklist
-          steps={onboarding.steps}
-          completedCount={onboarding.completedCount}
+      <GlitterDropClaim drop={pendingDrop} />
+
+      <div className="mb-6 grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+        <LuckMeter
+          levelName={status.level?.name || "Spark"}
+          levelIcon={status.level?.icon || "✨"}
+          levelNumber={levelNumber}
+          progressPct={status.progressPct}
+          luckPoints={status.luckPoints}
         />
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { label: "Hits", value: formatCredits(status.hits) },
+            { label: "Streak", value: `🔥 ${status.streakDays}d` },
+            { label: "Spins", value: String(status.wheelSpins) },
+            { label: "Tokens", value: String(status.questTokens) },
+          ].map((card) => (
+            <div key={card.label} className="gh-glass p-4">
+              <p className="text-xs text-[var(--text-muted)]">{card.label}</p>
+              <p className="mt-1 font-[family-name:var(--font-syne)] text-xl font-bold">
+                {card.value}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {status.boostExpiresAt && status.boostExpiresAt > new Date() ? (
+        <p className="mb-4 rounded-xl border border-[var(--neon-gold)]/30 bg-[var(--neon-gold)]/10 px-4 py-3 text-sm">
+          ⚡ Boost active · {status.boostMultiplier}% surf credits until{" "}
+          {status.boostExpiresAt.toISOString().slice(11, 16)} UTC
+        </p>
       ) : null}
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {[
-          { label: "Balance", value: formatCredits(stats.user.creditBalance) },
-          { label: "Earned today", value: formatCredits(stats.earnedToday) },
-          { label: "Visits delivered today", value: String(stats.deliveredToday) },
-          { label: "Active campaigns", value: String(stats.activeCampaigns) },
-          {
-            label: "Hits remaining",
-            value: String(delivery.totalHitsRemaining),
-          },
-        ].map((card) => (
-          <div key={card.label} className="gh-glass p-5">
-            <p className="text-sm text-[var(--text-muted)]">{card.label}</p>
-            <p className="mt-2 font-[family-name:var(--font-syne)] text-2xl font-bold">
-              {card.value}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-8 grid gap-4 lg:grid-cols-3">
-        <div className="gh-glass p-5">
-          <p className="gh-badge">Level</p>
-          <p className="mt-3 text-xl font-semibold">{stats.level?.name || stats.user.levelSlug}</p>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
-            {stats.user.levelPoints} points · streak {stats.user.streakDays}d
-          </p>
+      <section className="mb-8">
+        <h2 className="mb-3 font-[family-name:var(--font-syne)] text-lg font-semibold">
+          🎯 Today&apos;s Missions
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {missions.map((m) => (
+            <Link key={m.href} href={m.href} className="gh-glass block p-4 transition hover:bg-white/5">
+              <p className="font-medium">{m.title}</p>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">{m.reward}</p>
+            </Link>
+          ))}
         </div>
-        <div className="gh-glass p-5 lg:col-span-2">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/60">
-            Quick actions
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Link href="/websites/new" className="gh-btn gh-btn-ghost text-sm">
-              Add Website
-            </Link>
-            <Link href="/surf" className="gh-btn gh-btn-primary text-sm">
-              Start Surfing
-            </Link>
-            <Link href="/campaigns/new" className="gh-btn gh-btn-ghost text-sm">
-              Create Campaign
-            </Link>
-            <Link href="/mail" className="gh-btn gh-btn-ghost text-sm">
-              Network Mail
-            </Link>
-            <Link href="/promote" className="gh-btn gh-btn-ghost text-sm">
-              Promote
-            </Link>
-            <Link href="/store" className="gh-btn gh-btn-ghost text-sm">
-              Store
-            </Link>
-            <Link href="/browse" className="gh-btn gh-btn-ghost text-sm">
-              Browse Sites
-            </Link>
-            <Link href="/invite" className="gh-btn gh-btn-ghost text-sm">
-              Invite Friends
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <section className="gh-glass mb-8 p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold">
-              Delivery snapshot
-            </h2>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">{delivery.network.note}</p>
-          </div>
-          <p className="text-sm text-[var(--text-muted)]">
-            Network inventory · {delivery.network.activeCampaigns} campaigns · ~
-            {delivery.network.estimatedVisitsPerDay} visit-credits available
-          </p>
-        </div>
-        {delivery.campaigns.length === 0 ? (
-          <p className="mt-4 text-sm text-[var(--text-muted)]">
-            No campaigns yet — create one to see hits remaining.
-          </p>
-        ) : (
-          <ul className="mt-4 space-y-3">
-            {delivery.campaigns.map((c) => (
-              <li
-                key={c.id}
-                className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 pb-3 text-sm"
-              >
-                <div>
-                  <p className="font-medium">{c.name}</p>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    {c.websiteTitle} · {c.status} · {c.priority}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold">{c.hitsRemaining} hits left</p>
-                  <p className="text-xs text-white/40">{c.visitsDelivered} delivered</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="gh-glass p-5">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold">
-            Recent credit activity
-          </h2>
-          <ul className="mt-4 space-y-3">
-            {stats.recentLedger.length === 0 && (
-              <li className="text-sm text-[var(--text-muted)]">No movements yet.</li>
-            )}
-            {stats.recentLedger.map((entry) => (
-              <li key={entry.id} className="flex items-start justify-between gap-3 text-sm">
-                <div>
-                  <p>{entry.description}</p>
-                  <p className="text-xs text-white/40">{entry.type}</p>
-                </div>
-                <span className={entry.amount >= 0 ? "text-[var(--success)]" : "text-[var(--danger)]"}>
-                  {entry.amount >= 0 ? "+" : ""}
-                  {formatCredits(entry.amount)}
-                </span>
-              </li>
-            ))}
-          </ul>
+      <div className="mb-8 grid gap-6 lg:grid-cols-2">
+        <section>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold">
+              ✨ Glitter Quests
+            </h2>
+            <Link href="/luck/quests" className="text-sm text-[var(--neon-cyan)]">
+              All →
+            </Link>
+          </div>
+          <QuestList quests={activeQuests} />
         </section>
-        <section className="gh-glass p-5">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold">
-            Achievements
-          </h2>
-          <ul className="mt-4 space-y-3">
-            {stats.achievements.length === 0 && (
-              <li className="text-sm text-[var(--text-muted)]">
-                Surf your first site to unlock achievements.
-              </li>
-            )}
-            {stats.achievements.map((a) => (
-              <li key={a.id} className="text-sm">
-                <p className="font-medium">{a.achievement.name}</p>
-                <p className="text-xs text-[var(--text-muted)]">{a.achievement.description}</p>
-              </li>
-            ))}
-          </ul>
-          <Link href="/achievements" className="mt-4 inline-block text-sm text-[var(--neon-cyan)]">
-            View all →
-          </Link>
+
+        <section className="space-y-4">
+          {challenge ? (
+            <div className="gh-glass p-5">
+              <p className="gh-badge">Community</p>
+              <h3 className="mt-2 font-[family-name:var(--font-syne)] text-lg font-semibold">
+                {challenge.icon} {challenge.name}
+              </h3>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">{challenge.description}</p>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[var(--neon-cyan)] to-[var(--neon-pink)]"
+                  style={{
+                    width: `${Math.min(100, Math.floor((challenge.progress / Math.max(1, challenge.goal)) * 100))}%`,
+                  }}
+                />
+              </div>
+              <p className="mt-2 text-xs text-[var(--text-muted)]">
+                {challenge.progress.toLocaleString()} / {challenge.goal.toLocaleString()} · reward{" "}
+                {challenge.rewardHits} Hits
+              </p>
+              <Link href="/luck/challenges" className="mt-3 inline-block text-sm text-[var(--neon-cyan)]">
+                View challenges →
+              </Link>
+            </div>
+          ) : null}
+
+          <div className="gh-glass p-5">
+            <h3 className="font-[family-name:var(--font-syne)] text-lg font-semibold">
+              ✨ Glitter Activity
+            </h3>
+            <ul className="mt-3 space-y-2 text-sm">
+              {events.length === 0 && (
+                <li className="text-[var(--text-muted)]">Surf to spark your first rewards.</li>
+              )}
+              {events.map((e) => (
+                <li key={e.id} className="border-b border-white/5 pb-2">
+                  <p className="font-medium">{e.title}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{e.body}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Link href="/surf" className="gh-btn gh-btn-primary text-sm">
+          Surf
+        </Link>
+        <Link href="/luck/wheel" className="gh-btn gh-btn-ghost text-sm">
+          Wheel
+        </Link>
+        <Link href="/luck/royalty" className="gh-btn gh-btn-ghost text-sm">
+          Royalty
+        </Link>
+        <Link href="/luck/personas" className="gh-btn gh-btn-ghost text-sm">
+          Personas
+        </Link>
+        <Link href="/mail" className="gh-btn gh-btn-ghost text-sm">
+          Glitter Mail
+        </Link>
       </div>
     </AppShell>
   );

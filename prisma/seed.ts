@@ -477,12 +477,13 @@ async function main() {
     where: { id: "seed-welcome" },
     create: {
       id: "seed-welcome",
-      title: "Welcome to Glitter Hits",
-      body: "Get Seen. Get Hits. Get Glitter. Earn promotional credits by discovering websites — spend them to promote your own. Exchange traffic is always labeled honestly.",
+      title: "✨ Surf. Spark. Share. Get Lucky.",
+      body: "Welcome to the Glitter Luck Engine — earn Hits by surfing, grow Luck, claim Glitter Drops, and keep your streak alive.",
       isActive: true,
     },
     update: {
-      title: "Welcome to Glitter Hits",
+      title: "✨ Surf. Spark. Share. Get Lucky.",
+      body: "Welcome to the Glitter Luck Engine — earn Hits by surfing, grow Luck, claim Glitter Drops, and keep your streak alive.",
       isActive: true,
     },
   });
@@ -509,6 +510,232 @@ async function main() {
       });
     }
   }
+
+  // ─── Luck Engine seed ─────────────────────────────────────────────────────
+  const { DEFAULT_LUCK_ENGINE, DEFAULT_LUCK_LEVELS } = await import(
+    "../src/lib/luck/config"
+  );
+  await prisma.systemSetting.upsert({
+    where: { key: "luck_engine" },
+    create: { key: "luck_engine", valueJson: JSON.stringify(DEFAULT_LUCK_ENGINE) },
+    update: { valueJson: JSON.stringify(DEFAULT_LUCK_ENGINE) },
+  });
+
+  for (const level of DEFAULT_LUCK_LEVELS) {
+    await prisma.luckLevelDefinition.upsert({
+      where: { slug: level.slug },
+      create: level,
+      update: level,
+    });
+  }
+
+  const quests = [
+    {
+      slug: "first-spark",
+      name: "First Spark",
+      description: "Complete your first surf.",
+      icon: "✨",
+      rarity: "common" as const,
+      requirementJson: JSON.stringify({ type: "first_surf", target: 1 }),
+      rewardHits: 25,
+      rewardLuck: 10,
+      sortOrder: 1,
+    },
+    {
+      slug: "glitter-seeker",
+      name: "Glitter Seeker",
+      description: "Surf 25 pages.",
+      icon: "🔍",
+      rarity: "uncommon" as const,
+      requirementJson: JSON.stringify({ type: "surf", target: 25 }),
+      rewardHits: 100,
+      rewardLuck: 25,
+      sortOrder: 2,
+    },
+    {
+      slug: "signal-flare",
+      name: "Signal Flare",
+      description: "Promote your first website (create a campaign).",
+      icon: "📣",
+      rarity: "common" as const,
+      requirementJson: JSON.stringify({ type: "campaign", target: 1 }),
+      rewardHits: 50,
+      rewardLuck: 12,
+      sortOrder: 3,
+    },
+    {
+      slug: "community-builder",
+      name: "Community Builder",
+      description: "Refer your first activated member.",
+      icon: "🌈",
+      rarity: "rare" as const,
+      requirementJson: JSON.stringify({ type: "referral", target: 1 }),
+      rewardHits: 250,
+      rewardLuck: 40,
+      sortOrder: 4,
+      rewardBadgeSlug: "community-builder",
+    },
+    {
+      slug: "lucky-streak",
+      name: "Lucky Streak",
+      description: "Stay active 7 days in a row.",
+      icon: "🔥",
+      rarity: "rare" as const,
+      requirementJson: JSON.stringify({ type: "streak", target: 7 }),
+      rewardHits: 500,
+      rewardLuck: 50,
+      sortOrder: 5,
+      rewardBadgeSlug: "seven-day-streak",
+    },
+    {
+      slug: "glitter-legend",
+      name: "Glitter Legend",
+      description: "Complete 25 quests.",
+      icon: "👑",
+      rarity: "epic" as const,
+      requirementJson: JSON.stringify({ type: "quests_completed", target: 25 }),
+      rewardHits: 750,
+      rewardLuck: 100,
+      sortOrder: 6,
+      rewardBadgeSlug: "quest-master",
+    },
+  ];
+
+  for (const q of quests) {
+    await prisma.questDefinition.upsert({
+      where: { slug: q.slug },
+      create: q,
+      update: {
+        name: q.name,
+        description: q.description,
+        icon: q.icon,
+        rarity: q.rarity,
+        requirementJson: q.requirementJson,
+        rewardHits: q.rewardHits,
+        rewardLuck: q.rewardLuck,
+        rewardBadgeSlug: q.rewardBadgeSlug ?? null,
+        sortOrder: q.sortOrder,
+        isActive: true,
+      },
+    });
+  }
+
+  const milestones = [
+    { days: 3, name: "Spark Streak", rewardHits: 25, rewardLuck: 10, rewardSpins: 1 },
+    { days: 7, name: "Lucky Streak", rewardHits: 100, rewardLuck: 25, rewardSpins: 1, badgeSlug: "seven-day-streak" },
+    { days: 14, name: "Super Streak", rewardHits: 250, rewardLuck: 40, rewardSpins: 2 },
+    { days: 30, name: "Glitter Legend", rewardHits: 750, rewardLuck: 80, rewardSpins: 3, badgeSlug: "glitter-legend-streak" },
+  ];
+  for (const m of milestones) {
+    await prisma.streakMilestone.upsert({
+      where: { days: m.days },
+      create: m,
+      update: m,
+    });
+  }
+
+  const personas = [
+    { slug: "unicorn", name: "Unicorn", icon: "🦄", description: "Mythic queer magic.", accentColor: "#ff4fd8", unlockLuckMin: 0, sortOrder: 1 },
+    { slug: "royal", name: "Royal", icon: "👑", description: "Crowned discovery energy.", accentColor: "#ffd36a", unlockLuckMin: 150, sortOrder: 2 },
+    { slug: "glitter-fairy", name: "Glitter Fairy", icon: "🧚", description: "Soft sparkle chaos.", accentColor: "#c084fc", unlockLuckMin: 50, sortOrder: 3 },
+    { slug: "flame", name: "Flame", icon: "🔥", description: "Streak-fueled heat.", accentColor: "#ff6b8a", unlockLuckMin: 350, sortOrder: 4 },
+    { slug: "moon-witch", name: "Moon Witch", icon: "🌙", description: "Night glitter rituals.", accentColor: "#4de2ff", unlockLuckMin: 700, sortOrder: 5 },
+    { slug: "diamond-diva", name: "Diamond Diva", icon: "💎", description: "Rare drop royalty.", accentColor: "#a5f3fc", unlockLuckMin: 1200, sortOrder: 6 },
+    { slug: "rainbow-rebel", name: "Rainbow Rebel", icon: "🌈", description: "Community parade power.", accentColor: "#f472b6", unlockLuckMin: 200, sortOrder: 7 },
+  ];
+  for (const p of personas) {
+    await prisma.persona.upsert({
+      where: { slug: p.slug },
+      create: p,
+      update: p,
+    });
+  }
+
+  const badges = [
+    { slug: "first-spark", name: "First Spark", description: "Completed first surf.", icon: "✨", rarity: "common" as const },
+    { slug: "unicorn", name: "Unicorn", description: "Chose the Unicorn persona.", icon: "🦄", rarity: "uncommon" as const },
+    { slug: "seven-day-streak", name: "7-Day Streak", description: "Seven active days.", icon: "🔥", rarity: "rare" as const },
+    { slug: "diamond-drop", name: "Diamond Drop", description: "Claimed a Diamond Drop.", icon: "💎", rarity: "diamond" as const },
+    { slug: "glitter-royalty", name: "Glitter Royalty", description: "Entered a royalty board.", icon: "👑", rarity: "epic" as const },
+    { slug: "community-builder", name: "Community Builder", description: "First referral activated.", icon: "🌈", rarity: "rare" as const },
+    { slug: "first-promotion", name: "First Promotion", description: "Launched a campaign.", icon: "📣", rarity: "common" as const },
+    { slug: "quest-master", name: "Quest Master", description: "Completed many quests.", icon: "🎯", rarity: "epic" as const },
+    { slug: "glitter-legend-streak", name: "Glitter Legend", description: "30-day streak.", icon: "🌟", rarity: "epic" as const },
+  ];
+  for (const b of badges) {
+    await prisma.badgeDefinition.upsert({
+      where: { slug: b.slug },
+      create: b,
+      update: b,
+    });
+  }
+
+  const wheel = [
+    { label: "+10 Hits", rewardType: "hits", rewardValue: 10, weight: 28, color: "#ff4fd8", sortOrder: 1 },
+    { label: "+25 Hits", rewardType: "hits", rewardValue: 25, weight: 20, color: "#c084fc", sortOrder: 2 },
+    { label: "+100 Hits", rewardType: "hits", rewardValue: 100, weight: 8, color: "#ffd36a", sortOrder: 3 },
+    { label: "+Luck", rewardType: "luck", rewardValue: 15, weight: 18, color: "#4de2ff", sortOrder: 4 },
+    { label: "2X Surf", rewardType: "multiplier", rewardValue: 200, weight: 8, color: "#fb7185", sortOrder: 5 },
+    { label: "Mystery Drop", rewardType: "drop", rewardValue: 1, weight: 8, color: "#a78bfa", sortOrder: 6 },
+    { label: "Extra Spin", rewardType: "spins", rewardValue: 1, weight: 6, color: "#34d399", sortOrder: 7 },
+    { label: "Quest Token", rewardType: "token", rewardValue: 1, weight: 4, color: "#fbbf24", sortOrder: 8 },
+  ];
+  const existingSegments = await prisma.wheelSegment.count();
+  if (existingSegments === 0) {
+    for (const s of wheel) {
+      await prisma.wheelSegment.create({ data: s });
+    }
+  }
+
+  const royalty = [
+    { slug: "queen-of-traffic", name: "Queen of Traffic", metric: "visits_received", icon: "👑", description: "Most visits delivered to your sites.", sortOrder: 1 },
+    { slug: "king-of-clicks", name: "King of Clicks", metric: "surfs", icon: "🖱️", description: "Most pages discovered.", sortOrder: 2 },
+    { slug: "royal-recruiter", name: "Royal Recruiter", metric: "referrals", icon: "🌈", description: "Most activated referrals.", sortOrder: 3 },
+    { slug: "glitter-ambassador", name: "Glitter Ambassador", metric: "visits_given", icon: "✨", description: "Most exchange visits given.", sortOrder: 4 },
+    { slug: "surf-sorcerer", name: "Surf Sorcerer", metric: "surfs", icon: "🧙", description: "Dedicated discovery energy.", sortOrder: 5 },
+    { slug: "luckiest-member", name: "Luckiest Member", metric: "luck", icon: "🍀", description: "Highest Luck points.", sortOrder: 6 },
+    { slug: "longest-streak", name: "Longest Streak", metric: "streak", icon: "🔥", description: "Current active-day streak.", sortOrder: 7 },
+  ];
+  for (const r of royalty) {
+    await prisma.royaltyCategory.upsert({
+      where: { slug: r.slug },
+      create: r,
+      update: r,
+    });
+  }
+
+  await prisma.communityChallenge.upsert({
+    where: { slug: "pride-parade" },
+    create: {
+      slug: "pride-parade",
+      name: "Pride Parade",
+      description: "Surf 100,000 pages together. Every active contributor earns bonus Hits.",
+      icon: "🌈",
+      metric: "pages_surfed",
+      goal: 100000,
+      progress: 0,
+      rewardHits: 250,
+      status: "active",
+      startsAt: new Date(),
+    },
+    update: {
+      name: "Pride Parade",
+      description: "Surf 100,000 pages together. Every active contributor earns bonus Hits.",
+      status: "active",
+      rewardHits: 250,
+      goal: 100000,
+    },
+  });
+
+  // Give demo a starter spin + luck
+  await prisma.user.update({
+    where: { id: demo.id },
+    data: {
+      wheelSpins: 2,
+      luckPoints: 20,
+      luckLevelSlug: "spark",
+    },
+  });
 
   console.log("Seed complete.");
   console.log(`  Admin: ${adminEmail} / ${adminPassword}`);

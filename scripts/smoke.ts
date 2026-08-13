@@ -145,6 +145,24 @@ async function main() {
   assert.equal(membershipAllowsPriority("free", "premium"), false);
   assert.equal(membershipAllowsPriority("vip", "premium"), true);
 
+  console.log("▶ smoke: luck engine status + quests");
+  const { getLuckStatus } = await import("../src/lib/luck/engine");
+  const { listUserQuests } = await import("../src/lib/luck/quests");
+  const luck = await getLuckStatus(demo.id);
+  assert.ok(luck.level);
+  assert.ok(typeof luck.luckPoints === "number");
+  const quests = await listUserQuests(demo.id);
+  assert.ok(quests.length > 0);
+
+  console.log("▶ smoke: wheel spin idempotency");
+  await prisma.user.update({ where: { id: demo.id }, data: { wheelSpins: { increment: 1 } } });
+  const { spinWheel } = await import("../src/lib/luck/wheel");
+  const key = `smoke_${Date.now()}`;
+  const first = await spinWheel(demo.id, key);
+  const second = await spinWheel(demo.id, key);
+  assert.equal(second.replay, true);
+  assert.equal(first.spin.id, second.spin.id);
+
   console.log("✓ smoke passed");
 }
 

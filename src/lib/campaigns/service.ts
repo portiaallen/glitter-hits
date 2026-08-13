@@ -82,6 +82,9 @@ export async function createWebsite(userId: string, raw: z.infer<typeof websiteI
     }
   }
 
+  const { onMeaningfulActivity } = await import("@/lib/luck/activity");
+  await onMeaningfulActivity({ userId, kind: "website", silentLuckNotify: true });
+
   return website;
 }
 
@@ -132,6 +135,8 @@ export async function createCampaign(
   }
 
   await checkAchievements(userId);
+  const { onMeaningfulActivity } = await import("@/lib/luck/activity");
+  await onMeaningfulActivity({ userId, kind: "campaign", silentLuckNotify: true });
   return prisma.campaign.findUniqueOrThrow({
     where: { id: campaign.id },
     include: { website: true },

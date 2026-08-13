@@ -20,6 +20,7 @@ export const config = {
     "/mail/:path*",
     "/store/:path*",
     "/promote/:path*",
+    "/luck/:path*",
     "/notifications/:path*",
     "/admin/:path*",
     "/login",

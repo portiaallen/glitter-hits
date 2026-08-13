@@ -267,6 +267,12 @@ export async function markMailRead(userId: string, receiptId: string) {
     where: { id: receipt.mailId },
     data: { readCount: { increment: 1 } },
   });
+  const { onMeaningfulActivity } = await import("@/lib/luck/activity");
+  await onMeaningfulActivity({
+    userId,
+    kind: "mail_open",
+    silentLuckNotify: true,
+  });
   return updated;
 }
 

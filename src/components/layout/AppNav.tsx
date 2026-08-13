@@ -7,14 +7,14 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/surf", label: "Surf" },
+  { href: "/luck/quests", label: "Quests" },
+  { href: "/luck/wheel", label: "Wheel" },
   { href: "/websites", label: "Websites" },
   { href: "/campaigns", label: "Campaigns" },
   { href: "/promote", label: "Promote" },
   { href: "/mail", label: "Mail" },
   { href: "/store", label: "Store" },
-  { href: "/credits", label: "Credits" },
-  { href: "/achievements", label: "Achievements" },
-  { href: "/invite", label: "Invite" },
+  { href: "/luck/royalty", label: "Royalty" },
   { href: "/notifications", label: "Alerts" },
   { href: "/settings", label: "Settings" },
 ];

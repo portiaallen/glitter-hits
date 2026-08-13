@@ -44,6 +44,16 @@ model User {
   lifetimeSpent    Int            @default(0)
   levelSlug        String         @default("newcomer")
   levelPoints      Int            @default(0)
+  // Glitter Luck Engine
+  luckPoints       Int            @default(0)
+  luckLevelSlug    String         @default("spark")
+  wheelSpins       Int            @default(0)
+  questTokens      Int            @default(0)
+  personaId        String?
+  lastActiveDate   String? // YYYY-MM-DD UTC for meaningful activity
+  boostMultiplier  Int            @default(100) // percent, 100 = 1x
+  boostExpiresAt   DateTime?
+  profilePublic    Boolean        @default(true)
   streakDays       Int            @default(0)
   longestStreak    Int            @default(0)
   lastSurfDate     DateTime?
@@ -58,6 +68,7 @@ model User {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
+  persona          Persona?       @relation(fields: [personaId], references: [id], onDelete: SetNull)
   accounts         Account[]
   sessions         Session[]
   websites         Website[]
@@ -75,6 +86,15 @@ model User {
   notifications    Notification[]
   mailsSent        MailCampaign[] @relation("MailSender")
   mailReceipts     MailReceipt[]  @relation("MailRecipient")
+  luckLedger       LuckLedger[]
+  userQuests       UserQuest[]
+  glitterDrops     GlitterDrop[]
+  jackpotWins      JackpotWin[]
+  wheelSpinsLog    WheelSpin[]
+  userBadges       UserBadge[]
+  challengeParts   ChallengeContribution[]
+  rewardEvents     RewardEvent[]
+  streakClaims     StreakMilestoneClaim[]
 }
 
 model Account {
@@ -123,6 +143,11 @@ enum CreditTxnType {
   earned_achievement
   earned_referral
   earned_promo
+  earned_drop
+  earned_jackpot
+  earned_wheel
+  earned_quest
+  earned_challenge
   spent_campaign
   spent_featured
   spent_boost
@@ -686,4 +711,285 @@ model MailReceipt {
   @@unique([mailId, recipientId])
   @@index([recipientId, createdAt])
   @@index([recipientId, readAt])
+}
+
+// ─── Glitter Luck Engine ────────────────────────────────────────────────────
+
+enum RewardRarity {
+  common
+  uncommon
+  rare
+  epic
+  diamond
+}
+
+enum QuestStatus {
+  active
+  completed
+  claimed
+  expired
+}
+
+enum ChallengeStatus {
+  draft
+  active
+  completed
+  expired
+  cancelled
+}
+
+model LuckLevelDefinition {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  minLuck     Int
+  sortOrder   Int     @default(0)
+  icon        String  @default("✨")
+  description String?
+  isActive    Boolean @default(true)
+}
+
+model LuckLedger {
+  id           String   @id @default(cuid())
+  userId       String
+  amount       Int
+  balanceAfter Int
+  source       String
+  description  String
+  metadataJson String   @default("{}")
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([source, createdAt])
+}
+
+model QuestDefinition {
+  id              String       @id @default(cuid())
+  slug            String       @unique
+  name            String
+  description     String
+  icon            String       @default("🎯")
+  rarity          RewardRarity @default(common)
+  requirementJson String       @default("{}")
+  rewardHits      Int          @default(0)
+  rewardLuck      Int          @default(0)
+  rewardSpins     Int          @default(0)
+  rewardTokens    Int          @default(0)
+  rewardBadgeSlug String?
+  isRepeatable    Boolean      @default(false)
+  isActive        Boolean      @default(true)
+  sortOrder       Int          @default(0)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  userQuests UserQuest[]
+}
+
+model UserQuest {
+  id          String      @id @default(cuid())
+  userId      String
+  questId     String
+  status      QuestStatus @default(active)
+  progress    Int         @default(0)
+  target      Int         @default(1)
+  completedAt DateTime?
+  claimedAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest QuestDefinition @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId])
+  @@index([userId, status])
+}
+
+model StreakMilestone {
+  id          String  @id @default(cuid())
+  days        Int     @unique
+  name        String
+  description String?
+  rewardHits  Int     @default(0)
+  rewardLuck  Int     @default(0)
+  rewardSpins Int     @default(0)
+  badgeSlug   String?
+  isActive    Boolean @default(true)
+}
+
+model StreakMilestoneClaim {
+  id          String   @id @default(cuid())
+  userId      String
+  milestoneId String
+  claimedAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, milestoneId])
+}
+
+model Persona {
+  id              String  @id @default(cuid())
+  slug            String  @unique
+  name            String
+  description     String
+  icon            String
+  accentColor     String  @default("#ff4fd8")
+  unlockLuckMin   Int     @default(0)
+  unlockQuestSlug String?
+  isActive        Boolean @default(true)
+  sortOrder       Int     @default(0)
+  users           User[]
+}
+
+model BadgeDefinition {
+  id           String       @id @default(cuid())
+  slug         String       @unique
+  name         String
+  description  String
+  icon         String       @default("✨")
+  rarity       RewardRarity @default(common)
+  criteriaJson String       @default("{}")
+  isActive     Boolean      @default(true)
+  sortOrder    Int          @default(0)
+  users        UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge BadgeDefinition @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+model GlitterDrop {
+  id           String       @id @default(cuid())
+  userId       String
+  rarity       RewardRarity @default(common)
+  rewardType   String
+  rewardValue  Int          @default(0)
+  rewardLabel  String
+  status       String       @default("pending")
+  expiresAt    DateTime
+  claimedAt    DateTime?
+  metadataJson String       @default("{}")
+  createdAt    DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status, expiresAt])
+}
+
+model JackpotWin {
+  id          String   @id @default(cuid())
+  userId      String
+  rewardType  String
+  rewardValue Int
+  rewardLabel String
+  source      String   @default("activity")
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}
+
+model WheelSegment {
+  id          String       @id @default(cuid())
+  label       String
+  rewardType  String
+  rewardValue Int          @default(0)
+  weight      Int          @default(10)
+  rarity      RewardRarity @default(common)
+  color       String       @default("#ff4fd8")
+  isActive    Boolean      @default(true)
+  sortOrder   Int          @default(0)
+}
+
+model WheelSpin {
+  id          String   @id @default(cuid())
+  userId      String
+  clientKey   String
+  segmentId   String?
+  rewardType  String
+  rewardValue Int
+  rewardLabel String
+  processed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clientKey])
+  @@index([userId, createdAt])
+}
+
+model CommunityChallenge {
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  name            String
+  description     String
+  icon            String          @default("🌈")
+  metric          String
+  goal            Int
+  progress        Int             @default(0)
+  rewardHits      Int             @default(0)
+  status          ChallengeStatus @default(draft)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  completedAt     DateTime?
+  eligibilityJson String          @default("{\"requireActive\":true}")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  contributions ChallengeContribution[]
+}
+
+model ChallengeContribution {
+  id          String   @id @default(cuid())
+  challengeId String
+  userId      String
+  amount      Int      @default(1)
+  rewarded    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  challenge CommunityChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([userId])
+}
+
+model RoyaltyCategory {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String?
+  metric      String
+  icon        String  @default("👑")
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+  rotateDays  Int     @default(7)
+}
+
+model RewardEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  kind        String
+  title       String
+  body        String
+  payloadJson String   @default("{}")
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

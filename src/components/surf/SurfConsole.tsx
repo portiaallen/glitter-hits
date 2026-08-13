@@ -161,6 +161,12 @@ export function SurfConsole() {
       const data = await postJson<{
         earned?: number;
         alreadyCredited?: boolean;
+        luckFeedback?: {
+          luck?: number;
+          messages?: string[];
+          dropId?: string;
+          jackpot?: { label: string } | null;
+        } | null;
       }>("/api/surf/complete", {
         sessionId: session.id,
         visitId: site.visitId,
@@ -173,11 +179,11 @@ export function SurfConsole() {
         creditsEarned: s.creditsEarned + earned,
         sitesViewed: s.sitesViewed + (data.alreadyCredited ? 0 : 1),
       }));
-      setMessage(
-        earned > 0
-          ? `+${formatCredits(earned)} Glitter Hits earned`
-          : "Visit completed",
-      );
+      const bits = [
+        earned > 0 ? `✨ +${formatCredits(earned)} Hits` : "Visit completed",
+        ...(data.luckFeedback?.messages ?? []),
+      ];
+      setMessage(bits.join(" · "));
       await loadNext(session.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to complete visit");

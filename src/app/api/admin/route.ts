@@ -239,6 +239,52 @@ export async function POST(req: Request) {
       return NextResponse.json({ placement });
     }
 
+    if (action === "update_luck_engine") {
+      const { setLuckEngineConfig } = await import("@/lib/luck/config");
+      const config = await setLuckEngineConfig(body.settings ?? {}, user.id);
+      await prisma.adminAuditLog.create({
+        data: {
+          actorId: user.id,
+          action: "luck_engine.update",
+          detailsJson: JSON.stringify({ keys: Object.keys(body.settings ?? {}) }),
+        },
+      });
+      return NextResponse.json({ config });
+    }
+
+    if (action === "upsert_quest") {
+      const data = z
+        .object({
+          id: z.string().optional(),
+          slug: z.string().min(2),
+          name: z.string().min(2),
+          description: z.string().min(2),
+          icon: z.string().optional(),
+          rarity: z.enum(["common", "uncommon", "rare", "epic", "diamond"]).optional(),
+          requirementJson: z.string(),
+          rewardHits: z.number().int().min(0),
+          rewardLuck: z.number().int().min(0),
+          rewardSpins: z.number().int().min(0).optional(),
+          isActive: z.boolean().optional(),
+          sortOrder: z.number().int().optional(),
+        })
+        .parse(body.quest);
+      const { id, ...fields } = data;
+      const quest = id
+        ? await prisma.questDefinition.update({ where: { id }, data: fields })
+        : await prisma.questDefinition.create({ data: fields });
+      await prisma.adminAuditLog.create({
+        data: {
+          actorId: user.id,
+          action: id ? "quest.update" : "quest.create",
+          targetType: "quest",
+          targetId: quest.id,
+          detailsJson: JSON.stringify(quest),
+        },
+      });
+      return NextResponse.json({ quest });
+    }
+
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (e) {
     return NextResponse.json(
