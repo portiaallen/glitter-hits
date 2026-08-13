@@ -7,7 +7,7 @@
 - [ ] Postgres `DATABASE_URL` (Neon / Vercel Postgres)
 - [ ] `RESEND_API_KEY` + verified `EMAIL_FROM` (password reset + contact)
 - [ ] `CRON_SECRET` set; Vercel Cron can call `/api/cron/weekly`
-- [ ] Cloudflare Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY`
+- [ ] Cloudflare Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` (then set `REQUIRE_TURNSTILE=true`)
 - [ ] Do **not** set `ALLOW_INSECURE_AUTH` or `MODERATION_AUTO_APPROVE` in production
 - [ ] Seed once with `SEED_MODE=production`, strong `SEED_ADMIN_PASSWORD`, **no** `ALLOW_DEMO_SEED`
 - [ ] Rotate founder password after first login
