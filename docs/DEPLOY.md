@@ -39,13 +39,36 @@
 
 ## Domain: glitterhits.online
 
-Point DNS at Vercel, then finish:
+Vercel project: `sacred-luck-s-projects/glitter-hits`  
+Production alias: https://glitter-hits.vercel.app (also aliased to glitterhits.online once DNS is correct)
 
-1. Vercel custom domain → `glitterhits.online` (+ `www` redirect if desired)
-2. Env: `AUTH_URL` / `NEXT_PUBLIC_APP_URL` = `https://glitterhits.online`
-3. Resend: verify domain, set MX/TXT/DKIM, then `RESEND_API_KEY` + `EMAIL_FROM`
-4. Cloudflare Turnstile: add widget hostname `glitterhits.online`, set keys + `REQUIRE_TURNSTILE=true`
-5. Stripe webhook: `https://glitterhits.online/api/webhooks/stripe`
+### Porkbun DNS (required)
+
+At https://porkbun.com DNS for `glitterhits.online`, **remove parking A records**, then add:
+
+| Type | Host | Answer / Value |
+| --- | --- | --- |
+| A | `@` (blank) | `76.76.21.21` |
+| CNAME | `www` | `cname.vercel-dns.com` |
+
+(Alternatively point nameservers to `ns1.vercel-dns.com` + `ns2.vercel-dns.com`.)
+
+Then wait a few minutes and run verification in Vercel Domains, or ask the agent to re-check.
+
+### Env already set on Vercel Production
+
+- `AUTH_URL` / `NEXT_PUBLIC_APP_URL` → `https://glitterhits.online`
+- `EMAIL_FROM` / `SUPPORT_EMAIL`
+- Stripe live Price IDs + live `STRIPE_WEBHOOK_SECRET`
+
+### Still set manually in Vercel
+
+From https://dashboard.stripe.com/acct_1Rqj95AZwvXaTN33/apikeys :
+
+- `STRIPE_SECRET_KEY`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+
+After DNS: Resend domain verify + Turnstile widget for `glitterhits.online`.
 
 Helper (after `vercel login` + claimed Stripe key):
 
