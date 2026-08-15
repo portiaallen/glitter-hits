@@ -37,6 +37,22 @@
 | `ALLOW_DEMO_SEED` | no (leave unset) | Seeds demo users locally |
 | `SEED_ADMIN_PASSWORD` | yes when seeding prod | Founder bootstrap |
 
+## Domain: glitterhits.online
+
+Point DNS at Vercel, then finish:
+
+1. Vercel custom domain → `glitterhits.online` (+ `www` redirect if desired)
+2. Env: `AUTH_URL` / `NEXT_PUBLIC_APP_URL` = `https://glitterhits.online`
+3. Resend: verify domain, set MX/TXT/DKIM, then `RESEND_API_KEY` + `EMAIL_FROM`
+4. Cloudflare Turnstile: add widget hostname `glitterhits.online`, set keys + `REQUIRE_TURNSTILE=true`
+5. Stripe webhook: `https://glitterhits.online/api/webhooks/stripe`
+
+Helper (after `vercel login` + claimed Stripe key):
+
+```bash
+./scripts/setup-glitterhits-online.sh
+```
+
 ## Local
 
 ```bash
