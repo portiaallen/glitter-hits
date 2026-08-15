@@ -177,11 +177,17 @@ async function main() {
     update: { valueJson: JSON.stringify(MAIL_ECONOMY) },
   });
 
+  const { STRIPE_TEST_PRICE_IDS, STRIPE_LIVE_PRICE_IDS } = await import("../src/lib/stripe/price-ids");
+  const live =
+    process.env.STRIPE_SECRET_KEY?.startsWith("sk_live") ||
+    process.env.STRIPE_SECRET_KEY?.startsWith("rk_live") ||
+    process.env.STRIPE_USE_LIVE_PRICES === "true";
+  const defaults = live ? STRIPE_LIVE_PRICE_IDS : STRIPE_TEST_PRICE_IDS;
   const packPriceEnv: Record<string, string | undefined> = {
-    "starter-100": process.env.STRIPE_PRICE_PACK_STARTER,
-    "boost-500": process.env.STRIPE_PRICE_PACK_BOOST,
-    "launch-1500": process.env.STRIPE_PRICE_PACK_LAUNCH,
-    "empire-5000": process.env.STRIPE_PRICE_PACK_EMPIRE,
+    "starter-100": process.env.STRIPE_PRICE_PACK_STARTER || defaults["starter-100"],
+    "boost-500": process.env.STRIPE_PRICE_PACK_BOOST || defaults["boost-500"],
+    "launch-1500": process.env.STRIPE_PRICE_PACK_LAUNCH || defaults["launch-1500"],
+    "empire-5000": process.env.STRIPE_PRICE_PACK_EMPIRE || defaults["empire-5000"],
   };
 
   for (const pack of CREDIT_PACKS) {
