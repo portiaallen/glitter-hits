@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { createCreditPackCheckout } from "@/lib/stripe/checkout";
 
 async function main() {
-  const user = await prisma.user.findUniqueOrThrow({ where: { email: "demo@glitterhits.gay" } });
+  const user = await prisma.user.findUniqueOrThrow({ where: { email: "demo@glitterhits.online" } });
   const pack = await prisma.creditPack.findFirstOrThrow({ where: { slug: "starter-100" } });
   const result = await createCreditPackCheckout({
     userId: user.id,

@@ -27,7 +27,7 @@ Copy the printed `whsec_…` into `STRIPE_WEBHOOK_SECRET`.
 ## Production
 
 1. Claim / move to your real Stripe account (or create live prices)
-2. Add webhook endpoint: `https://<your-domain>/api/webhooks/stripe`
+2. Add webhook endpoint: `https://glitterhits.online/api/webhooks/stripe`
 3. Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
 4. Enable Admin monetization toggles: `credit_purchases`, `premium_memberships`
 5. Switch to live keys only after domain + Terms review

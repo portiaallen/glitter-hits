@@ -14,7 +14,7 @@ describe("credit ledger", () => {
   let userId: string;
 
   before(async () => {
-    const user = await prisma.user.findUnique({ where: { email: "demo@glitterhits.gay" } });
+    const user = await prisma.user.findUnique({ where: { email: "demo@glitterhits.online" } });
     assert.ok(user, "seed demo user required — run npm run db:seed");
     userId = user!.id;
   });
@@ -57,7 +57,7 @@ describe("credit ledger", () => {
 describe("delivery engine", () => {
   it("never returns the viewer their own campaign", async () => {
     const demo = await prisma.user.findUniqueOrThrow({
-      where: { email: "demo@glitterhits.gay" },
+      where: { email: "demo@glitterhits.online" },
     });
     const pick = await selectNextCampaign({
       userId: demo.id,

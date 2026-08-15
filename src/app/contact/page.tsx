@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  const email = "hello@glitterhits.gay";
+  const email = "hello@glitterhits.online";
 
   return (
     <div>

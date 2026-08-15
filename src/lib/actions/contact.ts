@@ -62,7 +62,7 @@ export async function submitContactAction(formData: FormData) {
   const supportTo =
     process.env.SUPPORT_EMAIL ||
     process.env.SEED_ADMIN_EMAIL ||
-    "hello@glitterhits.gay";
+    "hello@glitterhits.online";
 
   if (emailConfigured()) {
     try {

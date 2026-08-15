@@ -257,7 +257,7 @@ async function main() {
     });
   }
 
-  const adminEmail = (process.env.SEED_ADMIN_EMAIL || "admin@glitterhits.gay").toLowerCase();
+  const adminEmail = (process.env.SEED_ADMIN_EMAIL || "admin@glitterhits.online").toLowerCase();
   const adminPassword = process.env.SEED_ADMIN_PASSWORD || "ChangeMeNow!";
   const prodLike =
     process.env.SEED_MODE === "production" ||
@@ -276,34 +276,45 @@ async function main() {
 
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
-  const admin = await prisma.user.upsert({
-    where: { email: adminEmail },
-    create: {
-      email: adminEmail,
-      name: "Founder",
-      passwordHash,
-      role: "founder",
-      membership: "vip",
-      referralCode: "FOUNDER-GLITTER",
-      creditBalance: 1000,
-      lifetimeEarned: 1000,
-      levelSlug: "queerdom-vip",
-      levelPoints: 3000,
-    },
-    update: {
-      // Do not overwrite production passwords on re-seed unless explicitly requested.
-      ...(process.env.SEED_RESET_ADMIN_PASSWORD === "true" ? { passwordHash } : {}),
-      role: "founder",
-    },
-  });
+  const existingAdmin =
+    (await prisma.user.findUnique({ where: { email: adminEmail } })) ??
+    (await prisma.user.findUnique({ where: { referralCode: "FOUNDER-GLITTER" } })) ??
+    (await prisma.user.findFirst({ where: { role: { in: ["founder", "admin"] } } }));
+
+  const admin = existingAdmin
+    ? await prisma.user.update({
+        where: { id: existingAdmin.id },
+        data: {
+          email: adminEmail,
+          ...(process.env.SEED_RESET_ADMIN_PASSWORD === "true" || !existingAdmin.passwordHash
+            ? { passwordHash }
+            : {}),
+          role: "founder",
+          referralCode: existingAdmin.referralCode || "FOUNDER-GLITTER",
+        },
+      })
+    : await prisma.user.create({
+        data: {
+          email: adminEmail,
+          name: "Founder",
+          passwordHash,
+          role: "founder",
+          membership: "vip",
+          referralCode: "FOUNDER-GLITTER",
+          creditBalance: 1000,
+          lifetimeEarned: 1000,
+          levelSlug: "queerdom-vip",
+          levelPoints: 3000,
+        },
+      });
 
   const demoEmails = [
-    "demo@glitterhits.gay",
-    "nova@glitterhits.gay",
-    "rio@glitterhits.gay",
-    "sage@glitterhits.gay",
-    "kai@glitterhits.gay",
-    "lux@glitterhits.gay",
+    "demo@glitterhits.online",
+    "nova@glitterhits.online",
+    "rio@glitterhits.online",
+    "sage@glitterhits.online",
+    "kai@glitterhits.online",
+    "lux@glitterhits.online",
   ];
 
   let demo: { id: string } | null = null;
@@ -312,9 +323,9 @@ async function main() {
     // Demo member
     const demoHash = await bcrypt.hash("demo12345", 12);
     demo = await prisma.user.upsert({
-      where: { email: "demo@glitterhits.gay" },
+      where: { email: "demo@glitterhits.online" },
       create: {
-        email: "demo@glitterhits.gay",
+        email: "demo@glitterhits.online",
         name: "Demo Discoverer",
         passwordHash: demoHash,
         role: "member",
@@ -328,11 +339,11 @@ async function main() {
 
     // Extra network members so mailing has recipients beyond demo/admin
     const networkMembers = [
-      { email: "nova@glitterhits.gay", name: "Nova", code: "NOVA-01" },
-      { email: "rio@glitterhits.gay", name: "Rio", code: "RIO-02" },
-      { email: "sage@glitterhits.gay", name: "Sage", code: "SAGE-03" },
-      { email: "kai@glitterhits.gay", name: "Kai", code: "KAI-04" },
-      { email: "lux@glitterhits.gay", name: "Lux", code: "LUX-05" },
+      { email: "nova@glitterhits.online", name: "Nova", code: "NOVA-01" },
+      { email: "rio@glitterhits.online", name: "Rio", code: "RIO-02" },
+      { email: "sage@glitterhits.online", name: "Sage", code: "SAGE-03" },
+      { email: "kai@glitterhits.online", name: "Kai", code: "KAI-04" },
+      { email: "lux@glitterhits.online", name: "Lux", code: "LUX-05" },
     ];
     const memberHash = await bcrypt.hash("networkmember1", 12);
     for (const m of networkMembers) {

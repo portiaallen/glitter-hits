@@ -3,9 +3,9 @@
 ## Production gate (do not skip)
 
 - [ ] Strong `AUTH_SECRET` (`openssl rand -base64 32`)
-- [ ] `AUTH_URL` + `NEXT_PUBLIC_APP_URL` = production domain
+- [ ] `AUTH_URL` + `NEXT_PUBLIC_APP_URL` = `https://glitterhits.online`
 - [ ] Postgres `DATABASE_URL` (Neon / Vercel Postgres)
-- [ ] `RESEND_API_KEY` + verified `EMAIL_FROM` (password reset + contact) — **needs domain DNS**
+- [ ] `RESEND_API_KEY` + verified `EMAIL_FROM` (e.g. `Glitter Hits <noreply@glitterhits.online>`) — **needs domain DNS**
 - [ ] `CRON_SECRET` set; Vercel Cron can call `/api/cron/weekly`
 - [ ] Cloudflare Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` (then set `REQUIRE_TURNSTILE=true`) — **widget hostname needs domain**
 - [ ] Stripe: `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, price IDs
@@ -55,7 +55,7 @@ npm run dev
 # prisma/schema.prisma provider = postgresql
 npx prisma db push
 SEED_MODE=production \
-SEED_ADMIN_EMAIL="you@domain" \
+SEED_ADMIN_EMAIL="you@glitterhits.online" \
 SEED_ADMIN_PASSWORD="<strong-12+-chars>" \
 npx tsx prisma/seed.ts
 ```
@@ -81,7 +81,7 @@ Webhook path: `/api/webhooks/stripe`.
 3. Build: `prisma generate && next build` (`npm run build`)
 4. After first deploy, run production seed once (CLI or one-off)
 5. Confirm `vercel.json` cron + `CRON_SECRET`
-6. Point custom domain, then finish Resend DNS + Turnstile hostname + Stripe live webhook URL
+6. Attach custom domain `glitterhits.online`, then finish Resend DNS + Turnstile hostname + Stripe live webhook URL (`https://glitterhits.online/api/webhooks/stripe`)
 
 ## Smoke
 

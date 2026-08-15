@@ -81,7 +81,7 @@ export async function createPasswordResetToken(email: string): Promise<{
     ok: false,
     emailed: false,
     message:
-      "Password reset is temporarily unavailable. Contact support at hello@glitterhits.gay.",
+      "Password reset is temporarily unavailable. Contact support at hello@glitterhits.online.",
   };
 }
 

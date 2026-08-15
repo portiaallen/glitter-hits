@@ -13,7 +13,7 @@ export async function sendTransactionalEmail(params: {
   const from =
     process.env.EMAIL_FROM ||
     process.env.SMTP_FROM ||
-    "Glitter Hits <noreply@glitterhits.gay>";
+    "Glitter Hits <noreply@glitterhits.online>";
 
   if (process.env.RESEND_API_KEY) {
     const resend = new Resend(process.env.RESEND_API_KEY);

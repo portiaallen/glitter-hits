@@ -16,9 +16,9 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("▶ smoke: seed users");
-  const demo = await prisma.user.findUniqueOrThrow({ where: { email: "demo@glitterhits.gay" } });
+  const demo = await prisma.user.findUniqueOrThrow({ where: { email: "demo@glitterhits.online" } });
   const admin =
-    (await prisma.user.findUnique({ where: { email: "admin@glitterhits.gay" } })) ??
+    (await prisma.user.findUnique({ where: { email: "admin@glitterhits.online" } })) ??
     (await prisma.user.findFirst({ where: { role: { in: ["admin", "founder"] } } }));
   assert.ok(admin, "admin/founder user missing — run db:seed");
 
