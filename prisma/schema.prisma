@@ -65,10 +65,15 @@ model User {
   isSuspended      Boolean        @default(false)
   suspendedReason  String?
   onboardingDoneAt DateTime?
+  // Stripe billing (cash packs + membership subscriptions)
+  stripeCustomerId            String?   @unique
+  stripeSubscriptionId        String?   @unique
+  stripeSubscriptionStatus    String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
   persona          Persona?       @relation(fields: [personaId], references: [id], onDelete: SetNull)
+  purchases        StripePurchase[]
   accounts         Account[]
   sessions         Session[]
   websites         Website[]
@@ -656,16 +661,53 @@ model Notification {
 // ─── Credit store packs (cash checkout when enabled) ────────────────────────
 
 model CreditPack {
-  id          String  @id @default(cuid())
-  slug        String  @unique
-  name        String
-  description String?
-  credits     Int
-  priceCents  Int
-  badge       String?
-  isActive    Boolean @default(true)
-  sortOrder   Int     @default(0)
-  createdAt   DateTime @default(now())
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  name          String
+  description   String?
+  credits       Int
+  priceCents    Int
+  badge         String?
+  stripePriceId String?
+  isActive      Boolean @default(true)
+  sortOrder     Int     @default(0)
+  createdAt     DateTime @default(now())
+}
+
+enum StripePurchaseKind {
+  credit_pack
+  membership
+}
+
+enum StripePurchaseStatus {
+  pending
+  paid
+  refunded
+  failed
+}
+
+model StripePurchase {
+  id                    String               @id @default(cuid())
+  userId                String
+  kind                  StripePurchaseKind
+  status                StripePurchaseStatus @default(pending)
+  amountCents           Int
+  currency              String               @default("usd")
+  creditPackSlug        String?
+  creditsGranted        Int?
+  membershipTier        MembershipTier?
+  stripeSessionId       String               @unique
+  stripePaymentIntentId String?
+  stripeSubscriptionId  String?
+  metadataJson          String               @default("{}")
+  fulfilledAt           DateTime?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status, kind])
 }
 
 // ─── Member mailing / solo ads ──────────────────────────────────────────────

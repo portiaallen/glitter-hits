@@ -38,6 +38,7 @@ Local seed creates demo accounts when not in production seed mode. **Never use d
 | `npm run db:reset` | Reset DB + seed |
 | `npm test` | Unit / integration tests |
 | `npm run smoke` | End-to-end-ish launch smoke against local DB |
+| `npm run launch-check` | Print launch readiness (never prints secrets) |
 | `npm run typecheck` | TypeScript check |
 
 ## Product pillars
@@ -57,4 +58,4 @@ Local seed creates demo accounts when not in production seed mode. **Never use d
 
 ## Production
 
-Follow the full launch checklist in `docs/DEPLOY.md`. Required: Postgres, strong `AUTH_SECRET`, Resend, Turnstile, `CRON_SECRET`, production-safe seed (no demo users), counsel-reviewed Terms/Privacy.
+Follow the full launch checklist in `docs/DEPLOY.md`. Required: Postgres, strong `AUTH_SECRET`, Stripe (cash packs + memberships), Resend, Turnstile, `CRON_SECRET`, production-safe seed (no demo users), counsel-reviewed Terms/Privacy. Run `npm run launch-check` to see what is still missing.

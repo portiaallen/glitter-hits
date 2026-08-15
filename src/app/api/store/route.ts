@@ -7,6 +7,12 @@ import {
   upgradeMembershipWithCredits,
 } from "@/lib/mail/service";
 import { prisma } from "@/lib/db";
+import {
+  createCreditPackCheckout,
+  createMembershipCheckout,
+  isPaidMembershipTier,
+  isStripeConfigured,
+} from "@/lib/stripe";
 
 export async function GET() {
   const session = await auth();
@@ -26,12 +32,13 @@ export async function GET() {
     ...catalog,
     membership: user.membership,
     balance: user.creditBalance,
+    stripeConfigured: isStripeConfigured(),
   });
 }
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session.user.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -62,6 +69,39 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, ...result });
     }
 
+    if (body.action === "buy_membership_cash") {
+      const tier = String(body.tier || "");
+      if (!isPaidMembershipTier(tier)) {
+        return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
+      }
+      const catalog = await getStoreCatalog();
+      if (!catalog.membershipCheckoutEnabled) {
+        return NextResponse.json(
+          { error: "Membership cash checkout is not enabled." },
+          { status: 400 },
+        );
+      }
+      if (!isStripeConfigured()) {
+        return NextResponse.json(
+          { error: "Stripe is not configured yet." },
+          { status: 503 },
+        );
+      }
+      const result = await createMembershipCheckout({
+        userId: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+        tier,
+      });
+      if (!result.url) {
+        return NextResponse.json(
+          { error: result.error || "Could not start checkout." },
+          { status: 400 },
+        );
+      }
+      return NextResponse.json({ ok: true, url: result.url });
+    }
+
     if (body.action === "buy_pack") {
       const catalog = await getStoreCatalog();
       if (!catalog.cashCheckoutEnabled) {
@@ -73,10 +113,29 @@ export async function POST(req: Request) {
           { status: 400 },
         );
       }
-      return NextResponse.json(
-        { error: "Stripe checkout wiring is staged — contact support for packs." },
-        { status: 400 },
-      );
+      if (!isStripeConfigured()) {
+        return NextResponse.json(
+          { error: "Stripe is not configured yet." },
+          { status: 503 },
+        );
+      }
+      const packId = String(body.packId || "");
+      if (!packId) {
+        return NextResponse.json({ error: "Missing packId" }, { status: 400 });
+      }
+      const result = await createCreditPackCheckout({
+        userId: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+        packId,
+      });
+      if (!result.url) {
+        return NextResponse.json(
+          { error: result.error || "Could not start checkout." },
+          { status: 400 },
+        );
+      }
+      return NextResponse.json({ ok: true, url: result.url });
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

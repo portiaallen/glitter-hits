@@ -100,7 +100,7 @@ const FOUNDER_BRANDS = [
 
 const MONETIZATION = [
   { key: "premium_memberships", name: "Premium Memberships", enabled: true },
-  { key: "credit_purchases", name: "Promotional Credit Purchases", enabled: false },
+  { key: "credit_purchases", name: "Promotional Credit Purchases", enabled: true },
   { key: "featured_placements", name: "Featured Placements", enabled: true },
   { key: "banner_advertising", name: "Banner Advertising", enabled: false },
   { key: "sponsored_listings", name: "Sponsored Listings", enabled: false },
@@ -177,10 +177,18 @@ async function main() {
     update: { valueJson: JSON.stringify(MAIL_ECONOMY) },
   });
 
+  const packPriceEnv: Record<string, string | undefined> = {
+    "starter-100": process.env.STRIPE_PRICE_PACK_STARTER,
+    "boost-500": process.env.STRIPE_PRICE_PACK_BOOST,
+    "launch-1500": process.env.STRIPE_PRICE_PACK_LAUNCH,
+    "empire-5000": process.env.STRIPE_PRICE_PACK_EMPIRE,
+  };
+
   for (const pack of CREDIT_PACKS) {
+    const stripePriceId = packPriceEnv[pack.slug] || null;
     await prisma.creditPack.upsert({
       where: { slug: pack.slug },
-      create: pack,
+      create: { ...pack, stripePriceId },
       update: {
         name: pack.name,
         description: pack.description,
@@ -189,6 +197,7 @@ async function main() {
         badge: pack.badge,
         sortOrder: pack.sortOrder,
         isActive: true,
+        ...(stripePriceId ? { stripePriceId } : {}),
       },
     });
   }

@@ -88,8 +88,34 @@ export function StoreClient({
         setError(data.error || "Purchase unavailable");
         return;
       }
+      if (data.url) {
+        window.location.href = data.url as string;
+        return;
+      }
       setMessage("Pack purchased.");
       router.refresh();
+    });
+  }
+
+  function buyMembershipCash(tier: Exclude<MembershipTier, "free">) {
+    setMessage(null);
+    setError(null);
+    startTransition(async () => {
+      const res = await fetch("/api/store", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "buy_membership_cash", tier }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || "Checkout unavailable");
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url as string;
+        return;
+      }
+      setError("Checkout did not return a URL.");
     });
   }
 
@@ -142,14 +168,28 @@ export function StoreClient({
                   ))}
                 </ul>
                 {canBuy ? (
-                  <button
-                    type="button"
-                    disabled={pending}
-                    onClick={() => upgrade(plan.tier as Exclude<MembershipTier, "free">)}
-                    className="gh-btn gh-btn-primary mt-4 text-sm"
-                  >
-                    Upgrade · {creditCost} hits
-                  </button>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      disabled={pending}
+                      onClick={() => upgrade(plan.tier as Exclude<MembershipTier, "free">)}
+                      className="gh-btn gh-btn-primary text-sm"
+                    >
+                      Upgrade · {creditCost} hits
+                    </button>
+                    {membershipCheckoutEnabled && plan.priceCents > 0 ? (
+                      <button
+                        type="button"
+                        disabled={pending}
+                        onClick={() =>
+                          buyMembershipCash(plan.tier as Exclude<MembershipTier, "free">)
+                        }
+                        className="gh-btn gh-btn-ghost text-sm"
+                      >
+                        Pay ${(plan.priceCents / 100).toFixed(2)}/mo
+                      </button>
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
             );
