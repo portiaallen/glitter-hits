@@ -16,7 +16,7 @@ export default async function PricingPage() {
     <div>
       <PageHero
         title="Free exchange first. Premium when you need it."
-        description="Earn Glitter Hits by Surfing. Spend them on campaigns, network mail, and membership upgrades. Cash packs stay optional."
+        description="Earn Glitter Hits by Surfing. Free members can earn Plus (Pro) through discoveries — or spend Hits / cash on permanent upgrades."
         eyebrow="Pricing"
       />
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">

@@ -13,6 +13,8 @@ import { listActiveChallenges } from "@/lib/luck/challenges";
 import { formatCredits } from "@/lib/utils";
 import { prisma } from "@/lib/db";
 import { grantDailyLoginSpin } from "@/lib/luck/wheel";
+import { getEarnMembershipProgress } from "@/lib/membership/earn";
+import { EarnMembershipCard } from "@/components/membership/EarnMembershipCard";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -22,17 +24,19 @@ export default async function DashboardPage() {
 
   await grantDailyLoginSpin(session.user.id);
 
-  const [status, pendingDrop, events, quests, challenges, user] = await Promise.all([
-    getLuckStatus(session.user.id),
-    getPendingDrop(session.user.id),
-    listRecentRewardEvents(session.user.id, 10),
-    listUserQuests(session.user.id),
-    listActiveChallenges(),
-    prisma.user.findUniqueOrThrow({
-      where: { id: session.user.id },
-      include: { persona: true },
-    }),
-  ]);
+  const [status, pendingDrop, events, quests, challenges, user, earnProgress] =
+    await Promise.all([
+      getLuckStatus(session.user.id),
+      getPendingDrop(session.user.id),
+      listRecentRewardEvents(session.user.id, 10),
+      listUserQuests(session.user.id),
+      listActiveChallenges(),
+      prisma.user.findUniqueOrThrow({
+        where: { id: session.user.id },
+        include: { persona: true },
+      }),
+      getEarnMembershipProgress(session.user.id),
+    ]);
 
   const levels = await prisma.luckLevelDefinition.findMany({
     where: { isActive: true },
@@ -44,6 +48,7 @@ export default async function DashboardPage() {
   );
 
   const missions = [
+    { href: "/surf", title: "Surf toward Pro", reward: "Earn Plus membership" },
     { href: "/surf", title: "Surf 10 pages", reward: "+Hits · +Luck" },
     {
       href: "/luck/quests",
@@ -63,6 +68,15 @@ export default async function DashboardPage() {
       subtitle={status.mantra}
     >
       <GlitterDropClaim drop={pendingDrop} />
+
+      <div className="mb-6">
+        <EarnMembershipCard
+          membership={earnProgress.membership}
+          membershipExpiresAt={earnProgress.membershipExpiresAt}
+          membershipSource={earnProgress.membershipSource}
+          milestones={earnProgress.milestones}
+        />
+      </div>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-[1.2fr_1fr]">
         <LuckMeter

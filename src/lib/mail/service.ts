@@ -103,7 +103,11 @@ export async function upgradeMembershipWithCredits(params: {
     });
     await tx.user.update({
       where: { id: params.userId },
-      data: { membership: params.tier },
+      data: {
+        membership: params.tier,
+        membershipExpiresAt: null,
+        membershipSource: "credits",
+      },
     });
   });
 
@@ -303,12 +307,13 @@ export const MEMBERSHIP_PLANS: MembershipPlan[] = [
   },
   {
     tier: "plus",
-    name: "Glitter Plus",
+    name: "Plus (Pro)",
     priceCents: 999,
     websiteSlots: 10,
     mailTierUnlocked: ["standard", "boosted"],
     enabled: true,
     perks: [
+      "Earnable by Surfing (time-limited) or buy permanent",
       "10 website slots",
       "Boosted mailing tier",
       "Priority campaign queue bump",

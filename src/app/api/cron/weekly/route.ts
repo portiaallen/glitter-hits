@@ -22,27 +22,41 @@ export async function GET(req: Request) {
     }
   }
 
-  const [users, activeCampaigns, visitsWeek, expiredPlacements] = await Promise.all([
-    prisma.user.count(),
-    prisma.campaign.count({ where: { status: "active" } }),
-    prisma.visit.count({
-      where: {
-        completed: true,
-        startedAt: { gte: new Date(Date.now() - 7 * 86_400_000) },
-      },
-    }),
-    import("@/lib/placements/service").then((m) => m.expireDuePlacements()),
-  ]);
+  const [users, activeCampaigns, visitsWeek, expiredPlacements, expiredMemberships] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.campaign.count({ where: { status: "active" } }),
+      prisma.visit.count({
+        where: {
+          completed: true,
+          startedAt: { gte: new Date(Date.now() - 7 * 86_400_000) },
+        },
+      }),
+      import("@/lib/placements/service").then((m) => m.expireDuePlacements()),
+      import("@/lib/membership/earn").then((m) => m.expireEarnedMemberships()),
+    ]);
 
   const key = `cron:weekly:${new Date().toISOString().slice(0, 10)}`;
   await prisma.systemSetting.upsert({
     where: { key },
     create: {
       key,
-      valueJson: JSON.stringify({ users, activeCampaigns, visitsWeek, expiredPlacements }),
+      valueJson: JSON.stringify({
+        users,
+        activeCampaigns,
+        visitsWeek,
+        expiredPlacements,
+        expiredMemberships,
+      }),
     },
     update: {
-      valueJson: JSON.stringify({ users, activeCampaigns, visitsWeek, expiredPlacements }),
+      valueJson: JSON.stringify({
+        users,
+        activeCampaigns,
+        visitsWeek,
+        expiredPlacements,
+        expiredMemberships,
+      }),
     },
   });
 
@@ -52,6 +66,7 @@ export async function GET(req: Request) {
     activeCampaigns,
     visitsWeek,
     expiredPlacements,
+    expiredMemberships,
     note: "Weekly member bonuses are claimed in-app after 5 discoveries.",
   });
 }

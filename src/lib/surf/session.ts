@@ -259,9 +259,14 @@ export async function completeSurfVisit(params: {
         silentLuckNotify: true,
       });
 
-      return { ...result, luckFeedback };
+      const { checkAndGrantEarnedMemberships } = await import(
+        "@/lib/membership/earn"
+      );
+      const membershipGrants = await checkAndGrantEarnedMemberships(params.userId);
+
+      return { ...result, luckFeedback, membershipGrants };
     }
-    return { ...result, luckFeedback: null };
+    return { ...result, luckFeedback: null, membershipGrants: [] };
   });
 }
 

@@ -60,6 +60,8 @@ async function applyMembership(params: {
     where: { id: params.userId },
     data: {
       membership: params.tier,
+      membershipExpiresAt: null,
+      membershipSource: "stripe",
       stripeSubscriptionId: params.subscriptionId ?? undefined,
       stripeSubscriptionStatus: params.status ?? "active",
       stripeCustomerId: params.customerId ?? undefined,

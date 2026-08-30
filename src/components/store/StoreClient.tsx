@@ -3,6 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { MembershipTier } from "@prisma/client";
+import {
+  EarnMembershipCard,
+  type EarnMilestoneView,
+} from "@/components/membership/EarnMembershipCard";
 
 type Pack = {
   id: string;
@@ -32,6 +36,7 @@ export function StoreClient({
   currentMembership,
   balance,
   mailEconomy,
+  earnProgress,
 }: {
   packs: Pack[];
   memberships: Plan[];
@@ -46,6 +51,12 @@ export function StoreClient({
     featuredCost: number;
     premiumSoloCost: number;
     paidSoloUpgradeCost: number;
+  };
+  earnProgress?: {
+    membership: string;
+    membershipExpiresAt: string | Date | null;
+    membershipSource: string | null;
+    milestones: EarnMilestoneView[];
   };
 }) {
   const router = useRouter();
@@ -129,6 +140,15 @@ export function StoreClient({
         <p className="gh-badge">Membership: {currentMembership}</p>
       </div>
 
+      {earnProgress ? (
+        <EarnMembershipCard
+          membership={earnProgress.membership}
+          membershipExpiresAt={earnProgress.membershipExpiresAt}
+          membershipSource={earnProgress.membershipSource}
+          milestones={earnProgress.milestones}
+        />
+      ) : null}
+
       {(message || error) && (
         <p className={`text-sm ${error ? "text-[var(--danger)]" : "text-[var(--success)]"}`}>
           {error || message}
@@ -140,8 +160,9 @@ export function StoreClient({
           Membership
         </h2>
         <p className="mb-4 text-sm text-[var(--text-muted)]">
-          Unlock higher mail tiers and website slots. Pay with Glitter Hits now
-          {membershipCheckoutEnabled ? ", or cash when checkout is live" : ""}.
+          Prefer to buy? Unlock higher mail tiers and website slots with Glitter Hits
+          {membershipCheckoutEnabled ? ", or cash when checkout is live" : ""}. Free members can
+          also earn Plus (Pro) by Surfing.
         </p>
         <div className="grid gap-4 lg:grid-cols-2">
           {memberships.map((plan) => {
