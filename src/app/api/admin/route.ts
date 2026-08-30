@@ -304,6 +304,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ theme });
     }
 
+    if (action === "surprise_gift") {
+      const data = z
+        .object({
+          hits: z.number().int().min(1).max(50_000),
+          spins: z.number().int().min(0).max(20).optional(),
+          reason: z.string().max(120).optional(),
+          announceDays: z.number().int().min(1).max(30).optional(),
+        })
+        .parse(body);
+      const { giftRandomActiveMember } = await import("@/lib/experience/surprise-gift");
+      const gift = await giftRandomActiveMember({
+        actorId: user.id,
+        hits: data.hits,
+        spins: data.spins,
+        reason: data.reason,
+        announceDays: data.announceDays,
+      });
+      return NextResponse.json({ gift });
+    }
+
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (e) {
     return NextResponse.json(
