@@ -12,6 +12,7 @@ const LINKS: { href: string; label: string; exact?: boolean }[] = [
   { href: "/admin/contact", label: "Contact" },
   { href: "/admin/placements", label: "Placements" },
   { href: "/admin/luck", label: "Luck Engine" },
+  { href: "/admin/experience", label: "Experience" },
   { href: "/admin/credits", label: "Credits" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/brands", label: "Brands" },

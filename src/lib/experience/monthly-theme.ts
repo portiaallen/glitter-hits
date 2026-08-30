@@ -65,6 +65,39 @@ export const MONTHLY_THEMES: MonthlyTheme[] = [
     cssAttr: "camp",
     accents: { primary: "#ff4fb8", secondary: "#ffc53d" },
   },
+  {
+    slug: "nostalgic-tv",
+    name: "Nostalgic TV Month",
+    tagline: "Every site is a new channel. Stay tuned.",
+    discoveryLine: "Commercial break over — next program incoming.",
+    heroHint: "Come explore. Come get your traffic. Come flip channels.",
+    collectibleName: "Remote Clickers",
+    collectibleHint: "Collect remote clickers while you channel-surf.",
+    cssAttr: "rainbow",
+    accents: { primary: "#ff4fb8", secondary: "#ffc53d" },
+  },
+  {
+    slug: "alien",
+    name: "Alien Month",
+    tagline: "We come in peace. We leave with Hits.",
+    discoveryLine: "Scanning unfamiliar frequencies…",
+    heroHint: "First contact, then traffic.",
+    collectibleName: "Signal Beacons",
+    collectibleHint: "Beacon collectibles for the curious visitors.",
+    cssAttr: "space",
+    accents: { primary: "#5eead4", secondary: "#a78bfa" },
+  },
+  {
+    slug: "mystery",
+    name: "Mystery Month",
+    tagline: "Something unexpected is behind the next Hit.",
+    discoveryLine: "Clue unlocked. Keep exploring.",
+    heroHint: "Come discover something you can't explain yet.",
+    collectibleName: "Hidden Sparkles",
+    collectibleHint: "Hidden sparkles for the detectives of the exchange.",
+    cssAttr: "weird-internet",
+    accents: { primary: "#a78bfa", secondary: "#2ec8e6" },
+  },
 ];
 
 /** Active default until admin/SystemSetting override is wired. */
@@ -89,4 +122,36 @@ export async function getActiveMonthlyTheme(): Promise<MonthlyTheme> {
     /* fall through — config file default */
   }
   return getThemeBySlug(DEFAULT_THEME_SLUG);
+}
+
+export async function setActiveMonthlyTheme(params: {
+  slug: string;
+  updatedBy?: string;
+}): Promise<MonthlyTheme> {
+  const theme = MONTHLY_THEMES.find((t) => t.slug === params.slug);
+  if (!theme) {
+    throw new Error(`Unknown theme slug: ${params.slug}`);
+  }
+
+  const { prisma } = await import("@/lib/db");
+  const value = {
+    slug: theme.slug,
+    name: theme.name,
+    updatedAt: new Date().toISOString(),
+  };
+
+  await prisma.systemSetting.upsert({
+    where: { key: "experience.monthly_theme" },
+    create: {
+      key: "experience.monthly_theme",
+      valueJson: JSON.stringify(value),
+      updatedBy: params.updatedBy,
+    },
+    update: {
+      valueJson: JSON.stringify(value),
+      updatedBy: params.updatedBy,
+    },
+  });
+
+  return theme;
 }

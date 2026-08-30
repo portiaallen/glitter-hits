@@ -285,6 +285,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ quest });
     }
 
+    if (action === "update_monthly_theme") {
+      const data = z.object({ slug: z.string().min(2) }).parse(body);
+      const { setActiveMonthlyTheme } = await import("@/lib/experience/monthly-theme");
+      const theme = await setActiveMonthlyTheme({
+        slug: data.slug,
+        updatedBy: user.id,
+      });
+      await prisma.adminAuditLog.create({
+        data: {
+          actorId: user.id,
+          action: "experience.monthly_theme",
+          targetType: "system",
+          targetId: "experience.monthly_theme",
+          detailsJson: JSON.stringify({ slug: theme.slug, name: theme.name }),
+        },
+      });
+      return NextResponse.json({ theme });
+    }
+
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (e) {
     return NextResponse.json(
