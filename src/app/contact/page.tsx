@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/PageHero";
-import { ContactForm } from "@/components/contact/ContactForm";
+import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  const email = "hello@glitterhits.online";
+  const email = "hello@glitterhits.gay";
 
   return (
     <div>
@@ -24,9 +24,15 @@ export default function ContactPage() {
             <a href={`mailto:${email}`} className="text-[var(--neon-cyan)] hover:underline">
               {email}
             </a>
+            . For product ideas, bugs, and theme suggestions, use{" "}
+            <a href="/feedback" className="text-[var(--neon-cyan)] hover:underline">
+              Tell Glitter Hits
+            </a>
             .
           </p>
-          <ContactForm />
+          <div className="mt-8">
+            <FeedbackForm defaultCategory="contact" />
+          </div>
         </div>
       </section>
     </div>

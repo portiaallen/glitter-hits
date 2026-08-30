@@ -62,7 +62,7 @@ export default async function AdminAnalyticsPage() {
         <h2 className="font-semibold">Recent visits</h2>
         <ul className="mt-3 space-y-2 text-sm">
           {recentVisits.map((v) => (
-            <li key={v.id} className="flex flex-wrap justify-between gap-2 border-b border-white/5 pb-2">
+            <li key={v.id} className="flex flex-wrap justify-between gap-2 border-b border-[var(--border-glass)] pb-2">
               <span>
                 {v.quality} · {v.sourceLabel} · {v.completed ? "completed" : "open"}
               </span>

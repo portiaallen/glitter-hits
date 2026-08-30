@@ -33,7 +33,7 @@ export function MonetizationToggles({ features }: { features: Feature[] }) {
       </p>
       <ul className="mt-4 space-y-3">
         {features.map((f) => (
-          <li key={f.key} className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 pb-3">
+          <li key={f.key} className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-glass)] pb-3">
             <div>
               <p className="font-medium">{f.name}</p>
               <p className="text-xs text-[var(--text-muted)]">{f.description}</p>

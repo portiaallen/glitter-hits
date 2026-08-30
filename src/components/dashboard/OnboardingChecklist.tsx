@@ -52,7 +52,7 @@ export function OnboardingChecklist({
           type="button"
           onClick={dismiss}
           disabled={pending}
-          className="text-sm text-white/50 hover:text-white"
+          className="text-sm text-[var(--text)]/50 hover:text-[var(--text)]"
         >
           Dismiss
         </button>
@@ -62,19 +62,19 @@ export function OnboardingChecklist({
           <li key={step.key}>
             <Link
               href={step.href}
-              className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-white/5"
+              className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-[var(--bg-glass)]"
             >
               <span
                 className={
                   step.complete
                     ? "text-[var(--success)]"
-                    : "text-white/30"
+                    : "text-[var(--text)]/30"
                 }
                 aria-hidden
               >
                 {step.complete ? "✓" : "○"}
               </span>
-              <span className={step.complete ? "text-white/60 line-through" : ""}>
+              <span className={step.complete ? "text-[var(--text)]/60 line-through" : ""}>
                 {step.label}
               </span>
             </Link>

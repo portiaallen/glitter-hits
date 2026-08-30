@@ -60,7 +60,7 @@ export function NotificationBell() {
         ) : null}
       </button>
       {open ? (
-        <div className="absolute right-0 z-40 mt-2 w-80 rounded-2xl border border-white/10 bg-[#12061c]/95 p-3 shadow-xl backdrop-blur-xl">
+        <div className="absolute right-0 z-40 mt-2 w-80 rounded-2xl border border-[var(--border-glass)] bg-[#12061c]/95 p-3 shadow-xl backdrop-blur-xl">
           <div className="mb-2 flex items-center justify-between gap-2">
             <p className="text-sm font-semibold">Notifications</p>
             <button
@@ -83,16 +83,16 @@ export function NotificationBell() {
                   <Link
                     href={n.href}
                     onClick={() => setOpen(false)}
-                    className="block rounded-xl px-2 py-2 hover:bg-white/5"
+                    className="block rounded-xl px-2 py-2 hover:bg-[var(--bg-glass)]"
                   >
-                    <p className={`text-sm ${n.readAt ? "text-white/70" : "font-medium"}`}>
+                    <p className={`text-sm ${n.readAt ? "text-[var(--text-muted)]" : "font-medium"}`}>
                       {n.title}
                     </p>
                     <p className="text-xs text-[var(--text-muted)]">{n.body}</p>
                   </Link>
                 ) : (
                   <div className="rounded-xl px-2 py-2">
-                    <p className={`text-sm ${n.readAt ? "text-white/70" : "font-medium"}`}>
+                    <p className={`text-sm ${n.readAt ? "text-[var(--text-muted)]" : "font-medium"}`}>
                       {n.title}
                     </p>
                     <p className="text-xs text-[var(--text-muted)]">{n.body}</p>

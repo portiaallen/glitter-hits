@@ -116,9 +116,9 @@ export function WheelClient({
             <li className="text-[var(--text-muted)]">No spins yet — earn them by surfing.</li>
           )}
           {history.map((h) => (
-            <li key={h.id} className="flex justify-between gap-3 border-b border-white/5 pb-2">
+            <li key={h.id} className="flex justify-between gap-3 border-b border-[var(--border-glass)] pb-2">
               <span>{h.rewardLabel}</span>
-              <span className="text-xs text-white/40">
+              <span className="text-xs text-[var(--text-muted)]">
                 {new Date(h.createdAt).toISOString().slice(0, 10)}
               </span>
             </li>

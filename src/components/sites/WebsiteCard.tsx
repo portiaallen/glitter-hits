@@ -28,7 +28,7 @@ export function WebsiteCard({
           </span>
         ))}
         {categoryName && categorySlug && (
-          <Link href={`/categories/${categorySlug}`} className="gh-badge hover:text-white">
+          <Link href={`/categories/${categorySlug}`} className="gh-badge hover:text-[var(--text)]">
             {categoryName}
           </Link>
         )}
@@ -49,7 +49,7 @@ export function WebsiteCard({
           Visit site
         </a>
         {typeof discoverCount === "number" && (
-          <span className="text-xs text-white/40">{discoverCount.toLocaleString()} discovers</span>
+          <span className="text-xs text-[var(--text-muted)]">{discoverCount.toLocaleString()} discovers</span>
         )}
       </div>
     </article>

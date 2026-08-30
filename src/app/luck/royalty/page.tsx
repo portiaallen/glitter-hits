@@ -28,7 +28,7 @@ export default async function RoyaltyPage() {
                 <li className="text-[var(--text-muted)]">No royalty yet.</li>
               )}
               {leaders.map((l, i) => (
-                <li key={l.id} className="flex justify-between gap-3 border-b border-white/5 pb-2">
+                <li key={l.id} className="flex justify-between gap-3 border-b border-[var(--border-glass)] pb-2">
                   <span>
                     #{i + 1} {l.name || "Anonymous"}
                     {l.meta ? ` · ${l.meta}` : ""}

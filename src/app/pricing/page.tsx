@@ -31,7 +31,7 @@ export default async function PricingPage() {
                   ? "Free forever core loop"
                   : `$${(plan.priceCents / 100).toFixed(2)}/mo when cash checkout is enabled — or unlock with hits in the Store`}
               </p>
-              <ul className="mt-4 space-y-1 text-sm text-white/80">
+              <ul className="mt-4 space-y-1 text-sm text-[var(--text)]/80">
                 {plan.perks.map((perk) => (
                   <li key={perk}>· {perk}</li>
                 ))}

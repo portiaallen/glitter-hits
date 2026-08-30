@@ -27,7 +27,7 @@ export default async function NotificationsPage() {
           <li key={n.id} className="gh-glass p-5">
             <p className="font-medium">{n.title}</p>
             <p className="mt-1 text-sm text-[var(--text-muted)]">{n.body}</p>
-            <p className="mt-2 text-xs text-white/40">{n.createdAt.toISOString()}</p>
+            <p className="mt-2 text-xs text-[var(--text-muted)]">{n.createdAt.toISOString()}</p>
             {n.href ? (
               <Link href={n.href} className="mt-2 inline-block text-sm text-[var(--neon-cyan)]">
                 Open →

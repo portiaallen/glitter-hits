@@ -34,7 +34,7 @@ export default async function AchievementsPage() {
                 <span className="gh-badge">{got ? "Unlocked" : "Locked"}</span>
               </div>
               <p className="mt-2 text-sm text-[var(--text-muted)]">{def.description}</p>
-              <p className="mt-3 text-xs text-white/45">
+              <p className="mt-3 text-xs text-[var(--text-muted)]">
                 +{def.creditReward} Hits · +{def.pointsReward} pts
               </p>
             </div>

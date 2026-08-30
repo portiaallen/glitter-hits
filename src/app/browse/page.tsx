@@ -91,14 +91,14 @@ export default async function BrowsePage({
         </form>
 
         <div className="mb-6 flex flex-wrap gap-2">
-          <Link href="/browse" className="gh-badge hover:text-white">
+          <Link href="/browse" className="gh-badge hover:text-[var(--text)]">
             All
           </Link>
           {categories.slice(0, 12).map((c) => (
             <Link
               key={c.id}
               href={`/browse?category=${c.slug}`}
-              className="gh-badge hover:text-white"
+              className="gh-badge hover:text-[var(--text)]"
             >
               {c.icon} {c.name}
             </Link>

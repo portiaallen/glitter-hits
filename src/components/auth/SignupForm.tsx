@@ -70,7 +70,7 @@ export function SignupForm({ referralCode }: { referralCode?: string }) {
       </div>
       <div>
         <label htmlFor="referralCode" className="gh-label">
-          Referral code <span className="text-white/40">(optional)</span>
+          Referral code <span className="text-[var(--text-muted)]">(optional)</span>
         </label>
         <input
           id="referralCode"

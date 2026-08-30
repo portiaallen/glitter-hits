@@ -12,9 +12,11 @@ export default async function AdminContactPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h2 className="font-[family-name:var(--font-syne)] text-xl font-semibold">Contact inbox</h2>
+        <h2 className="font-[family-name:var(--font-syne)] text-xl font-semibold">
+          Contact &amp; feedback inbox
+        </h2>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Submissions from the public Contact form. Emails also go to SUPPORT_EMAIL when Resend is
+          Contact + Tell Glitter Hits submissions. Emails also go to SUPPORT_EMAIL when Resend is
           configured.
         </p>
       </header>
@@ -25,7 +27,7 @@ export default async function AdminContactPage() {
           messages.map((m) => (
             <article key={m.id} className="gh-glass p-5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="font-semibold text-white">
+                <p className="font-semibold text-[var(--text)]">
                   {m.name}{" "}
                   <a
                     href={`mailto:${m.email}`}
@@ -38,8 +40,14 @@ export default async function AdminContactPage() {
                   {m.createdAt.toISOString().slice(0, 19).replace("T", " ")} UTC
                 </time>
               </div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <span className="gh-badge">{m.category}</span>
+                {m.rewarded ? <span className="gh-badge">rewarded</span> : null}
+              </div>
               <p className="mt-3 whitespace-pre-wrap text-sm text-[var(--text-muted)]">{m.message}</p>
-              <p className="mt-2 text-xs uppercase tracking-wide text-white/40">{m.status}</p>
+              <p className="mt-2 text-xs uppercase tracking-wide text-[var(--text-muted)]">
+                {m.status}
+              </p>
             </article>
           ))
         )}

@@ -46,7 +46,7 @@ export default async function AdminModerationPage() {
               <p className="text-[var(--text-muted)]">
                 {r.reason} — {r.details}
               </p>
-              <p className="mt-1 text-xs text-white/40">
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
                 Reporter: {r.reporter.email}
               </p>
               <div className="mt-3">

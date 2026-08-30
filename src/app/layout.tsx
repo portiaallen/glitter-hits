@@ -3,7 +3,9 @@ import { Outfit, Syne } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner";
+import { FeedbackFab } from "@/components/feedback/FeedbackFab";
 import { Providers } from "@/components/providers/Providers";
+import { getActiveMonthlyTheme } from "@/lib/experience/monthly-theme";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -20,11 +22,11 @@ const syne = Syne({
 
 export const metadata: Metadata = {
   title: {
-    default: "Glitter Hits — Get Seen. Get Hits. Get Glitter.",
+    default: "Glitter Hits — Come Get Your Traffic",
     template: "%s | Glitter Hits",
   },
   description:
-    "A modern traffic exchange and discovery network. Earn Glitter Hits by discovering websites, then spend them to promote your own — transparently.",
+    "Trade visits. Discover websites. Have a little fun while you're at it. A playful traffic exchange for the Queerdom — honest labels, real discovery.",
   keywords: [
     "traffic exchange",
     "website discovery",
@@ -34,9 +36,15 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const theme = await getActiveMonthlyTheme();
+
   return (
-    <html lang="en" className={`${outfit.variable} ${syne.variable} h-full`}>
+    <html
+      lang="en"
+      data-month-theme={theme.cssAttr}
+      className={`${outfit.variable} ${syne.variable} h-full`}
+    >
       <body className="relative flex min-h-full flex-col font-sans text-foreground antialiased">
         <div className="gh-stars" aria-hidden />
         <Providers>
@@ -44,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <main className="relative z-10 flex-1">{children}</main>
           <Footer />
+          <FeedbackFab />
         </Providers>
       </body>
     </html>

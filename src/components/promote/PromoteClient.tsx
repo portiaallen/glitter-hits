@@ -119,7 +119,7 @@ export function PromoteClient({
             <p className="mt-3 text-sm">
               <span className="text-xl font-bold">{offer.creditCost}</span> hits
               {offer.creditCost < offer.listPrice ? (
-                <span className="ml-2 text-xs text-white/40 line-through">
+                <span className="ml-2 text-xs text-[var(--text-muted)] line-through">
                   {offer.listPrice}
                 </span>
               ) : null}
@@ -150,7 +150,7 @@ export function PromoteClient({
             {placements.map((p) => (
               <li
                 key={p.id}
-                className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3 text-sm"
+                className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-glass)] pb-3 text-sm"
               >
                 <div>
                   <p className="font-medium">{p.title || p.type}</p>

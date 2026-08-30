@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const primaryLinks = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/surf", label: "Surf" },
+  { href: "/dashboard", label: "Home" },
+  { href: "/surf", label: "Explore" },
   { href: "/luck", label: "Luck" },
-  { href: "/websites", label: "Websites" },
+  { href: "/websites", label: "Sites" },
   { href: "/campaigns", label: "Campaigns" },
   { href: "/promote", label: "Promote" },
   { href: "/mail", label: "Mail" },
@@ -19,10 +19,10 @@ const primaryLinks = [
 
 const mobileLinks = [
   { href: "/dashboard", label: "Home" },
-  { href: "/surf", label: "Surf" },
+  { href: "/surf", label: "Explore" },
   { href: "/luck", label: "Luck" },
   { href: "/campaigns", label: "Promote" },
-  { href: "/notifications", label: "Alerts" },
+  { href: "/feedback", label: "Ideas" },
 ];
 
 export function AppNav() {
@@ -40,10 +40,10 @@ export function AppNav() {
                 <Link
                   href={link.href}
                   className={cn(
-                    "block rounded-full px-3 py-2 text-sm transition",
+                    "block rounded-xl px-3 py-2 text-sm transition",
                     active
-                      ? "bg-white/10 text-white"
-                      : "text-[var(--text-muted)] hover:bg-white/5 hover:text-white",
+                      ? "bg-[var(--theme-wash)] font-semibold text-[var(--text)]"
+                      : "text-[var(--text-muted)] hover:bg-[var(--bg-glass)] hover:text-[var(--text)]",
                   )}
                 >
                   {link.label}
@@ -56,7 +56,7 @@ export function AppNav() {
 
       <nav
         aria-label="Mobile"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[rgba(12,8,24,0.92)] px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-glass)] bg-white/90 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl md:hidden"
       >
         <ul className="mx-auto flex max-w-lg items-stretch justify-between gap-1">
           {mobileLinks.map((link) => {
@@ -67,10 +67,10 @@ export function AppNav() {
                 <Link
                   href={link.href}
                   className={cn(
-                    "flex flex-col items-center rounded-xl px-1 py-2 text-[11px] font-medium transition",
+                    "flex min-h-11 flex-col items-center justify-center rounded-xl px-1 py-2 text-[11px] font-medium transition",
                     active
-                      ? "bg-white/10 text-white"
-                      : "text-[var(--text-muted)] hover:text-white",
+                      ? "bg-[var(--theme-wash)] text-[var(--text)]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text)]",
                   )}
                 >
                   {link.label}

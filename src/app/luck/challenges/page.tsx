@@ -31,7 +31,7 @@ export default async function ChallengesPage() {
                 <span className="gh-badge">{c.status}</span>
               </div>
               <p className="mt-2 text-sm text-[var(--text-muted)]">{c.description}</p>
-              <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/10">
+              <div className="mt-4 h-3 overflow-hidden rounded-full bg-[var(--bg-glass)]">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[var(--neon-cyan)] via-[var(--neon-pink)] to-[var(--neon-gold)]"
                   style={{ width: `${pct}%` }}

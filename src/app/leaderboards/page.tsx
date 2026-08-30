@@ -71,7 +71,7 @@ function Board({
           <li key={`${title}-${row.rank}-${row.name}`} className="flex items-start justify-between gap-3 text-sm">
             <div>
               <p className="font-medium">
-                <span className="mr-2 text-white/40">#{row.rank}</span>
+                <span className="mr-2 text-[var(--text-muted)]">#{row.rank}</span>
                 {row.name}
               </p>
               <p className="text-xs text-[var(--text-muted)]">{row.meta}</p>

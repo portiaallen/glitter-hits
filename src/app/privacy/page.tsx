@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         </p>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             1. What we collect
           </h2>
           <p>
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             2. Technical &amp; anti-abuse signals
           </h2>
           <p>
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             3. How we use data
           </h2>
           <p>
@@ -51,7 +51,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             4. Sharing
           </h2>
           <p>
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             5. Retention
           </h2>
           <p>
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             6. Your choices
           </h2>
           <p>
@@ -85,7 +85,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             7. Children
           </h2>
           <p>
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             8. Contact
           </h2>
           <p>

@@ -1,5 +1,5 @@
 // Glitter Hits — Prisma schema
-// SQLite for local/dev; switch provider to postgresql for production.
+// PostgreSQL in production (Neon). Local agents may temporarily use sqlite for UI verification.
 // Credits are ALWAYS integer Glitter Hits units — never floats / never Glitter Coins.
 
 generator client {
@@ -624,12 +624,18 @@ model ContactMessage {
   name      String
   email     String
   message   String
+  /// bug | suggestion | feature | theme | website | love | other | contact
+  category  String   @default("contact")
+  userId    String?
+  rewarded  Boolean  @default(false)
   ipHash    String?
   status    String   @default("new")
   createdAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([status])
+  @@index([category])
+  @@index([userId, createdAt])
 }
 
 model MonetizationFeature {

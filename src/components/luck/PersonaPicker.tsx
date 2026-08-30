@@ -40,7 +40,7 @@ export function PersonaPicker({ personas }: { personas: Persona[] }) {
           <p className="text-3xl">{p.icon}</p>
           <h3 className="mt-2 font-semibold">{p.name}</h3>
           <p className="mt-1 text-sm text-[var(--text-muted)]">{p.description}</p>
-          <p className="mt-2 text-xs text-white/40">Unlock at {p.unlockLuckMin} Luck</p>
+          <p className="mt-2 text-xs text-[var(--text-muted)]">Unlock at {p.unlockLuckMin} Luck</p>
           {p.selected ? (
             <span className="gh-badge mt-3 inline-flex">Selected</span>
           ) : p.unlocked ? (
@@ -53,7 +53,7 @@ export function PersonaPicker({ personas }: { personas: Persona[] }) {
               Choose
             </button>
           ) : (
-            <span className="mt-3 inline-block text-xs text-white/40">Locked</span>
+            <span className="mt-3 inline-block text-xs text-[var(--text-muted)]">Locked</span>
           )}
         </div>
       ))}

@@ -49,13 +49,13 @@ export function QuestList({ quests }: { quests: QuestRow[] }) {
                   {q.quest.icon} {q.quest.name}
                 </p>
                 <p className="mt-1 text-sm text-[var(--text-muted)]">{q.quest.description}</p>
-                <p className="mt-2 text-xs text-white/50">
+                <p className="mt-2 text-xs text-[var(--text)]/50">
                   +{q.quest.rewardHits} Hits · +{q.quest.rewardLuck} Luck · {q.quest.rarity}
                 </p>
               </div>
               <span className="gh-badge">{q.status}</span>
             </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--bg-glass)]">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-[var(--neon-pink)] to-[var(--neon-gold)]"
                 style={{ width: `${pct}%` }}

@@ -49,7 +49,7 @@ export function ForgotPasswordForm() {
       {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
       {message && <p className="text-sm text-[var(--success)]">{message}</p>}
       {resetUrl && (
-        <p className="break-all rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-[var(--neon-cyan)]">
+        <p className="break-all rounded-xl border border-[var(--border-glass)] bg-[var(--bg-panel)] p-3 text-xs text-[var(--neon-cyan)]">
           Dev reset link: <a href={resetUrl}>{resetUrl}</a>
         </p>
       )}

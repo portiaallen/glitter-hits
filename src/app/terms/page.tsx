@@ -17,7 +17,7 @@ export default function TermsPage() {
         </p>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             1. The service
           </h2>
           <p>
@@ -30,7 +30,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             2. Accounts
           </h2>
           <p>
@@ -41,7 +41,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             3. Credits are not money or crypto
           </h2>
           <p>
@@ -53,7 +53,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             4. Honest traffic labeling
           </h2>
           <p>
@@ -65,7 +65,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             5. Acceptable use
           </h2>
           <p>
@@ -77,7 +77,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             6. No performance guarantees
           </h2>
           <p>
@@ -88,7 +88,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             7. Paid features
           </h2>
           <p>
@@ -99,7 +99,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             8. Intellectual property &amp; brands
           </h2>
           <p>
@@ -110,7 +110,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             9. Disclaimers &amp; limitation
           </h2>
           <p>
@@ -122,7 +122,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
             10. Contact
           </h2>
           <p>

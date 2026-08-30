@@ -55,7 +55,7 @@ export function GlitterDropClaim({ drop }: { drop: Drop | null }) {
           </>
         ) : (
           <>
-            <p className="text-xs uppercase tracking-[0.2em] text-white/50">
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--text)]/50">
               {drop.rarity} drop
             </p>
             <p className="mt-2 font-[family-name:var(--font-syne)] text-xl font-bold">

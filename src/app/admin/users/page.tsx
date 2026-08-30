@@ -24,10 +24,10 @@ export default async function AdminUsersPage() {
         </thead>
         <tbody>
           {users.map((u) => (
-            <tr key={u.id} className="border-t border-white/5">
+            <tr key={u.id} className="border-t border-[var(--border-glass)]">
               <td className="p-2">
                 <div>{u.name}</div>
-                <div className="text-xs text-white/40">{u.email}</div>
+                <div className="text-xs text-[var(--text-muted)]">{u.email}</div>
               </td>
               <td className="p-2">{u.role}</td>
               <td className="p-2">{u.membership}</td>

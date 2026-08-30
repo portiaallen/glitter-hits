@@ -52,7 +52,7 @@ export function MailInboxList({
           className={`rounded-2xl border px-4 py-4 ${
             item.isFeatured || item.mail.isPaidSolo
               ? "border-[var(--neon-pink)]/40 bg-[var(--neon-pink)]/5"
-              : "border-white/10 bg-white/[0.02]"
+              : "border-[var(--border-glass)] bg-white/[0.02]"
           }`}
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
@@ -80,7 +80,7 @@ export function MailInboxList({
               </button>
             ) : null}
           </div>
-          <p className="mt-3 whitespace-pre-wrap text-sm text-white/80">{item.mail.body}</p>
+          <p className="mt-3 whitespace-pre-wrap text-sm text-[var(--text)]/80">{item.mail.body}</p>
           {item.mail.ctaUrl ? (
             <a
               href={item.mail.ctaUrl}

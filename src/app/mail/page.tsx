@@ -68,7 +68,7 @@ export default async function MailPage() {
             {sent.map((m) => (
               <li
                 key={m.id}
-                className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3 text-sm"
+                className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-glass)] pb-3 text-sm"
               >
                 <div>
                   <p className="font-medium">{m.subject}</p>

@@ -157,7 +157,7 @@ export function MailComposeForm({
               <label
                 key={t}
                 className={`rounded-xl border px-3 py-3 text-sm ${
-                  tier === t ? "border-[var(--neon-cyan)]/50 bg-white/5" : "border-white/10"
+                  tier === t ? "border-[var(--neon-cyan)]/50 bg-[var(--bg-glass)]" : "border-[var(--border-glass)]"
                 } ${unlocked ? "cursor-pointer" : "opacity-40"}`}
               >
                 <input
@@ -178,7 +178,7 @@ export function MailComposeForm({
       </fieldset>
 
       {tier !== "premium_solo" ? (
-        <label className="flex items-start gap-3 rounded-xl border border-white/10 px-3 py-3 text-sm">
+        <label className="flex items-start gap-3 rounded-xl border border-[var(--border-glass)] px-3 py-3 text-sm">
           <input
             type="checkbox"
             checked={paidSolo}
@@ -200,7 +200,7 @@ export function MailComposeForm({
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-[var(--text-muted)]">
-          Total: <strong className="text-white">{total}</strong> hits · balance {balance}
+          Total: <strong className="text-[var(--text)]">{total}</strong> hits · balance {balance}
         </p>
         <button type="submit" disabled={pending} className="gh-btn gh-btn-primary">
           {pending ? "Sending…" : "Send mailing"}

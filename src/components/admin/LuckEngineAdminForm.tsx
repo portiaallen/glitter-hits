@@ -101,7 +101,7 @@ export function LuckEngineAdminForm({
         />
       </div>
 
-      <fieldset className="space-y-3 rounded-xl border border-white/10 p-4">
+      <fieldset className="space-y-3 rounded-xl border border-[var(--border-glass)] p-4">
         <legend className="px-1 text-sm font-semibold">Glitter Drops</legend>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="dropsEnabled" defaultChecked={config.drops.enabled} />
@@ -147,7 +147,7 @@ export function LuckEngineAdminForm({
         </div>
       </fieldset>
 
-      <fieldset className="space-y-3 rounded-xl border border-white/10 p-4">
+      <fieldset className="space-y-3 rounded-xl border border-[var(--border-glass)] p-4">
         <legend className="px-1 text-sm font-semibold">Jackpot</legend>
         <label className="flex items-center gap-2 text-sm">
           <input
@@ -209,7 +209,7 @@ export function LuckEngineAdminForm({
         </div>
       </fieldset>
 
-      <fieldset className="space-y-3 rounded-xl border border-white/10 p-4">
+      <fieldset className="space-y-3 rounded-xl border border-[var(--border-glass)] p-4">
         <legend className="px-1 text-sm font-semibold">Wheel</legend>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="wheelEnabled" defaultChecked={config.wheel.enabled} />
@@ -237,7 +237,7 @@ export function LuckEngineAdminForm({
         </div>
       </fieldset>
 
-      <fieldset className="space-y-3 rounded-xl border border-white/10 p-4">
+      <fieldset className="space-y-3 rounded-xl border border-[var(--border-glass)] p-4">
         <legend className="px-1 text-sm font-semibold">Luck weights</legend>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {(

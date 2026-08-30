@@ -31,7 +31,7 @@ export function LuckMeter({
   return (
     <div className={`gh-glass relative overflow-hidden p-5 ${spark ? "gh-luck-spark" : ""}`}>
       {spark ? <div className="gh-glitter-burst" aria-hidden /> : null}
-      <p className="text-xs uppercase tracking-[0.18em] text-white/45">Your Glitter Status</p>
+      <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Your Glitter Status</p>
       <p className="mt-2 font-[family-name:var(--font-syne)] text-xl font-bold sm:text-2xl">
         {levelIcon} Luck Level {levelNumber} — {levelName}
       </p>

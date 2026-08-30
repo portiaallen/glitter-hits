@@ -551,15 +551,24 @@ async function main() {
     where: { id: "seed-welcome" },
     create: {
       id: "seed-welcome",
-      title: "✨ Surf. Spark. Share. Get Lucky.",
-      body: "Welcome to the Glitter Luck Engine — earn Hits by surfing, grow Luck, claim Glitter Drops, and keep your streak alive.",
+      title: "Come play with us.",
+      body: "Volume 111 is live — explore Hits, collect traffic, and tell us what monthly theme we should try next.",
       isActive: true,
     },
     update: {
-      title: "✨ Surf. Spark. Share. Get Lucky.",
-      body: "Welcome to the Glitter Luck Engine — earn Hits by surfing, grow Luck, claim Glitter Drops, and keep your streak alive.",
+      title: "Come play with us.",
+      body: "Volume 111 is live — explore Hits, collect traffic, and tell us what monthly theme we should try next.",
       isActive: true,
     },
+  });
+
+  await prisma.systemSetting.upsert({
+    where: { key: "experience.monthly_theme" },
+    create: {
+      key: "experience.monthly_theme",
+      valueJson: JSON.stringify({ slug: "rainbow" }),
+    },
+    update: {},
   });
 
   // Featured placement inventory (architecture live; some disabled)

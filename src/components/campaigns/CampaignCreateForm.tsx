@@ -263,7 +263,7 @@ export function CampaignCreateForm({
         />
       </div>
 
-      <fieldset className="rounded-xl border border-white/10 p-4">
+      <fieldset className="rounded-xl border border-[var(--border-glass)] p-4">
         <legend className="px-1 text-sm font-medium">Schedule</legend>
         <div className="mt-2 flex flex-wrap gap-3 text-sm">
           <label className="flex items-center gap-2">
@@ -293,7 +293,7 @@ export function CampaignCreateForm({
                     key={d.v}
                     type="button"
                     className={`rounded-lg px-3 py-1 text-xs ${
-                      on ? "bg-white/15 text-white" : "bg-white/5 text-white/50"
+                      on ? "bg-white/15 text-[var(--text)]" : "bg-[var(--bg-glass)] text-[var(--text)]/50"
                     }`}
                     onClick={() =>
                       setDays((prev) =>

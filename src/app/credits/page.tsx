@@ -49,10 +49,10 @@ export default async function CreditsPage() {
         </h2>
         <ul className="mt-4 space-y-3">
           {ledger.map((entry) => (
-            <li key={entry.id} className="flex justify-between gap-3 border-b border-white/5 pb-3 text-sm">
+            <li key={entry.id} className="flex justify-between gap-3 border-b border-[var(--border-glass)] pb-3 text-sm">
               <div>
                 <p>{entry.description}</p>
-                <p className="text-xs text-white/40">
+                <p className="text-xs text-[var(--text-muted)]">
                   {entry.type} · {entry.createdAt.toISOString()}
                 </p>
               </div>
@@ -61,7 +61,7 @@ export default async function CreditsPage() {
                   {entry.amount >= 0 ? "+" : ""}
                   {formatCredits(entry.amount)}
                 </p>
-                <p className="text-xs text-white/40">bal {formatCredits(entry.balanceAfter)}</p>
+                <p className="text-xs text-[var(--text-muted)]">bal {formatCredits(entry.balanceAfter)}</p>
               </div>
             </li>
           ))}

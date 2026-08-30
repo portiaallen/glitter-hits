@@ -102,7 +102,7 @@ export default async function DashboardPage() {
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {missions.map((m) => (
-            <Link key={m.href} href={m.href} className="gh-glass block p-4 transition hover:bg-white/5">
+            <Link key={m.href} href={m.href} className="gh-glass block p-4 transition hover:bg-[var(--bg-glass)]">
               <p className="font-medium">{m.title}</p>
               <p className="mt-1 text-sm text-[var(--text-muted)]">{m.reward}</p>
             </Link>
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
                 {challenge.icon} {challenge.name}
               </h3>
               <p className="mt-1 text-sm text-[var(--text-muted)]">{challenge.description}</p>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--bg-glass)]">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[var(--neon-cyan)] to-[var(--neon-pink)]"
                   style={{
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
                 <li className="text-[var(--text-muted)]">Surf to spark your first rewards.</li>
               )}
               {events.map((e) => (
-                <li key={e.id} className="border-b border-white/5 pb-2">
+                <li key={e.id} className="border-b border-[var(--border-glass)] pb-2">
                   <p className="font-medium">{e.title}</p>
                   <p className="text-xs text-[var(--text-muted)]">{e.body}</p>
                 </li>

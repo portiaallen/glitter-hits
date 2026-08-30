@@ -53,7 +53,15 @@ function deviceHint() {
   return "desktop";
 }
 
-export function SurfConsole() {
+const REACTIONS = ["Love it", "Curious", "Weird (in a good way)", "Bookmark vibe"] as const;
+
+export function SurfConsole({
+  themeLine = "Next channel: something you didn't expect.",
+  dailyGoal = 5,
+}: {
+  themeLine?: string;
+  dailyGoal?: number;
+}) {
   const [session, setSession] = useState<SurfSession | null>(null);
   const [site, setSite] = useState<SurfSite | null>(null);
   const [remaining, setRemaining] = useState(0);
@@ -64,6 +72,9 @@ export function SurfConsole() {
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"iframe" | "external">("iframe");
   const [iframeBroken, setIframeBroken] = useState(false);
+  const [celebrate, setCelebrate] = useState(false);
+  const [reaction, setReaction] = useState<string | null>(null);
+  const [channelKey, setChannelKey] = useState(0);
   const [stats, setStats] = useState<SessionStats>({
     creditsEarned: 0,
     sitesViewed: 0,
@@ -81,6 +92,7 @@ export function SurfConsole() {
     setBusy(true);
     setError(null);
     setMessage(null);
+    setReaction(null);
     completingRef.current = false;
     try {
       const data = await postJson<{
@@ -109,6 +121,7 @@ export function SurfConsole() {
         creditsEarnedIfComplete: data.creditsEarnedIfComplete ?? 1,
       };
       setSite(nextSite);
+      setChannelKey((k) => k + 1);
       setRemaining(nextSite.requiredDurationSec);
       setElapsed(0);
       elapsedRef.current = 0;
@@ -119,7 +132,6 @@ export function SurfConsole() {
       setViewMode("iframe");
       setIframeBroken(false);
       if (iframeTimerRef.current) window.clearTimeout(iframeTimerRef.current);
-      // Many sites block iframes — after a short grace, nudge external mode
       iframeTimerRef.current = window.setTimeout(() => {
         setIframeBroken(true);
       }, 4500);
@@ -180,10 +192,12 @@ export function SurfConsole() {
         sitesViewed: s.sitesViewed + (data.alreadyCredited ? 0 : 1),
       }));
       const bits = [
-        earned > 0 ? `✨ +${formatCredits(earned)} Hits` : "Visit completed",
+        earned > 0 ? `+${formatCredits(earned)} Hits collected` : "Discovery complete",
         ...(data.luckFeedback?.messages ?? []),
       ];
+      setCelebrate(true);
       setMessage(bits.join(" · "));
+      window.setTimeout(() => setCelebrate(false), 900);
       await loadNext(session.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to complete visit");
@@ -193,7 +207,6 @@ export function SurfConsole() {
     }
   }, [loadNext, session, site]);
 
-  // Countdown ticker
   useEffect(() => {
     if (!session || !site || paused || busy) return;
 
@@ -215,7 +228,6 @@ export function SurfConsole() {
     return () => window.clearInterval(id);
   }, [session, site, paused, busy, completeVisit]);
 
-  // Heartbeat
   useEffect(() => {
     if (!session) return;
     const tick = () => {
@@ -261,7 +273,7 @@ export function SurfConsole() {
         elapsedSec: elapsedRef.current,
       });
       setStats((s) => ({ ...s, sitesSkipped: s.sitesSkipped + 1 }));
-      setMessage("Site skipped");
+      setMessage("Skipped — tuning the next channel…");
       await loadNext(session.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Skip failed");
@@ -313,7 +325,7 @@ export function SurfConsole() {
       setSite(null);
       setRemaining(0);
       setElapsed(0);
-      setMessage("Session ended");
+      setMessage("Session ended — come explore again tomorrow.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to end session");
     } finally {
@@ -325,34 +337,47 @@ export function SurfConsole() {
     site && site.requiredDurationSec > 0
       ? Math.min(100, (elapsed / site.requiredDurationSec) * 100)
       : 0;
+  const goalProgress = Math.min(100, (stats.sitesViewed / dailyGoal) * 100);
 
   return (
     <div className="space-y-4">
       <div className="gh-glass flex flex-wrap items-center justify-between gap-3 p-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.16em] text-white/40">Session</p>
-          <div className="mt-1 flex flex-wrap gap-2 text-sm">
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
+            Discovery session
+          </p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{themeLine}</p>
+          <div className="mt-2 flex flex-wrap gap-2 text-sm">
+            <span className="gh-badge">Collected {formatCredits(stats.creditsEarned)} Hits</span>
             <span className="gh-badge">
-              Earned {formatCredits(stats.creditsEarned)}
+              Explored {stats.sitesViewed}/{dailyGoal} today
             </span>
-            <span className="gh-badge">Viewed {stats.sitesViewed}</span>
             <span className="gh-badge">Skipped {stats.sitesSkipped}</span>
+          </div>
+          <div className="mt-3 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-[var(--bg-cosmic)]">
+            <div
+              className="h-full rounded-full transition-[width] duration-300"
+              style={{
+                width: `${goalProgress}%`,
+                background: "var(--prism)",
+              }}
+            />
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {!session ? (
             <button
               type="button"
-              className="gh-btn gh-btn-primary"
+              className="gh-btn gh-btn-primary min-h-11"
               disabled={busy}
               onClick={() => void startSession()}
             >
-              Start surfing
+              Start exploring
             </button>
           ) : (
             <button
               type="button"
-              className="gh-btn gh-btn-ghost"
+              className="gh-btn gh-btn-ghost min-h-11"
               disabled={busy}
               onClick={() => void endSurf()}
             >
@@ -368,7 +393,10 @@ export function SurfConsole() {
         </p>
       ) : null}
       {message ? (
-        <p className="rounded-xl border border-[var(--success)]/30 bg-[var(--success)]/10 px-4 py-3 text-sm text-[var(--success)]">
+        <p
+          className={`relative overflow-hidden rounded-xl border border-[var(--success)]/25 bg-[var(--success)]/10 px-4 py-3 text-sm text-[var(--success)] ${celebrate ? "animate-celebrate" : ""}`}
+        >
+          {celebrate ? <span className="gh-glitter-burst" aria-hidden /> : null}
           {message}
         </p>
       ) : null}
@@ -376,14 +404,19 @@ export function SurfConsole() {
       {session && site ? (
         <>
           <div className="gh-glass p-4 sm:p-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div className="min-w-0">
-                <p className="text-xs uppercase tracking-[0.16em] text-white/40">
-                  Now discovering
+                <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                  Now on channel
                 </p>
                 <h2 className="mt-1 truncate font-[family-name:var(--font-syne)] text-xl font-bold sm:text-2xl">
                   {site.website.title}
                 </h2>
+                {site.website.description ? (
+                  <p className="mt-1 line-clamp-2 text-sm text-[var(--text-muted)]">
+                    {site.website.description}
+                  </p>
+                ) : null}
                 <a
                   href={site.website.url}
                   target="_blank"
@@ -393,28 +426,42 @@ export function SurfConsole() {
                   {site.website.url}
                 </a>
               </div>
-              <div className="text-center sm:text-right">
+              <div className="text-center lg:text-right">
                 <p
-                  className="font-[family-name:var(--font-syne)] text-5xl font-extrabold tabular-nums gh-gradient-text"
+                  className="gh-surf-countdown font-[family-name:var(--font-syne)] text-5xl font-extrabold gh-gradient-text sm:text-6xl"
                   aria-live="polite"
                 >
                   {remaining}
                 </p>
                 <p className="text-xs text-[var(--text-muted)]">
-                  seconds · +{formatCredits(site.creditsEarnedIfComplete)} Hits
+                  seconds · +{formatCredits(site.creditsEarnedIfComplete)} Hits when complete
                 </p>
               </div>
             </div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+            <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-[var(--bg-cosmic)]">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[var(--neon-pink)] to-[var(--neon-cyan)] transition-[width] duration-200"
-                style={{ width: `${progress}%` }}
+                className="h-full rounded-full transition-[width] duration-200"
+                style={{ width: `${progress}%`, background: "var(--prism)" }}
               />
             </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {REACTIONS.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  className={`gh-badge min-h-9 transition ${reaction === r ? "border-[var(--theme-accent)] bg-[var(--theme-wash)] text-[var(--text)]" : ""}`}
+                  onClick={() => setReaction(r)}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 type="button"
-                className="gh-btn gh-btn-ghost px-3 py-2 text-sm"
+                className="gh-btn gh-btn-ghost min-h-11 px-3 py-2 text-sm"
                 disabled={busy}
                 onClick={() => void togglePause()}
               >
@@ -422,23 +469,23 @@ export function SurfConsole() {
               </button>
               <button
                 type="button"
-                className="gh-btn gh-btn-ghost px-3 py-2 text-sm"
+                className="gh-btn gh-btn-primary min-h-11 px-3 py-2 text-sm"
                 disabled={busy}
                 onClick={() => void skipSite()}
               >
-                Skip
+                Next Hit
               </button>
               <button
                 type="button"
-                className="gh-btn gh-btn-ghost px-3 py-2 text-sm"
+                className="gh-btn gh-btn-ghost min-h-11 px-3 py-2 text-sm"
                 disabled={busy}
                 onClick={() => openExternal()}
               >
-                Open externally
+                Open full site
               </button>
               <button
                 type="button"
-                className="gh-btn gh-btn-ghost px-3 py-2 text-sm"
+                className="gh-btn gh-btn-ghost min-h-11 px-3 py-2 text-sm"
                 disabled={busy}
                 onClick={() => void reportSite()}
               >
@@ -453,9 +500,9 @@ export function SurfConsole() {
                   className="text-[var(--neon-cyan)] underline"
                   onClick={() => openExternal()}
                 >
-                  Open externally
+                  Open full site
                 </button>{" "}
-                and keep surfing — the timer still counts here.
+                — the timer still counts here.
               </p>
             ) : null}
           </div>
@@ -463,36 +510,40 @@ export function SurfConsole() {
           {viewMode === "external" ? (
             <div className="gh-glass p-8 text-center">
               <p className="font-[family-name:var(--font-syne)] text-xl font-semibold">
-                External discovery mode
+                Full-site discovery mode
               </p>
               <p className="mx-auto mt-2 max-w-md text-sm text-[var(--text-muted)]">
-                The site opened in a new tab. Stay on this page so the countdown can credit
-                your visit — many sites refuse iframes.
+                The site opened in a new tab. Stay on this page so the countdown can credit your
+                visit — many sites refuse iframes.
               </p>
               <a
                 href={site.website.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="gh-btn gh-btn-primary mt-5 inline-flex"
+                className="gh-btn gh-btn-primary mt-5 inline-flex min-h-11"
               >
                 Re-open site
               </a>
               <button
                 type="button"
-                className="gh-btn gh-btn-ghost mt-3 ml-2 inline-flex text-sm"
+                className="gh-btn gh-btn-ghost mt-3 ml-2 inline-flex min-h-11 text-sm"
                 onClick={() => setViewMode("iframe")}
               >
-                Try iframe again
+                Try preview again
               </button>
             </div>
           ) : (
-            <div className="gh-glass overflow-hidden p-1">
+            <div key={channelKey} className="gh-surf-stage animate-channel p-1.5 sm:p-2">
+              <div className="mb-2 flex items-center justify-between px-2 pt-1 text-xs text-[var(--text-muted)]">
+                <span>Live preview</span>
+                <span className="gh-badge">Honest exchange traffic</span>
+              </div>
               <iframe
                 title={site.website.title}
                 src={site.website.url}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
                 referrerPolicy="no-referrer"
-                className="h-[55vh] w-full rounded-[1.1rem] bg-black/40 sm:h-[65vh]"
+                className="h-[52vh] w-full rounded-[1.15rem] bg-[var(--bg-cosmic)] sm:h-[64vh]"
                 onLoad={() => {
                   setIframeBroken(false);
                   if (iframeTimerRef.current) window.clearTimeout(iframeTimerRef.current);
@@ -504,25 +555,26 @@ export function SurfConsole() {
       ) : session ? (
         <div className="gh-glass p-8 text-center">
           <p className="text-[var(--text-muted)]">
-            {busy ? "Finding the next site…" : message || "Waiting for the next discovery."}
+            {busy ? "Tuning the next channel…" : message || "Waiting for the next discovery."}
           </p>
           <button
             type="button"
-            className="gh-btn gh-btn-primary mt-4"
+            className="gh-btn gh-btn-primary mt-4 min-h-11"
             disabled={busy}
             onClick={() => void loadNext(session.id)}
           >
-            Try again
+            Find next Hit
           </button>
         </div>
       ) : (
-        <div className="gh-glass p-8 text-center">
-          <h2 className="font-[family-name:var(--font-syne)] text-2xl font-bold">
+        <div className="gh-glass relative overflow-hidden p-8 text-center sm:p-12">
+          <div className="gh-glitter-burst opacity-40" aria-hidden />
+          <h2 className="font-[family-name:var(--font-syne)] text-2xl font-bold sm:text-3xl">
             Ready to discover?
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-[var(--text-muted)]">
-            Watch each site for the countdown, earn Glitter Hits, then spend them promoting
-            your own pages.
+          <p className="mx-auto mt-3 max-w-md text-sm text-[var(--text-muted)]">
+            Every site is a new channel. Watch the countdown, collect Hits, then get your own
+            pages seen — the exchange that feels like exploration.
           </p>
         </div>
       )}

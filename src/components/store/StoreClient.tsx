@@ -162,7 +162,7 @@ export function StoreClient({
                     ? ` · $${(plan.priceCents / 100).toFixed(2)}/mo when cash is on`
                     : ""}
                 </p>
-                <ul className="mt-3 space-y-1 text-sm text-white/80">
+                <ul className="mt-3 space-y-1 text-sm text-[var(--text)]/80">
                   {plan.perks.map((perk) => (
                     <li key={perk}>· {perk}</li>
                   ))}

@@ -42,7 +42,7 @@ export default async function RewardsPage() {
               <div key={a.id} className="gh-glass p-5">
                 <h3 className="font-semibold">{a.name}</h3>
                 <p className="mt-2 text-sm text-[var(--text-muted)]">{a.description}</p>
-                <p className="mt-3 text-xs text-white/45">
+                <p className="mt-3 text-xs text-[var(--text-muted)]">
                   +{a.creditReward} Hits · +{a.pointsReward} pts
                 </p>
               </div>

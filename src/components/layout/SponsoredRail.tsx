@@ -14,7 +14,7 @@ export async function SponsoredRail({
   return (
     <aside className="gh-glass p-4" aria-label={title}>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <p className="text-xs uppercase tracking-[0.16em] text-white/40">{title}</p>
+        <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{title}</p>
         <Link href="/featured" className="text-xs text-[var(--neon-cyan)]">
           All →
         </Link>
@@ -29,13 +29,13 @@ export async function SponsoredRail({
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                className="block rounded-xl px-2 py-2 transition hover:bg-white/5"
+                className="block rounded-xl px-2 py-2 transition hover:bg-[var(--bg-glass)]"
               >
                 <p className="text-sm font-medium">{label}</p>
                 {p.body ? (
                   <p className="mt-1 line-clamp-2 text-xs text-[var(--text-muted)]">{p.body}</p>
                 ) : null}
-                <p className="mt-1 text-[10px] uppercase tracking-wider text-white/30">
+                <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--text)]/30">
                   {p.type.replaceAll("_", " ")} · exchange promo
                 </p>
               </a>
