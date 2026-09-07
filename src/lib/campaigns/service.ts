@@ -150,6 +150,9 @@ export async function setCampaignStatus(
 ) {
   const campaign = await prisma.campaign.findFirst({ where: { id: campaignId, userId } });
   if (!campaign) throw new Error("Campaign not found.");
+  if (status === "deleted" && campaign.creditBalance > 0) {
+    throw new Error("Move or spend remaining campaign credits before deleting.");
+  }
   return prisma.campaign.update({
     where: { id: campaignId },
     data: { status },

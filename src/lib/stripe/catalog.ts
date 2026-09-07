@@ -12,7 +12,7 @@ export type CreditPackSlug =
 
 export type PaidMembershipTier = Exclude<MembershipTier, "free">;
 
-function useLivePrices() {
+function resolveLivePrices() {
   return (
     process.env.STRIPE_SECRET_KEY?.startsWith("sk_live") ||
     process.env.STRIPE_SECRET_KEY?.startsWith("rk_live") ||
@@ -28,7 +28,7 @@ function packPrice(slug: CreditPackSlug): string | undefined {
     "empire-5000": process.env.STRIPE_PRICE_PACK_EMPIRE,
   }[slug];
   if (fromEnv) return fromEnv;
-  return (useLivePrices() ? STRIPE_LIVE_PRICE_IDS : STRIPE_TEST_PRICE_IDS)[slug];
+  return (resolveLivePrices() ? STRIPE_LIVE_PRICE_IDS : STRIPE_TEST_PRICE_IDS)[slug];
 }
 
 function membershipPrice(tier: PaidMembershipTier): string | undefined {
@@ -38,7 +38,7 @@ function membershipPrice(tier: PaidMembershipTier): string | undefined {
     vip: process.env.STRIPE_PRICE_MEMBERSHIP_VIP,
   }[tier];
   if (fromEnv) return fromEnv;
-  return (useLivePrices() ? STRIPE_LIVE_PRICE_IDS : STRIPE_TEST_PRICE_IDS)[tier];
+  return (resolveLivePrices() ? STRIPE_LIVE_PRICE_IDS : STRIPE_TEST_PRICE_IDS)[tier];
 }
 
 export const CREDIT_PACK_PRICE_ENV: Record<CreditPackSlug, string | undefined> = {

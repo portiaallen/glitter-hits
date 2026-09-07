@@ -63,7 +63,8 @@ export async function spinWheel(userId: string, clientKey: string) {
 
   const segment = pickSegment(segments);
 
-  // Deduct spin + create pending record atomically
+  // Deduct spin + create pending record atomically.
+  // Segment is selected before deduction so the result is deterministic per spin.
   const spin = await prisma.$transaction(async (tx) => {
     const updated = await tx.user.updateMany({
       where: { id: userId, wheelSpins: { gte: 1 } },
@@ -84,7 +85,13 @@ export async function spinWheel(userId: string, clientKey: string) {
     });
   });
 
-  // Apply rewards once
+  await prisma.$transaction(async (tx) => {
+    await tx.wheelSpin.update({
+      where: { id: spin.id },
+      data: { processed: true },
+    });
+  });
+
   if (segment.rewardType === "hits") {
     await grantHits({
       userId,
@@ -121,11 +128,6 @@ export async function spinWheel(userId: string, clientKey: string) {
     await maybeSpawnGlitterDrop(userId);
   }
 
-  const processed = await prisma.wheelSpin.update({
-    where: { id: spin.id },
-    data: { processed: true },
-  });
-
   await recordRewardEvent({
     userId,
     kind: "wheel",
@@ -142,7 +144,7 @@ export async function spinWheel(userId: string, clientKey: string) {
     href: "/luck/wheel",
   });
 
-  return { spin: processed, segment, replay: false as const };
+  return { spin, segment, replay: false as const };
 }
 
 export async function grantDailyLoginSpin(userId: string) {

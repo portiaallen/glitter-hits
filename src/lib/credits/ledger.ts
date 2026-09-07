@@ -28,15 +28,21 @@ export async function moveCredits(input: CreditMoveInput) {
 
   const run = async (tx: Prisma.TransactionClient) => {
     const user = await tx.user.findUniqueOrThrow({ where: { id: input.userId } });
+
+    if (user.isSuspended) {
+      throw new Error("Account is suspended — credits cannot be moved.");
+    }
+
     const nextBalance = user.creditBalance + amount;
     if (nextBalance < 0) {
       throw new Error("Insufficient Glitter Hits balance.");
     }
 
+    const amountAbs = Math.abs(amount);
     const lifetimeEarned =
-      amount > 0 ? user.lifetimeEarned + amount : user.lifetimeEarned;
+      amount > 0 ? user.lifetimeEarned + amountAbs : user.lifetimeEarned;
     const lifetimeSpent =
-      amount < 0 ? user.lifetimeSpent + Math.abs(amount) : user.lifetimeSpent;
+      amount < 0 ? user.lifetimeSpent + amountAbs : user.lifetimeSpent;
 
     const updated = await tx.user.update({
       where: { id: input.userId },

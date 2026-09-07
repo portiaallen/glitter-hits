@@ -175,8 +175,7 @@ export async function completeSurfVisit(params: {
       },
     });
 
-    // Deduct from campaign owner's spent tracking already on campaign;
-    // visitor earns credits
+    // Deduct campaign credits from campaign pool, then award visitor earnings.
     if (earn > 0) {
       await moveCredits({
         tx,

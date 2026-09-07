@@ -23,29 +23,37 @@ async function fulfillCreditPack(session: Stripe.Checkout.Session) {
     return;
   }
 
-  await prisma.$transaction(async (tx) => {
-    await moveCredits({
-      tx,
-      userId: purchase.userId,
-      amount: credits,
-      type: "purchase",
-      description: `Purchased ${credits} Glitter Hits (${purchase.creditPackSlug ?? "pack"})`,
-      metadata: {
-        stripeSessionId: session.id,
-        packSlug: purchase.creditPackSlug,
-      },
-    });
+  try {
+    await prisma.$transaction(async (tx) => {
+      await moveCredits({
+        tx,
+        userId: purchase.userId,
+        amount: credits,
+        type: "purchase",
+        description: `Purchased ${credits} Glitter Hits (${purchase.creditPackSlug ?? "pack"})`,
+        metadata: {
+          stripeSessionId: session.id,
+          packSlug: purchase.creditPackSlug,
+        },
+      });
 
-    await tx.stripePurchase.update({
-      where: { id: purchase.id },
-      data: {
-        status: "paid",
-        fulfilledAt: new Date(),
-        stripePaymentIntentId:
-          typeof session.payment_intent === "string" ? session.payment_intent : undefined,
-      },
+      await tx.stripePurchase.update({
+        where: { id: purchase.id },
+        data: {
+          status: "paid",
+          fulfilledAt: new Date(),
+          stripePaymentIntentId:
+            typeof session.payment_intent === "string" ? session.payment_intent : undefined,
+        },
+      });
     });
-  });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("StaleObjectError")) {
+      console.info("[stripe] concurrent fulfillment skipped", session.id);
+      return;
+    }
+    throw err;
+  }
 }
 
 async function applyMembership(params: {
@@ -206,6 +214,13 @@ export async function fulfillCheckoutSessionById(sessionId: string, userId: stri
   }
   if (session.payment_status !== "paid" && session.status !== "complete") {
     return { ok: false as const, error: "Checkout is not complete yet." };
+  }
+
+  const purchase = await prisma.stripePurchase.findUnique({
+    where: { stripeSessionId: sessionId },
+  });
+  if (purchase?.userId && purchase.userId !== userId) {
+    return { ok: false as const, error: "Purchase does not belong to this user." };
   }
 
   await fulfillCheckoutSession(session);
