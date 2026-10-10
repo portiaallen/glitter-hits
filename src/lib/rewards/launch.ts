@@ -111,6 +111,12 @@ export async function claimWeeklyBonus(userId: string) {
   return { amount: economy.weeklyActivityBonus, weekKey: key, visits };
 }
 
+// Seed/demo accounts (both Glitter domains) never appear on public leaderboards.
+const seedEmailExclusions = [
+  { email: { not: { endsWith: "@glitterhits.online" } } },
+  { email: { not: { endsWith: "@glitterhits.gay" } } },
+];
+
 export type LeaderboardBoard =
   | "discoverers"
   | "promoters"
@@ -121,7 +127,7 @@ export type LeaderboardBoard =
 export async function getLeaderboards() {
   const [discoverers, promoters, active, referred, trending] = await Promise.all([
     prisma.user.findMany({
-      where: { isSuspended: false, email: { not: { endsWith: "@glitterhits.online" } } },
+      where: { isSuspended: false, AND: seedEmailExclusions },
       orderBy: { lifetimeEarned: "desc" },
       take: 20,
       select: {
@@ -133,7 +139,7 @@ export async function getLeaderboards() {
       },
     }),
     prisma.user.findMany({
-      where: { isSuspended: false, email: { not: { endsWith: "@glitterhits.online" } } },
+      where: { isSuspended: false, AND: seedEmailExclusions },
       orderBy: { lifetimeSpent: "desc" },
       take: 20,
       select: {
@@ -147,7 +153,7 @@ export async function getLeaderboards() {
       where: {
         isSuspended: false,
         lastSurfDate: { not: null },
-        email: { not: { endsWith: "@glitterhits.online" } },
+        AND: seedEmailExclusions,
       },
       orderBy: [{ streakDays: "desc" }, { levelPoints: "desc" }],
       take: 20,
@@ -184,7 +190,7 @@ export async function getLeaderboards() {
   const referrerUsers = await prisma.user.findMany({
     where: {
       id: { in: referrerIds },
-      email: { not: { endsWith: "@glitterhits.online" } },
+      AND: seedEmailExclusions,
     },
     select: { id: true, name: true, levelSlug: true },
   });
