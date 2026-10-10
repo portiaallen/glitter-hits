@@ -121,7 +121,7 @@ export type LeaderboardBoard =
 export async function getLeaderboards() {
   const [discoverers, promoters, active, referred, trending] = await Promise.all([
     prisma.user.findMany({
-      where: { isSuspended: false },
+      where: { isSuspended: false, email: { not: { endsWith: "@glitterhits.online" } } },
       orderBy: { lifetimeEarned: "desc" },
       take: 20,
       select: {
@@ -133,7 +133,7 @@ export async function getLeaderboards() {
       },
     }),
     prisma.user.findMany({
-      where: { isSuspended: false },
+      where: { isSuspended: false, email: { not: { endsWith: "@glitterhits.online" } } },
       orderBy: { lifetimeSpent: "desc" },
       take: 20,
       select: {
@@ -144,7 +144,11 @@ export async function getLeaderboards() {
       },
     }),
     prisma.user.findMany({
-      where: { isSuspended: false, lastSurfDate: { not: null } },
+      where: {
+        isSuspended: false,
+        lastSurfDate: { not: null },
+        email: { not: { endsWith: "@glitterhits.online" } },
+      },
       orderBy: [{ streakDays: "desc" }, { levelPoints: "desc" }],
       take: 20,
       select: {
@@ -178,7 +182,10 @@ export async function getLeaderboards() {
 
   const referrerIds = referred.map((r) => r.referrerId);
   const referrerUsers = await prisma.user.findMany({
-    where: { id: { in: referrerIds } },
+    where: {
+      id: { in: referrerIds },
+      email: { not: { endsWith: "@glitterhits.online" } },
+    },
     select: { id: true, name: true, levelSlug: true },
   });
   const referrerMap = new Map(referrerUsers.map((u) => [u.id, u]));
