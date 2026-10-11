@@ -51,6 +51,16 @@ export async function signupAction(formData: FormData) {
     return { error: `Too many signup attempts. Try again in ${rl.retryAfterSec}s.` };
   }
 
+  const signupIp = await clientIp();
+  const rlSignupIp = rateLimit({
+    key: `signup-ip:${signupIp || "unknown"}`,
+    limit: 10,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!rlSignupIp.ok) {
+    return { error: `Too many signup attempts from this network. Try again in ${rlSignupIp.retryAfterSec}s.` };
+  }
+
   const captcha = await verifyTurnstileToken(
     String(formData.get("cf-turnstile-response") || formData.get("turnstileToken") || ""),
     await clientIp(),
@@ -131,6 +141,15 @@ export async function loginAction(formData: FormData) {
     return { error: `Too many login attempts. Try again in ${rl.retryAfterSec}s.` };
   }
 
+  const rlLoginIp = rateLimit({
+    key: `login-ip:${(await clientIp()) || "unknown"}`,
+    limit: 30,
+    windowMs: 15 * 60 * 1000,
+  });
+  if (!rlLoginIp.ok) {
+    return { error: `Too many login attempts from this network. Try again in ${rlLoginIp.retryAfterSec}s.` };
+  }
+
   try {
     await signIn("credentials", {
       email,
@@ -154,6 +173,15 @@ export async function requestPasswordResetAction(formData: FormData) {
   });
   if (!rl.ok) {
     return { error: `Too many reset requests. Try again in ${rl.retryAfterSec}s.` };
+  }
+
+  const rlResetIp = rateLimit({
+    key: `reset-ip:${(await clientIp()) || "unknown"}`,
+    limit: 10,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!rlResetIp.ok) {
+    return { error: `Too many reset requests from this network. Try again in ${rlResetIp.retryAfterSec}s.` };
   }
 
   const captcha = await verifyTurnstileToken(
