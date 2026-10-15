@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { estimateNetworkAvailability } from "@/lib/delivery/engine";
 import { getActiveMonthlyTheme } from "@/lib/experience/monthly-theme";
 import { collectiblesForTheme } from "@/lib/experience/collectibles";
+import { getFoundingStatus } from "@/lib/founding";
 
 export default async function HomePage() {
   const [availability, spotlights, queerdomCount, brandCount, theme] = await Promise.all([
@@ -19,6 +20,7 @@ export default async function HomePage() {
   ]);
 
   const collectibles = collectiblesForTheme(theme.slug).slice(0, 3);
+  const founding = await getFoundingStatus();
 
   return (
     <div>
@@ -47,6 +49,15 @@ export default async function HomePage() {
         />
 
         <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-4 py-16 sm:px-6">
+          {founding.open && (
+            <Link
+              href="/founding"
+              className="gh-theme-chip animate-rise mb-5 w-fit"
+              style={{ background: "linear-gradient(120deg, var(--theme-accent), var(--theme-accent-2))", color: "#fff" }}
+            >
+              The Founding 500 is open, claim your free welcome package
+            </Link>
+          )}
           <p className="gh-theme-chip animate-rise w-fit">{theme.name}</p>
           <p className="animate-rise mt-5 font-[family-name:var(--font-syne)] text-5xl font-extrabold tracking-tight text-[var(--text)] sm:text-6xl md:text-7xl">
             Glitter Hits

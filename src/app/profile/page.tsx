@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/layout/AppShell";
 import { formatCredits } from "@/lib/utils";
 import { ProfileEditForm, ChangePasswordForm } from "@/components/profile/ProfileForms";
+import { getFoundingNumber } from "@/lib/founding";
 
 export const metadata: Metadata = { title: "Profile" };
 
@@ -13,10 +14,16 @@ export default async function ProfilePage() {
   if (!session?.user?.id) redirect("/login");
   const user = await prisma.user.findUniqueOrThrow({ where: { id: session.user.id } });
   const level = await prisma.levelDefinition.findUnique({ where: { slug: user.levelSlug } });
+  const foundingNumber = await getFoundingNumber(session.user.id);
 
   return (
     <AppShell title="Profile" subtitle="Your Glitter Hits identity.">
       <div className="mb-6 grid gap-3 gh-glass max-w-xl p-6 text-sm">
+        {foundingNumber !== null && (
+          <p className="gh-theme-chip w-fit" style={{ background: "linear-gradient(120deg, var(--theme-accent), var(--theme-accent-2))", color: "#fff" }}>
+            Founding Member #{foundingNumber}
+          </p>
+        )}
         <p><span className="text-[var(--text-muted)]">Email:</span> {user.email}</p>
         <p><span className="text-[var(--text-muted)]">Role:</span> {user.role}</p>
         <p><span className="text-[var(--text-muted)]">Level:</span> {level?.name || user.levelSlug}</p>

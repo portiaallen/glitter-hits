@@ -13,6 +13,7 @@ import {
   resetPasswordWithToken,
 } from "@/lib/auth/password-reset";
 import { rateLimit } from "@/lib/anti-abuse/rate-limit";
+import { getFoundingStatus, FOUNDING_BONUS_CREDITS } from "@/lib/founding";
 import { verifyTurnstileToken } from "@/lib/anti-abuse/turnstile";
 import { AuthError } from "next-auth";
 import { headers } from "next/headers";
@@ -108,6 +109,18 @@ export async function signupAction(formData: FormData) {
       amount: economy.signupBonusCredits,
       type: "earned_bonus",
       description: "Welcome bonus — Glitter Hits",
+    });
+  }
+
+  // Founding 500: the first FOUNDING_CAP real members get the founding
+  // welcome package (bonus Hits on top of the standard welcome bonus).
+  const founding = await getFoundingStatus();
+  if (founding.open) {
+    await moveCredits({
+      userId: user.id,
+      amount: FOUNDING_BONUS_CREDITS,
+      type: "earned_bonus",
+      description: "Founding Member welcome package, 500 bonus Hits",
     });
   }
 
