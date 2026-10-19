@@ -12,8 +12,9 @@ export default function TermsPage() {
         eyebrow="Legal"
       />
       <div className="mx-auto max-w-3xl space-y-8 px-4 py-10 text-sm leading-relaxed text-[var(--text-muted)] sm:px-6">
-        <p className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-amber-100">
-          Launch draft — have counsel review before treating as final. Last updated: August 12, 2026.
+        <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+          Last updated: October 19, 2026. Adds the cross-brand promotions and marketing
+          email sections below.
         </p>
 
         <section className="space-y-3">
@@ -123,7 +124,33 @@ export default function TermsPage() {
 
         <section className="space-y-3">
           <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
-            10. Contact
+            10. Cross-brand promotions &amp; marketing email
+          </h2>
+          <p>
+            Glitter Hits, Glitter Universe (including Glitter Gags), and PK Business
+            Services are separate ventures, each operated by Portia Allen. Marketing email
+            across these brands is strictly opt-in: joining Glitter Hits and accepting
+            these terms is <strong>not</strong> a marketing opt-in.
+          </p>
+          <p>
+            If you choose the optional marketing checkbox at signup (or later in
+            Settings), Glitter Hits, Glitter Universe, and PK Business Services may send
+            you occasional promotions, special offers, and updates. Any brand added later
+            would be covered only after this notice is updated. You can unsubscribe
+            anytime with the link in any marketing email, or from Settings.
+          </p>
+          <p>
+            Your marketing consent status, the UTC timestamp it was recorded, the exact
+            wording shown when you opted in, and its version are stored on your account.
+            Members who joined before this section existed are not backfilled: they
+            receive marketing email only after opting in. No SMS or text marketing is
+            sent.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
+            11. Contact
           </h2>
           <p>
             Questions about these terms:{" "}

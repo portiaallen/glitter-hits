@@ -95,6 +95,15 @@ export function SignupForm({ referralCode }: { referralCode?: string }) {
           .
         </span>
       </label>
+      <label className="flex items-start gap-2 text-sm text-[var(--text-muted)]">
+        <input name="marketingOptIn" type="checkbox" value="true" className="mt-1" />
+        <span>
+          I&apos;d like occasional promotions, special offers, and updates from Glitter Hits,
+          Glitter Universe, and PK Business Services, all operated by Portia Allen. Any
+          brand added later would be covered only after this notice is updated.
+          Unsubscribe anytime with the link in any email.
+        </span>
+      </label>
       <TurnstileWidget onToken={(t) => setTurnstileToken(t || "")} />
       <input type="hidden" name="cf-turnstile-response" value={turnstileToken} />
       {/* Honeypot — hidden from humans */}

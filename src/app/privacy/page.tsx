@@ -12,8 +12,9 @@ export default function PrivacyPage() {
         eyebrow="Legal"
       />
       <div className="mx-auto max-w-3xl space-y-8 px-4 py-10 text-sm leading-relaxed text-[var(--text-muted)] sm:px-6">
-        <p className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-amber-100">
-          Launch draft — have counsel review before treating as final. Last updated: August 12, 2026.
+        <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+          Last updated: October 19, 2026. Adds the cross-brand promotions and marketing
+          email sections below.
         </p>
 
         <section className="space-y-3">
@@ -96,7 +97,34 @@ export default function PrivacyPage() {
 
         <section className="space-y-3">
           <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
-            8. Contact
+            8. Marketing email &amp; cross-brand promotions
+          </h2>
+          <p>
+            Email is transactional only (password reset, support) unless you opt in.
+            Glitter Hits, Glitter Universe (including Glitter Gags), and PK Business
+            Services are separate ventures, each operated by Portia Allen. Accepting the
+            Terms is never a marketing opt-in.
+          </p>
+          <p>
+            Marketing email across these brands happens only if you choose the optional,
+            unchecked-by-default marketing checkbox at signup or opt in later in
+            Settings. The wording you saw when opting in, its version, your consent
+            status, and the UTC timestamp are recorded on your account. Any brand added
+            later would be covered only after this notice is updated.
+          </p>
+          <p>
+            Every marketing email carries a working unsubscribe link, honored across all
+            three brands' lists, and you can change your choice anytime in Settings.
+            Members who joined before this section existed are not backfilled: they
+            receive marketing email only after opting in. Marketing email is sent through
+            our email processor (Resend); no SMS or text marketing is sent, and we do not
+            sell personal data.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="font-[family-name:var(--font-syne)] text-lg font-semibold text-[var(--text)]">
+            9. Contact
           </h2>
           <p>
             Privacy questions:{" "}

@@ -15,6 +15,7 @@ import {
 import { rateLimit } from "@/lib/anti-abuse/rate-limit";
 import { getFoundingStatus, FOUNDING_BONUS_CREDITS } from "@/lib/founding";
 import { verifyTurnstileToken } from "@/lib/anti-abuse/turnstile";
+import { recordMarketingConsent } from "@/lib/marketing-consent";
 import { AuthError } from "next-auth";
 import { headers } from "next/headers";
 
@@ -123,6 +124,12 @@ export async function signupAction(formData: FormData) {
       description: "Founding Member welcome package, 500 bonus Hits",
     });
   }
+
+  // Cross-brand marketing email is strictly opt-in and never bundled with
+  // terms acceptance. Record whichever answer the member gave, with status,
+  // UTC timestamp, wording version, and source, so the trail is auditable.
+  const marketingOptIn = String(formData.get("marketingOptIn") || "") === "true";
+  await recordMarketingConsent(user.id, marketingOptIn, "signup");
 
   await attachReferralOnSignup({
     newUserId: user.id,

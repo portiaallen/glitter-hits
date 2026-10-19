@@ -4,12 +4,17 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { AppShell } from "@/components/layout/AppShell";
 import { ChangePasswordForm } from "@/components/profile/ProfileForms";
+import { MarketingEmailPrefs } from "@/components/profile/MarketingEmailPrefs";
+import { getMarketingConsent, MARKETING_CONSENT_COPY } from "@/lib/marketing-consent";
 
 export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
+
+  const consent = await getMarketingConsent(session.user.id);
+  const lastEntry = consent.entries[consent.entries.length - 1] ?? null;
 
   return (
     <AppShell
@@ -38,6 +43,11 @@ export default async function SettingsPage() {
           </p>
         </div>
         <ChangePasswordForm />
+        <MarketingEmailPrefs
+          optedIn={consent.current === "opted-in"}
+          lastAt={lastEntry?.at ?? null}
+          copy={MARKETING_CONSENT_COPY}
+        />
       </div>
     </AppShell>
   );
