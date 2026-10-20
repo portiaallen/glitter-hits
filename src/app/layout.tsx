@@ -21,6 +21,7 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://traffic.glitteruniverse.quest"),
   title: {
     default: "Glitter Traffic — Come Get Your Traffic",
     template: "%s | Glitter Traffic",
@@ -34,6 +35,15 @@ export const metadata: Metadata = {
     "Queerdom",
     "promotional credits",
   ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "https://traffic.glitteruniverse.quest",
+    siteName: "Glitter Traffic",
+    title: "Glitter Traffic — Come Get Your Traffic",
+    description:
+      "Trade visits. Discover websites. Have a little fun while you're at it. A playful traffic exchange for the Queerdom — honest labels, real discovery.",
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
