@@ -18,12 +18,12 @@ export async function Header() {
 
   return (
     <header className="relative z-20 border-b border-[var(--border-glass)] bg-[var(--bg-glass)]5 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-6 sm:py-3.5">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-2.5 py-3 sm:gap-4 sm:px-6 sm:py-3.5">
         <Link href="/" className="group flex min-w-0 items-center gap-2">
           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--prism)] text-sm font-bold text-[#1a1028] shadow-[var(--shadow-lift)]">
             GT
           </span>
-          <span className="truncate font-[family-name:var(--font-syne)] text-base font-bold tracking-tight sm:text-lg">
+          <span className="gh-wordmark truncate font-[family-name:var(--font-syne)] text-base font-bold tracking-tight sm:text-lg">
             Glitter <span className="gh-gradient-text">Traffic</span>
           </span>
         </Link>

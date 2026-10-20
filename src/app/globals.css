@@ -80,6 +80,7 @@ html[data-month-theme="weird-internet"] {
 
 html,
 body {
+  overflow-x: clip;
   min-height: 100%;
 }
 
@@ -432,6 +433,12 @@ a {
   header .gh-btn {
     padding: 0.45rem 0.6rem;
     font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 399.98px) {
+  .gh-wordmark {
+    font-size: 0.875rem;
   }
 }
 
