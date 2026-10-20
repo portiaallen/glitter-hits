@@ -24,7 +24,7 @@ export async function createPasswordResetToken(email: string): Promise<{
     ok: true as const,
     emailed: false,
     message:
-      "If that email exists in Glitter Hits, we sent password reset instructions.",
+      "If that email exists in Glitter Traffic, we sent password reset instructions.",
   };
 
   if (!user) return generic;
@@ -59,7 +59,7 @@ export async function createPasswordResetToken(email: string): Promise<{
     return {
       ...generic,
       emailed: true,
-      message: "If that email exists in Glitter Hits, we sent password reset instructions.",
+      message: "If that email exists in Glitter Traffic, we sent password reset instructions.",
     };
   }
 

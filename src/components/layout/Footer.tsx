@@ -54,7 +54,7 @@ export async function Footer() {
               <Link href="/collectibles">Collectibles</Link>
             </li>
             <li>
-              <Link href="/feedback">Tell Glitter Hits</Link>
+              <Link href="/feedback">Tell Glitter Traffic</Link>
             </li>
             <li>
               <Link href="/rewards">Rewards</Link>
@@ -75,7 +75,7 @@ export async function Footer() {
         </div>
       </div>
       <div className="border-t border-[var(--border-glass)] px-4 py-4 text-center text-xs text-[var(--text-muted)]">
-        © {new Date().getFullYear()} Glitter Hits · Volume 111 energy · Exchange traffic is
+        © {new Date().getFullYear()} Glitter Traffic · Volume 111 energy · Exchange traffic is
         always labeled honestly.
       </div>
     </footer>

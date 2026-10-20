@@ -107,7 +107,7 @@ export function MailComposeForm({
         Compose network mail
       </h2>
       <p className="text-sm text-[var(--text-muted)]">
-        Reach active Glitter Hits members with credit-priced mailings. Paid Solo upgrades pin
+        Reach active Glitter Traffic members with credit-priced mailings. Paid Solo upgrades pin
         you to the top of inboxes.
       </p>
 

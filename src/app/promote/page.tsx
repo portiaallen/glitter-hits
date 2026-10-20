@@ -42,7 +42,7 @@ export default async function PromotePage() {
   return (
     <AppShell
       title="Promote"
-      subtitle="Spend Glitter Hits on featured placements, banners, and discovery spotlights — honestly labeled inventory."
+      subtitle="Spend Glitter Traffic on featured placements, banners, and discovery spotlights — honestly labeled inventory."
     >
       <PromoteClient
         offers={offers}

@@ -4,7 +4,7 @@ import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Get in touch with the Glitter Hits team.",
+  description: "Get in touch with the Glitter Traffic team.",
 };
 
 export default function ContactPage() {
@@ -26,7 +26,7 @@ export default function ContactPage() {
             </a>
             . For product ideas, bugs, and theme suggestions, use{" "}
             <a href="/feedback" className="text-[var(--neon-cyan)] hover:underline">
-              Tell Glitter Hits
+              Tell Glitter Traffic
             </a>
             .
           </p>

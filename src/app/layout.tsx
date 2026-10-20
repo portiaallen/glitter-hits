@@ -22,15 +22,15 @@ const syne = Syne({
 
 export const metadata: Metadata = {
   title: {
-    default: "Glitter Hits — Come Get Your Traffic",
-    template: "%s | Glitter Hits",
+    default: "Glitter Traffic — Come Get Your Traffic",
+    template: "%s | Glitter Traffic",
   },
   description:
     "Trade visits. Discover websites. Have a little fun while you're at it. A playful traffic exchange for the Queerdom — honest labels, real discovery.",
   keywords: [
     "traffic exchange",
     "website discovery",
-    "Glitter Hits",
+    "Glitter Traffic",
     "Queerdom",
     "promotional credits",
   ],

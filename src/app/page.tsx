@@ -60,7 +60,7 @@ export default async function HomePage() {
           )}
           <p className="gh-theme-chip animate-rise w-fit">{theme.name}</p>
           <p className="animate-rise mt-5 font-[family-name:var(--font-syne)] text-5xl font-extrabold tracking-tight text-[var(--text)] sm:text-6xl md:text-7xl">
-            Glitter Hits
+            Glitter Traffic
           </p>
           <h1 className="animate-rise-delay mt-4 max-w-2xl font-[family-name:var(--font-syne)] text-2xl font-semibold text-[var(--text)] sm:text-4xl">
             Come get your traffic.
@@ -97,7 +97,7 @@ export default async function HomePage() {
             {
               step: "02",
               title: "Collect Hits",
-              body: "Every fair visit earns integer Glitter Hits — never fake popularity.",
+              body: "Every fair visit earns integer Glitter Traffic — never fake popularity.",
             },
             {
               step: "03",

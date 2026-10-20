@@ -10,8 +10,8 @@ import {
 process.env.AUTH_SECRET = "test-secret-for-unsubscribe-tokens-only";
 
 test("consent version and copy are pinned to the approved wording", () => {
-  assert.equal(MARKETING_CONSENT_VERSION, "2026-10-19-v1");
-  assert.match(MARKETING_CONSENT_COPY, /Glitter Hits, Glitter Universe, and PK Business Services/);
+  assert.equal(MARKETING_CONSENT_VERSION, "2026-10-20-v1");
+  assert.match(MARKETING_CONSENT_COPY, /Glitter Traffic, Glitter Universe, and PK Business Services/);
   assert.match(MARKETING_CONSENT_COPY, /all operated by Portia Allen/);
   // No vague future-brand consent: later brands are covered only after notice updates.
   assert.match(MARKETING_CONSENT_COPY, /Any brand added later/);

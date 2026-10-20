@@ -108,7 +108,7 @@ export function FeedbackForm({
         disabled={pending}
         className="gh-btn gh-btn-primary w-full min-h-11 disabled:opacity-60"
       >
-        {pending ? "Sending…" : "Send to Glitter Hits"}
+        {pending ? "Sending…" : "Send to Glitter Traffic"}
       </button>
     </form>
   );

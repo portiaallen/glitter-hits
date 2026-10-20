@@ -5,8 +5,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
-  title: "Tell Glitter Hits",
-  description: "Help us make Glitter Hits more fun, clearer, and weirder in the best way.",
+  title: "Tell Glitter Traffic",
+  description: "Help us make Glitter Traffic more fun, clearer, and weirder in the best way.",
 };
 
 export default async function FeedbackPage() {
@@ -22,9 +22,9 @@ export default async function FeedbackPage() {
   return (
     <div>
       <PageHero
-        title="Help us make Glitter Hits better."
+        title="Help us make Glitter Traffic better."
         description="What you love, what you hate, what is confusing, what games you want, and what bizarre monthly theme we should try next."
-        eyebrow="Tell Glitter Hits"
+        eyebrow="Tell Glitter Traffic"
       />
       <section className="mx-auto max-w-xl px-4 py-14 sm:px-6">
         <div className="gh-glass p-6 sm:p-8">

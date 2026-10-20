@@ -98,7 +98,7 @@ export function SignupForm({ referralCode }: { referralCode?: string }) {
       <label className="flex items-start gap-2 text-sm text-[var(--text-muted)]">
         <input name="marketingOptIn" type="checkbox" value="true" className="mt-1" />
         <span>
-          I&apos;d like occasional promotions, special offers, and updates from Glitter Hits,
+          I&apos;d like occasional promotions, special offers, and updates from Glitter Traffic,
           Glitter Universe, and PK Business Services, all operated by Portia Allen. Any
           brand added later would be covered only after this notice is updated.
           Unsubscribe anytime with the link in any email.
@@ -121,7 +121,7 @@ export function SignupForm({ referralCode }: { referralCode?: string }) {
         disabled={pending}
         className="gh-btn gh-btn-primary w-full disabled:opacity-60"
       >
-        {pending ? "Creating account…" : "Join Glitter Hits"}
+        {pending ? "Creating account…" : "Join Glitter Traffic"}
       </button>
       <p className="text-center text-sm text-[var(--text-muted)]">
         Already have an account?{" "}

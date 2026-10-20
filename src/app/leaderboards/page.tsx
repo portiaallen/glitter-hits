@@ -12,7 +12,7 @@ export default async function LeaderboardsPage() {
     <div>
       <PageHero
         title="Network leaderboards"
-        description="Top discoverers, promoters, streaks, referrals, and trending sites — based on real Glitter Hits activity."
+        description="Top discoverers, promoters, streaks, referrals, and trending sites — based on real Glitter Traffic activity."
         eyebrow="Leaderboards"
       />
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:px-6 lg:grid-cols-2">

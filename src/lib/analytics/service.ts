@@ -69,7 +69,7 @@ export async function getCampaignAnalytics(campaignId: string, userId: string) {
     countryBreakdown,
     qualityBreakdown,
     transparencyNote:
-      "All visits are labeled as Glitter Hits exchange traffic. We never spoof organic, social, or search referrers.",
+      "All visits are labeled as Glitter Traffic exchange traffic. We never spoof organic, social, or search referrers.",
   };
 }
 

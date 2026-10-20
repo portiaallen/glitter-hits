@@ -90,7 +90,7 @@ export default function PrivacyPage() {
             7. Children
           </h2>
           <p>
-            Glitter Hits is not directed at children under 16 (or the age of digital consent in
+            Glitter Traffic is not directed at children under 16 (or the age of digital consent in
             your region). Do not create an account if you are under that age.
           </p>
         </section>
@@ -101,7 +101,7 @@ export default function PrivacyPage() {
           </h2>
           <p>
             Email is transactional only (password reset, support) unless you opt in.
-            Glitter Hits, Glitter Universe (including Glitter Gags), and PK Business
+            Glitter Traffic, Glitter Universe (including Glitter Gags), and PK Business
             Services are separate ventures, each operated by Portia Allen. Accepting the
             Terms is never a marketing opt-in.
           </p>

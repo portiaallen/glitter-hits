@@ -17,7 +17,7 @@ export default async function ProfilePage() {
   const foundingNumber = await getFoundingNumber(session.user.id);
 
   return (
-    <AppShell title="Profile" subtitle="Your Glitter Hits identity.">
+    <AppShell title="Profile" subtitle="Your Glitter Traffic identity.">
       <div className="mb-6 grid gap-3 gh-glass max-w-xl p-6 text-sm">
         {foundingNumber !== null && (
           <p className="gh-theme-chip w-fit" style={{ background: "linear-gradient(120deg, var(--theme-accent), var(--theme-accent-2))", color: "#fff" }}>

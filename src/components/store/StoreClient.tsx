@@ -160,7 +160,7 @@ export function StoreClient({
           Membership
         </h2>
         <p className="mb-4 text-sm text-[var(--text-muted)]">
-          Prefer to buy? Unlock higher mail tiers and website slots with Glitter Hits
+          Prefer to buy? Unlock higher mail tiers and website slots with Glitter Traffic
           {membershipCheckoutEnabled ? ", or cash when checkout is live" : ""}. Free members can
           also earn Plus (Pro) by Surfing.
         </p>
@@ -253,7 +253,7 @@ export function StoreClient({
           Network mail pricing
         </h2>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Solo mailings spend Glitter Hits. Paid Solo upgrades add featured inbox placement.
+          Solo mailings spend Glitter Traffic. Paid Solo upgrades add featured inbox placement.
         </p>
         <ul className="mt-4 grid gap-2 sm:grid-cols-2 text-sm">
           <li>Standard · {mailEconomy.standardCost} hits</li>

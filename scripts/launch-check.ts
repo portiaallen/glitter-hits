@@ -129,7 +129,7 @@ const blocked = checks.filter((c) => !c.ok);
 const domainBlocked = blocked.filter((c) => c.needsDomain);
 const canDoNow = blocked.filter((c) => !c.needsDomain);
 
-console.log("Glitter Hits — launch check\n");
+console.log("Glitter Traffic — launch check\n");
 for (const c of checks) {
   console.log(`${c.ok ? "✓" : "✗"} ${c.name}${c.needsDomain ? " (domain)" : ""}`);
   if (!c.ok) console.log(`    → ${c.note}`);

@@ -4,7 +4,7 @@ import { PageHero } from "@/components/layout/PageHero";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "The Glitter Hits story — transparent traffic exchange for the Queerdom.",
+  description: "The Glitter Traffic story — transparent traffic exchange for the Queerdom.",
 };
 
 export default function AboutPage() {
@@ -12,14 +12,14 @@ export default function AboutPage() {
     <div>
       <PageHero
         title="A traffic exchange that refuses to lie."
-        description="Glitter Hits is a promotional discovery network: you earn credits by visiting real sites, then spend them to promote yours. Exchange traffic is always labeled honestly."
+        description="Glitter Traffic is a promotional discovery network: you earn credits by visiting real sites, then spend them to promote yours. Exchange traffic is always labeled honestly."
         eyebrow="Brand story"
       />
 
       <section className="mx-auto max-w-7xl space-y-10 px-4 py-14 sm:px-6">
         <div className="max-w-3xl space-y-4 text-[var(--text-muted)] leading-relaxed">
           <p>
-            Built for the Queerdom and anyone tired of fake popularity, Glitter Hits treats
+            Built for the Queerdom and anyone tired of fake popularity, Glitter Traffic treats
             attention as a fair exchange — not a dark pattern. Manual surf sessions, integer
             credits, and clear labeling keep the loop glamorous and grounded.
           </p>
@@ -42,7 +42,7 @@ export default function AboutPage() {
               },
               {
                 title: "Integer credits",
-                body: "Glitter Hits stay whole numbers — clear ledgers, no floating dust.",
+                body: "Glitter Traffic stay whole numbers — clear ledgers, no floating dust.",
               },
               {
                 title: "Estimates ≠ guarantees",

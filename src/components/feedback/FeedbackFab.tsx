@@ -10,7 +10,7 @@ export function FeedbackFab() {
   }
 
   return (
-    <Link href="/feedback" className="gh-feedback-fab" aria-label="Got an idea? Tell Glitter Hits">
+    <Link href="/feedback" className="gh-feedback-fab" aria-label="Got an idea? Tell Glitter Traffic">
       Got an idea?
     </Link>
   );

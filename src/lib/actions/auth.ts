@@ -109,7 +109,7 @@ export async function signupAction(formData: FormData) {
       userId: user.id,
       amount: economy.signupBonusCredits,
       type: "earned_bonus",
-      description: "Welcome bonus — Glitter Hits",
+      description: "Welcome bonus — Glitter Traffic",
     });
   }
 

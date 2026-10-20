@@ -24,7 +24,7 @@ export const MONTHLY_THEMES: MonthlyTheme[] = [
   {
     slug: "rainbow",
     name: "Rainbow Month",
-    tagline: "What bizarre thing is Glitter Hits doing this month?",
+    tagline: "What bizarre thing is Glitter Traffic doing this month?",
     discoveryLine: "Today's Hits arrive in full spectrum.",
     heroHint: "Come play. Come explore. Come get your traffic.",
     collectibleName: "Prism Sparkles",

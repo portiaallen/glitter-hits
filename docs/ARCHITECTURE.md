@@ -1,8 +1,8 @@
-# Glitter Hits — Technical Architecture
+# Glitter Traffic — Technical Architecture
 
 ## Vision
 
-Glitter Hits is a transparent, credit-based traffic exchange and website discovery network for the Queerdom ecosystem. Members earn promotional credits by discovering other websites and spend those credits to promote their own.
+Glitter Traffic is a transparent, credit-based traffic exchange and website discovery network for the Queerdom ecosystem. Members earn promotional credits by discovering other websites and spend those credits to promote their own.
 
 **Tagline:** Get Seen. Get Hits. Get Glitter.
 
@@ -42,7 +42,7 @@ src/lib/
 
 ## Credit economy
 
-Glitter Hits are **integer promotional credits** (not Glitter Coins, not crypto).
+Glitter Traffic are **integer promotional credits** (not Glitter Coins, not crypto).
 
 Additional spend types:
 - `spent_mail` — network mailing
@@ -50,7 +50,7 @@ Additional spend types:
 
 Membership upgrades can also be purchased with credits via `/store` when cash checkout is off.
 
-- Unit: **Glitter Hits** (integer promotional credits)
+- Unit: **Glitter Traffic** (integer promotional credits)
 - Separate from Glitter Coins (casino currency) — never mixed
 - Every movement writes an immutable `CreditLedger` row
 - Types: earned, spent, bonus, promotional, referral, admin_adjustment

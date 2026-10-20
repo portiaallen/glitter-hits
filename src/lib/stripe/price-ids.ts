@@ -1,4 +1,4 @@
-/** Stripe Price IDs for Glitter Hits on acct_1Rqj95AZwvXaTN33 (Portia Allen). */
+/** Stripe Price IDs for Glitter Traffic on acct_1Rqj95AZwvXaTN33 (Portia Allen). */
 export const STRIPE_TEST_PRICE_IDS = {
   "starter-100": "price_1U4YVgAZwvXaTN33hUROHPTc",
   "boost-500": "price_1U4YVgAZwvXaTN33ZfhuIg0w",

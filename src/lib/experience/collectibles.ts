@@ -1,5 +1,5 @@
 /**
- * Collectibles scaffolding — unique to Glitter Hits.
+ * Collectibles scaffolding — unique to Glitter Traffic.
  * UI/architecture only for now; rewards can plug into the credit ledger later.
  */
 
@@ -33,7 +33,7 @@ export const COLLECTIBLE_CATALOG: CollectibleDefinition[] = [
     slug: "glitter-piece-rose",
     name: "Rose Glitter Piece",
     kind: "glitter_piece",
-    description: "A playful shard of the Glitter Hits spectrum.",
+    description: "A playful shard of the Glitter Traffic spectrum.",
     futureRewardHint: "Collect pieces toward profile decorations.",
   },
   {

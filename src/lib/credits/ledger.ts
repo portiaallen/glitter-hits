@@ -35,7 +35,7 @@ export async function moveCredits(input: CreditMoveInput) {
 
     const nextBalance = user.creditBalance + amount;
     if (nextBalance < 0) {
-      throw new Error("Insufficient Glitter Hits balance.");
+      throw new Error("Insufficient Glitter Traffic balance.");
     }
 
     const amountAbs = Math.abs(amount);
@@ -98,7 +98,7 @@ export async function allocateCreditsToCampaign(params: {
       userId: params.userId,
       amount: -amount,
       type: "spent_campaign",
-      description: `Allocated ${amount} Glitter Hits to campaign`,
+      description: `Allocated ${amount} Glitter Traffic to campaign`,
       campaignId: params.campaignId,
     });
 

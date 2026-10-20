@@ -47,7 +47,7 @@ export function MonthlyThemeAdminForm({
           Theme of the Month
         </h2>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
-          Pick what bizarre thing Glitter Hits is doing this month. This updates homepage copy,
+          Pick what bizarre thing Glitter Traffic is doing this month. This updates homepage copy,
           Explore the Hits language, collectible hints, and accent washes — without rebuilding the
           app.
         </p>

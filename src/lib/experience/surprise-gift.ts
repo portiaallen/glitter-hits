@@ -69,7 +69,7 @@ export async function giftRandomActiveMember(
 
   const winner = pool[Math.floor(Math.random() * pool.length)]!;
   const display = publicName(winner.name, winner.email);
-  const reason = input.reason?.trim() || "Glitter Hits surprise gift";
+  const reason = input.reason?.trim() || "Glitter Traffic surprise gift";
   const announceDays = Math.min(30, Math.max(1, input.announceDays ?? 7));
 
   await moveCredits({
@@ -89,12 +89,12 @@ export async function giftRandomActiveMember(
   }
 
   const giftBits = [
-    `${hits} Glitter Hits`,
+    `${hits} Glitter Traffic`,
     spins > 0 ? `${spins} wheel spin${spins === 1 ? "" : "s"}` : null,
   ].filter(Boolean);
 
   const title = `Surprise gift for ${display}!`;
-  const body = `${display} just received ${giftBits.join(" + ")} from Glitter Hits. Come explore — you could be next.`;
+  const body = `${display} just received ${giftBits.join(" + ")} from Glitter Traffic. Come explore — you could be next.`;
 
   // Keep the gift banner prominent: deactivate older surprise-gift announcements
   await prisma.announcement.updateMany({
@@ -119,7 +119,7 @@ export async function giftRandomActiveMember(
     userId: winner.id,
     type: "surprise_gift",
     title: "You got a surprise gift!",
-    body: `Glitter Hits gifted you ${giftBits.join(" + ")}. ${reason}`,
+    body: `Glitter Traffic gifted you ${giftBits.join(" + ")}. ${reason}`,
     href: "/credits",
   });
 

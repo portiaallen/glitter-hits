@@ -59,7 +59,7 @@ function packLineItem(pack: {
       unit_amount: pack.priceCents,
       product_data: {
         name: pack.name,
-        description: pack.description ?? `${pack.credits} Glitter Hits`,
+        description: pack.description ?? `${pack.credits} Glitter Traffic`,
       },
     },
   };

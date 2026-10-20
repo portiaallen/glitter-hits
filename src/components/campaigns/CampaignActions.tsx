@@ -39,7 +39,7 @@ export function CampaignActions({
         disabled={busy}
         className="gh-btn gh-btn-ghost px-3 py-1.5 text-xs"
         onClick={() => {
-          const amount = Number(prompt("Allocate how many Glitter Hits?", "10"));
+          const amount = Number(prompt("Allocate how many Glitter Traffic?", "10"));
           if (Number.isInteger(amount) && amount > 0) run("allocate", amount);
         }}
       >

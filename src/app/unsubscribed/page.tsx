@@ -18,7 +18,7 @@ export default async function UnsubscribedPage({
       <p className="mt-3 text-sm text-[var(--text-muted)]">
         {invalid
           ? "The unsubscribe link looks broken or expired. You can turn marketing email off anytime in Settings, or reply to any email and we'll handle it."
-          : "You're off every marketing list across Glitter Hits, Glitter Universe, and PK Business Services. Transactional email (password resets, support) still works. Changed your mind? Turn marketing back on anytime in Settings."}
+          : "You're off every marketing list across Glitter Traffic, Glitter Universe, and PK Business Services. Transactional email (password resets, support) still works. Changed your mind? Turn marketing back on anytime in Settings."}
       </p>
       <Link href="/settings" className="gh-btn gh-btn-primary mt-6 inline-block">
         Open Settings

@@ -30,7 +30,7 @@ async function fulfillCreditPack(session: Stripe.Checkout.Session) {
         userId: purchase.userId,
         amount: credits,
         type: "purchase",
-        description: `Purchased ${credits} Glitter Hits (${purchase.creditPackSlug ?? "pack"})`,
+        description: `Purchased ${credits} Glitter Traffic (${purchase.creditPackSlug ?? "pack"})`,
         metadata: {
           stripeSessionId: session.id,
           packSlug: purchase.creditPackSlug,

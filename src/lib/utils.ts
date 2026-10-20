@@ -10,7 +10,7 @@ export function formatCredits(amount: number): string {
 
 export function assertIntegerCredits(amount: number): number {
   if (!Number.isInteger(amount)) {
-    throw new Error("Glitter Hits credits must be integers — no floating-point balances.");
+    throw new Error("Glitter Traffic credits must be integers — no floating-point balances.");
   }
   return amount;
 }

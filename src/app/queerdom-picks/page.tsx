@@ -6,7 +6,7 @@ import { WebsiteCard } from "@/components/sites/WebsiteCard";
 
 export const metadata: Metadata = {
   title: "Queerdom Picks",
-  description: "Curated Queerdom Pick websites on Glitter Hits.",
+  description: "Curated Queerdom Pick websites on Glitter Traffic.",
 };
 
 export default async function QueerdomPicksPage() {

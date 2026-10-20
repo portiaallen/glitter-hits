@@ -299,7 +299,7 @@ export const MEMBERSHIP_PLANS: MembershipPlan[] = [
     mailTierUnlocked: ["standard"],
     enabled: true,
     perks: [
-      "Earn & spend Glitter Hits",
+      "Earn & spend Glitter Traffic",
       "Manual Surf",
       "3 website slots",
       "Standard network mail",

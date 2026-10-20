@@ -19,7 +19,7 @@ export default async function ReferralsPage() {
   return (
     <div>
       <PageHero
-        title="Invite friends. Earn Glitter Hits."
+        title="Invite friends. Earn Glitter Traffic."
         description="Configurable referral bonuses for signups and qualified activity — with anti-farming protections."
         eyebrow="Referrals"
       />

@@ -16,7 +16,7 @@ export default async function AdminContactPage() {
           Contact &amp; feedback inbox
         </h2>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Contact + Tell Glitter Hits submissions. Emails also go to SUPPORT_EMAIL when Resend is
+          Contact + Tell Glitter Traffic submissions. Emails also go to SUPPORT_EMAIL when Resend is
           configured.
         </p>
       </header>

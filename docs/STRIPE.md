@@ -1,4 +1,4 @@
-# Stripe setup (Glitter Hits) — acct_1Rqj95AZwvXaTN33 (Portia Allen)
+# Stripe setup (Glitter Traffic) — acct_1Rqj95AZwvXaTN33 (Portia Allen)
 
 ## Wired in Stripe Dashboard
 

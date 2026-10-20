@@ -15,7 +15,7 @@ export default async function PersonasPage() {
   return (
     <AppShell
       title="Member Personas"
-      subtitle="Optional identity cosmetics for your Glitter Hits vibe — unlock with Luck."
+      subtitle="Optional identity cosmetics for your Glitter Traffic vibe — unlock with Luck."
     >
       <PersonaPicker personas={personas} />
     </AppShell>

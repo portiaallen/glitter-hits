@@ -17,7 +17,7 @@ export default async function CollectiblesPage() {
     <div>
       <PageHero
         title="Collectibles are coming."
-        description="Unique to Glitter Hits — sparkles, glitter pieces, prismatic tokens, and monthly treasures. The gallery is live; the full reward economy arrives carefully."
+        description="Unique to Glitter Traffic — sparkles, glitter pieces, prismatic tokens, and monthly treasures. The gallery is live; the full reward economy arrives carefully."
         eyebrow={theme.collectibleName}
       />
       <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">

@@ -108,7 +108,7 @@ export async function POST(req: Request) {
         return NextResponse.json(
           {
             error:
-              "Cash checkout is not enabled yet. Earn Glitter Hits by surfing, or upgrade membership with credits.",
+              "Cash checkout is not enabled yet. Earn Glitter Traffic by surfing, or upgrade membership with credits.",
           },
           { status: 400 },
         );

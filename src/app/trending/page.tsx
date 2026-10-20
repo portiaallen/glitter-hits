@@ -5,7 +5,7 @@ import { WebsiteCard } from "@/components/sites/WebsiteCard";
 
 export const metadata: Metadata = {
   title: "Trending",
-  description: "Approved Glitter Hits sites ranked by discover count.",
+  description: "Approved Glitter Traffic sites ranked by discover count.",
 };
 
 export default async function TrendingPage() {

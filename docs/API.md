@@ -1,4 +1,4 @@
-# Glitter Hits API (internal)
+# Glitter Traffic API (internal)
 
 Base URL: `/api`
 

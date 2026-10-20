@@ -18,7 +18,7 @@ export default async function CreditsPage() {
 
   return (
     <AppShell
-      title="Glitter Hits"
+      title="Glitter Traffic"
       subtitle="Promotional credits — not crypto, not Glitter Coins. Every movement is ledgered."
     >
       <div className="mb-6 grid gap-4 sm:grid-cols-3">

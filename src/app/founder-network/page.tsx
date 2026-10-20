@@ -4,7 +4,7 @@ import { PageHero } from "@/components/layout/PageHero";
 
 export const metadata: Metadata = {
   title: "Founder Network",
-  description: "Founder Network brands on Glitter Hits — ventures growing with the Queerdom.",
+  description: "Founder Network brands on Glitter Traffic — ventures growing with the Queerdom.",
 };
 
 export default async function FounderNetworkPage() {

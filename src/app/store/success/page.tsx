@@ -26,7 +26,7 @@ export default async function StoreSuccessPage({
     message = result.ok
       ? params.kind === "membership"
         ? "Membership unlocked. Welcome to the next tier."
-        : "Glitter Hits credited to your balance."
+        : "Glitter Traffic credited to your balance."
       : result.error || message;
   }
 

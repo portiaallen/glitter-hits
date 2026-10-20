@@ -8,7 +8,7 @@ APP_URL="https://${DOMAIN}"
 WEBHOOK_PATH="/api/webhooks/stripe"
 WEBHOOK_URL="${APP_URL}${WEBHOOK_PATH}"
 
-echo "==> Glitter Hits production setup for ${DOMAIN}"
+echo "==> Glitter Traffic production setup for ${DOMAIN}"
 
 if ! command -v vercel >/dev/null 2>&1 && [[ -z "${VERCEL_TOKEN:-}" ]]; then
   if [[ -f node_modules/.bin/vercel ]]; then

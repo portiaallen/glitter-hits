@@ -48,7 +48,7 @@ export async function getOnboardingState(userId: string): Promise<OnboardingStat
     },
     {
       key: "allocate_hits",
-      label: "Allocate Glitter Hits to a campaign",
+      label: "Allocate Glitter Traffic to a campaign",
       href: "/campaigns",
       complete: funded > 0,
     },

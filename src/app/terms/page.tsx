@@ -8,7 +8,7 @@ export default function TermsPage() {
     <div>
       <PageHero
         title="Terms of use"
-        description="Glitter Hits is a promotional discovery network. We do not guarantee sales, customers, conversions, or search rankings."
+        description="Glitter Traffic is a promotional discovery network. We do not guarantee sales, customers, conversions, or search rankings."
         eyebrow="Legal"
       />
       <div className="mx-auto max-w-3xl space-y-8 px-4 py-10 text-sm leading-relaxed text-[var(--text-muted)] sm:px-6">
@@ -22,9 +22,9 @@ export default function TermsPage() {
             1. The service
           </h2>
           <p>
-            Glitter Hits (“we”, “us”) operates a credit-based traffic exchange and discovery
+            Glitter Traffic (“we”, “us”) operates a credit-based traffic exchange and discovery
             platform. Members surf approved websites to earn integer promotional credits called
-            Glitter Hits, and spend those credits to promote their own approved websites. Luck
+            Glitter Traffic, and spend those credits to promote their own approved websites. Luck
             Engine features (quests, wheel, drops, challenges, royalty) are optional gamification
             layered on the exchange.
           </p>
@@ -46,7 +46,7 @@ export default function TermsPage() {
             3. Credits are not money or crypto
           </h2>
           <p>
-            Glitter Hits credits are promotional units for use inside the platform. They are not
+            Glitter Traffic credits are promotional units for use inside the platform. They are not
             cryptocurrency, not Glitter Coins, and have no cash value unless a future paid
             redemption feature is explicitly enabled by administrators. Credits may be adjusted for
             abuse, errors, or economy changes.
@@ -58,7 +58,7 @@ export default function TermsPage() {
             4. Honest traffic labeling
           </h2>
           <p>
-            Exchange visits are labeled as Glitter Hits exchange traffic. You may not disguise,
+            Exchange visits are labeled as Glitter Traffic exchange traffic. You may not disguise,
             spoof, or instruct others to present exchange traffic as organic search, social,
             direct, or paid ads traffic. Automated viewing tools, if ever offered, must use the
             same honest labeling.
@@ -127,14 +127,14 @@ export default function TermsPage() {
             10. Cross-brand promotions &amp; marketing email
           </h2>
           <p>
-            Glitter Hits, Glitter Universe (including Glitter Gags), and PK Business
+            Glitter Traffic, Glitter Universe (including Glitter Gags), and PK Business
             Services are separate ventures, each operated by Portia Allen. Marketing email
-            across these brands is strictly opt-in: joining Glitter Hits and accepting
+            across these brands is strictly opt-in: joining Glitter Traffic and accepting
             these terms is <strong>not</strong> a marketing opt-in.
           </p>
           <p>
             If you choose the optional marketing checkbox at signup (or later in
-            Settings), Glitter Hits, Glitter Universe, and PK Business Services may send
+            Settings), Glitter Traffic, Glitter Universe, and PK Business Services may send
             you occasional promotions, special offers, and updates. Any brand added later
             would be covered only after this notice is updated. You can unsubscribe
             anytime with the link in any marketing email, or from Settings.

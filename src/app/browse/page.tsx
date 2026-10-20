@@ -7,7 +7,7 @@ import { SponsoredRail } from "@/components/layout/SponsoredRail";
 
 export const metadata: Metadata = {
   title: "Browse",
-  description: "Discover websites across the Glitter Hits network.",
+  description: "Discover websites across the Glitter Traffic network.",
 };
 
 export default async function BrowsePage({

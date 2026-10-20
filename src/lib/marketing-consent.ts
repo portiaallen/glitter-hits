@@ -3,13 +3,14 @@ import { prisma } from "@/lib/db";
 
 // Cross-brand marketing email consent (opt-in only).
 // Wording approved by the operator (Oct 15, 2026) with the counsel go recorded
-// Oct 19, 2026. Every change to this copy bumps MARKETING_CONSENT_VERSION so
+// Oct 19, 2026; Oct 20, 2026 version updates the brand name in the consent copy
+// (Glitter Traffic rename). Every change to this copy bumps MARKETING_CONSENT_VERSION so
 // the recorded consent always names the exact wording shown when it was given.
 
-export const MARKETING_CONSENT_VERSION = "2026-10-19-v1";
+export const MARKETING_CONSENT_VERSION = "2026-10-20-v1";
 
 export const MARKETING_CONSENT_COPY =
-  "I'd like occasional promotions, special offers, and updates from Glitter Hits, " +
+  "I'd like occasional promotions, special offers, and updates from Glitter Traffic, " +
   "Glitter Universe, and PK Business Services, all operated by Portia Allen. Any brand " +
   "added later would be covered only after this notice is updated. Unsubscribe anytime " +
   "with the link in any email.";

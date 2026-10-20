@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 /**
- * The Founding 500 — the first 500 real members of Glitter Hits.
+ * The Founding 500 — the first 500 real members of Glitter Traffic.
  * Founding status is derived from join order, so it needs no schema change:
  * an account is "founding" when it is among the first FOUNDING_CAP accounts
  * by createdAt, excluding the founder account and seed accounts.

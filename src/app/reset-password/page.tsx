@@ -16,7 +16,7 @@ export default async function ResetPasswordPage({
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-16 sm:px-6">
       <div className="mb-8 text-center">
         <p className="font-[family-name:var(--font-syne)] text-3xl font-extrabold">
-          <span className="gh-gradient-text">Glitter Hits</span>
+          <span className="gh-gradient-text">Glitter Traffic</span>
         </p>
         <h1 className="mt-3 text-xl font-semibold">Choose a new password</h1>
       </div>

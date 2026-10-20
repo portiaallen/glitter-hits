@@ -27,7 +27,7 @@ export default async function CampaignsPage() {
   const charge = Math.max(1, economy.creditsChargedPerVisit);
 
   return (
-    <AppShell title="Campaigns" subtitle="Allocate Glitter Hits, target audiences, and control delivery.">
+    <AppShell title="Campaigns" subtitle="Allocate Glitter Traffic, target audiences, and control delivery.">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Link href="/campaigns/new" className="gh-btn gh-btn-primary">
           Create Campaign

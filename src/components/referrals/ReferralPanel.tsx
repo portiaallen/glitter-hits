@@ -33,7 +33,7 @@ export function ReferralPanel({
       <div>
         <p className="gh-badge mb-3">Invite friends</p>
         <h2 className="font-[family-name:var(--font-syne)] text-2xl font-bold">
-          Share your Glitter Hits code
+          Share your Glitter Traffic code
         </h2>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
           Earn {formatCredits(signupBonus)} Hits when someone joins with your code,

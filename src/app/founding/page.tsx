@@ -7,14 +7,14 @@ import { getFoundingStatus } from "@/lib/founding";
 export const metadata: Metadata = {
   title: "The Founding 500",
   description:
-    "The first 500 Glitter Hits members claim the Founding Free Member package: 500 bonus Hits, a permanent founding badge, and early access to everything new.",
+    "The first 500 Glitter Traffic members claim the Founding Free Member package: 500 bonus Hits, a permanent founding badge, and early access to everything new.",
 };
 
 const perks = [
   {
     step: "01",
     title: "500 bonus Hits, day one",
-    body: "Join while founding spots are open and 500 bonus Glitter Hits land in your balance the moment you sign up, on top of the standard welcome bonus.",
+    body: "Join while founding spots are open and 500 bonus Glitter Traffic land in your balance the moment you sign up, on top of the standard welcome bonus.",
   },
   {
     step: "02",
@@ -41,7 +41,7 @@ export default async function FoundingPage() {
       <PageHero
         eyebrow="Limited founding window"
         title="The first 500 members get the Founding Free Member package. After that, it never exists again."
-        description="Glitter Hits is free for everyone. The Founding 500 is the layer on top: the people who believed early get the best version of the deal, permanently."
+        description="Glitter Traffic is free for everyone. The Founding 500 is the layer on top: the people who believed early get the best version of the deal, permanently."
       />
 
       <section className="relative overflow-hidden py-12">

@@ -1,4 +1,4 @@
-# Glitter Hits
+# Glitter Traffic
 
 **Surf. Spark. Share. Get Lucky.**
 
@@ -10,7 +10,7 @@ A modern, transparent traffic-exchange and website discovery platform for the Qu
 - Prisma 6 + SQLite locally / Postgres in production
 - Auth.js (NextAuth v5) credentials
 - Tailwind CSS 4
-- Integer Glitter Hits credit ledger (never floats; never Glitter Coins)
+- Integer Glitter Traffic credit ledger (never floats; never Glitter Coins)
 - Resend transactional email + Cloudflare Turnstile for launch hardening
 
 ## Quick start

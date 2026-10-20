@@ -20,7 +20,7 @@ export default async function AnalyticsPage() {
   return (
     <AppShell
       title="Analytics"
-      subtitle="Honest exchange metrics — visits labeled as Glitter Hits traffic."
+      subtitle="Honest exchange metrics — visits labeled as Glitter Traffic traffic."
     >
       <div className="space-y-3">
         {campaigns.map((c) => (

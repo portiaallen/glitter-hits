@@ -4,7 +4,7 @@ import { PageHero } from "@/components/layout/PageHero";
 
 export const metadata: Metadata = {
   title: "How it works",
-  description: "Earn Glitter Hits by discovering sites, then spend them to promote yours.",
+  description: "Earn Glitter Traffic by discovering sites, then spend them to promote yours.",
 };
 
 const steps = [
@@ -16,7 +16,7 @@ const steps = [
   {
     step: "02",
     title: "Earn",
-    body: "Credits land in your ledger immediately. Streaks, levels, and achievements can add bonus Glitter Hits over time.",
+    body: "Credits land in your ledger immediately. Streaks, levels, and achievements can add bonus Glitter Traffic over time.",
   },
   {
     step: "03",
@@ -35,7 +35,7 @@ export default function HowItWorksPage() {
     <div>
       <PageHero
         title="The earn / spend loop."
-        description="Surf to earn Glitter Hits. Spend them on campaigns. One fair loop — glamorous, manual, and transparent."
+        description="Surf to earn Glitter Traffic. Spend them on campaigns. One fair loop — glamorous, manual, and transparent."
         eyebrow="How it works"
       />
 

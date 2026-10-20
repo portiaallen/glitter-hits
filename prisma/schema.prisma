@@ -1,6 +1,6 @@
-// Glitter Hits — Prisma schema
+// Glitter Traffic — Prisma schema
 // PostgreSQL in production (Neon). Local agents may temporarily use sqlite for UI verification.
-// Credits are ALWAYS integer Glitter Hits units — never floats / never Glitter Coins.
+// Credits are ALWAYS integer Glitter Traffic units — never floats / never Glitter Coins.
 
 generator client {
   provider = "prisma-client-js"
@@ -42,7 +42,7 @@ model User {
   membershipSource String?
   bio              String?
   countryCode      String?
-  // Integer Glitter Hits balance (promotional credits, NOT crypto / NOT Glitter Coins)
+  // Integer Glitter Traffic balance (promotional credits, NOT crypto / NOT Glitter Coins)
   creditBalance    Int            @default(0)
   lifetimeEarned   Int            @default(0)
   lifetimeSpent    Int            @default(0)

@@ -13,7 +13,7 @@ export async function sendTransactionalEmail(params: {
   const from =
     process.env.EMAIL_FROM ||
     process.env.SMTP_FROM ||
-    "Glitter Hits <noreply@glitterhits.online>";
+    "Glitter Traffic <noreply@glitterhits.online>";
 
   if (process.env.RESEND_API_KEY) {
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -45,24 +45,24 @@ export function passwordResetEmail(params: { name?: string | null; resetUrl: str
   const who = params.name?.trim() || "there";
   const text = `Hi ${who},
 
-We received a request to reset your Glitter Hits password.
+We received a request to reset your Glitter Traffic password.
 
 Open this link within 1 hour:
 ${params.resetUrl}
 
 If you did not request this, you can ignore this email.
 
-— Glitter Hits
+— Glitter Traffic
 Surf. Spark. Share. Get Lucky.`;
 
   const html = `
   <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#1a1028;max-width:560px">
     <p>Hi ${who},</p>
-    <p>We received a request to reset your <strong>Glitter Hits</strong> password.</p>
+    <p>We received a request to reset your <strong>Glitter Traffic</strong> password.</p>
     <p><a href="${params.resetUrl}" style="display:inline-block;background:#ff4fd8;color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:600">Reset password</a></p>
     <p style="color:#6b5b7a;font-size:14px">This link expires in 1 hour. If you did not request it, ignore this email.</p>
     <p style="color:#6b5b7a;font-size:13px">Surf. Spark. Share. Get Lucky.</p>
   </div>`;
 
-  return { subject: "Reset your Glitter Hits password", text, html };
+  return { subject: "Reset your Glitter Traffic password", text, html };
 }

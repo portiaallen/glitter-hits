@@ -4,12 +4,12 @@ import { PageHero } from "@/components/layout/PageHero";
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "Frequently asked questions about Glitter Hits.",
+  description: "Frequently asked questions about Glitter Traffic.",
 };
 
 const faqs = [
   {
-    q: "What is Glitter Hits?",
+    q: "What is Glitter Traffic?",
     a: "A transparent traffic exchange and discovery network. You earn promotional credits by visiting sites, then spend them to promote your own.",
   },
   {
@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: "Are credits whole numbers?",
-    a: "Always. Glitter Hits uses integer credits only — no fractional balances.",
+    a: "Always. Glitter Traffic uses integer credits only — no fractional balances.",
   },
   {
     q: "Do estimates guarantee traffic?",
@@ -39,7 +39,7 @@ export default function FaqPage() {
     <div>
       <PageHero
         title="Questions, answered."
-        description="Short answers about the earn/spend loop, transparency, and how Glitter Hits stays fair."
+        description="Short answers about the earn/spend loop, transparency, and how Glitter Traffic stays fair."
         eyebrow="FAQ"
       />
       <section className="mx-auto max-w-3xl space-y-4 px-4 py-14 sm:px-6">

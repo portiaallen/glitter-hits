@@ -6,7 +6,7 @@ type PageHeroProps = {
 };
 
 export function PageHero({
-  brand = "Glitter Hits",
+  brand = "Glitter Traffic",
   title,
   description,
   eyebrow,

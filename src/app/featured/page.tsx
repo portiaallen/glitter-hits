@@ -5,7 +5,7 @@ import { WebsiteCard } from "@/components/sites/WebsiteCard";
 
 export const metadata: Metadata = {
   title: "Featured",
-  description: "Featured websites and active promotional placements on Glitter Hits.",
+  description: "Featured websites and active promotional placements on Glitter Traffic.",
 };
 
 export default async function FeaturedPage() {

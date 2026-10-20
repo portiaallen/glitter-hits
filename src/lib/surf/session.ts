@@ -245,7 +245,7 @@ export async function completeSurfVisit(params: {
           userId: result.ownerUserId,
           type: "campaign_exhausted",
           title: "Campaign out of hits",
-          body: `"${result.campaignName}" has no hits remaining. Allocate more Glitter Hits to keep delivering.`,
+          body: `"${result.campaignName}" has no hits remaining. Allocate more Glitter Traffic to keep delivering.`,
           href: "/campaigns",
         });
       }

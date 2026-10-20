@@ -45,7 +45,7 @@ export function AdjustCreditsForm() {
       <div>
         <h2 className="font-[family-name:var(--font-syne)] text-xl font-bold">Adjust credits</h2>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
-          Integer Glitter Hits only. Use a negative amount to debit.
+          Integer Glitter Traffic only. Use a negative amount to debit.
         </p>
       </div>
 

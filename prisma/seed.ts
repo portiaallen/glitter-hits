@@ -37,12 +37,12 @@ const LEVELS = [
 const ACHIEVEMENTS = [
   { slug: "first-surf", name: "First Surf", description: "Complete your first discovery visit.", criteriaJson: JSON.stringify({ firstSurf: 1 }), creditReward: 5, pointsReward: 10 },
   { slug: "sites-100", name: "100 Sites Discovered", description: "Discover 100 websites.", criteriaJson: JSON.stringify({ sitesDiscovered: 100 }), creditReward: 50, pointsReward: 100 },
-  { slug: "hits-1000", name: "1,000 Hits Earned", description: "Earn 1,000 Glitter Hits.", criteriaJson: JSON.stringify({ hitsEarned: 1000 }), creditReward: 100, pointsReward: 200 },
+  { slug: "hits-1000", name: "1,000 Hits Earned", description: "Earn 1,000 Glitter Traffic.", criteriaJson: JSON.stringify({ hitsEarned: 1000 }), creditReward: 100, pointsReward: 200 },
   { slug: "first-campaign", name: "First Campaign", description: "Launch your first campaign.", criteriaJson: JSON.stringify({ firstCampaign: 1 }), creditReward: 10, pointsReward: 25 },
   { slug: "first-referral", name: "First Referral", description: "Invite your first activated friend.", criteriaJson: JSON.stringify({ firstReferral: 1 }), creditReward: 15, pointsReward: 30 },
   { slug: "campaigns-10", name: "10 Active Campaigns", description: "Run 10 active campaigns at once.", criteriaJson: JSON.stringify({ activeCampaigns: 10 }), creditReward: 75, pointsReward: 150 },
   { slug: "community-explorer", name: "Community Explorer", description: "Discover 25 sites.", criteriaJson: JSON.stringify({ sitesDiscovered: 25 }), creditReward: 20, pointsReward: 40 },
-  { slug: "glitter-guide", name: "Glitter Guide", description: "Earn 500 Glitter Hits.", criteriaJson: JSON.stringify({ hitsEarned: 500 }), creditReward: 40, pointsReward: 80 },
+  { slug: "glitter-guide", name: "Glitter Guide", description: "Earn 500 Glitter Traffic.", criteriaJson: JSON.stringify({ hitsEarned: 500 }), creditReward: 40, pointsReward: 80 },
 ];
 
 const FOUNDER_BRANDS = [
@@ -114,7 +114,7 @@ const CREDIT_PACKS = [
   {
     slug: "starter-100",
     name: "Starter Pack",
-    description: "100 promotional Glitter Hits",
+    description: "100 promotional Glitter Traffic",
     credits: 100,
     priceCents: 499,
     badge: null as string | null,
@@ -163,7 +163,7 @@ const MAIL_ECONOMY = {
 };
 
 async function main() {
-  console.log("Seeding Glitter Hits…");
+  console.log("Seeding Glitter Traffic…");
 
   await prisma.systemSetting.upsert({
     where: { key: "economy" },

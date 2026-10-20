@@ -26,7 +26,7 @@ export const PLACEMENT_OFFERS: PlacementOffer[] = [
   {
     type: "homepage_spotlight",
     name: "Homepage Spotlight",
-    description: "Premium slot on the Glitter Hits homepage.",
+    description: "Premium slot on the Glitter Traffic homepage.",
     creditCost: 250,
     durationDays: 7,
     membershipMin: "plus",
