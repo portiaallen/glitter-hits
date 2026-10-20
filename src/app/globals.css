@@ -427,6 +427,14 @@ a {
   }
 }
 
+@media (max-width: 639.98px) {
+  /* Compact header buttons on phones so the wordmark fits without truncating. */
+  header .gh-btn {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gh-luck-spark,
   .gh-glitter-burst,
