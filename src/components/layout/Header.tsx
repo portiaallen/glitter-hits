@@ -23,7 +23,7 @@ export async function Header() {
           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--prism)] text-sm font-bold text-[#1a1028] shadow-[var(--shadow-lift)]">
             GT
           </span>
-          <span className="truncate font-[family-name:var(--font-syne)] text-lg font-bold tracking-tight sm:text-xl">
+          <span className="truncate font-[family-name:var(--font-syne)] text-base font-bold tracking-tight sm:text-lg">
             Glitter <span className="gh-gradient-text">Traffic</span>
           </span>
         </Link>
@@ -41,8 +41,10 @@ export async function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <span className="gh-theme-chip hidden max-w-[10rem] truncate sm:inline-flex" title={theme.tagline}>
-            {theme.name}
+          <span className="hidden max-w-[10rem] sm:inline-flex">
+            <span className="gh-theme-chip truncate" title={theme.tagline}>
+              {theme.name}
+            </span>
           </span>
           {session?.user ? (
             <>
@@ -61,10 +63,10 @@ export async function Header() {
             </>
           ) : (
             <>
-              <Link href="/login" className="gh-btn gh-btn-ghost px-3 py-2 text-sm">
+              <Link href="/login" className="gh-btn gh-btn-ghost whitespace-nowrap px-2.5 py-2 text-sm sm:px-3">
                 Log in
               </Link>
-              <Link href="/signup" className="gh-btn gh-btn-primary px-3 py-2 text-sm">
+              <Link href="/signup" className="gh-btn gh-btn-primary whitespace-nowrap px-2.5 py-2 text-sm sm:px-3">
                 Join free
               </Link>
             </>

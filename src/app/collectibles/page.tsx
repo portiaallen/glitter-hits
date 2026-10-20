@@ -22,7 +22,7 @@ export default async function CollectiblesPage() {
       />
       <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
         <p className="mb-8 max-w-2xl text-sm text-[var(--text-muted)]">
-          {theme.collectibleHint} Explore the Hits to earn traffic now — collectibles will layer on
+          {theme.collectibleHint} Explore the Traffic to earn traffic now — collectibles will layer on
           without changing the fair exchange.
         </p>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -39,7 +39,7 @@ export default async function CollectiblesPage() {
         </div>
         <div className="mt-10 flex flex-wrap gap-3">
           <Link href="/surf" className="gh-btn gh-btn-primary">
-            Explore the Hits
+            Explore the Traffic
           </Link>
           <Link href="/feedback" className="gh-btn gh-btn-ghost">
             Suggest a collectible

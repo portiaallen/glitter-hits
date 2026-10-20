@@ -419,6 +419,14 @@ a {
   }
 }
 
+@media (max-width: 767.98px) {
+  /* Mobile bottom nav already links to /feedback (Ideas); hide the floating
+     button on phones so it never overlaps card content. */
+  .gh-feedback-fab {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gh-luck-spark,
   .gh-glitter-burst,

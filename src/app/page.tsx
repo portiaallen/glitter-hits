@@ -103,7 +103,7 @@ export default async function HomePage() {
           {[
             {
               step: "01",
-              title: "Explore the Hits",
+              title: "Explore the Traffic",
               body: "Flip through real websites like channels. Watch, discover, collect Hits.",
             },
             {

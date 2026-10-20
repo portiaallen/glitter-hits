@@ -38,7 +38,7 @@ export async function AnnouncementBanner() {
                 href={isGift ? "/surf" : "/dashboard"}
                 className="text-xs text-[var(--neon-cyan)]"
               >
-                {isGift ? "Explore the Hits →" : "Open app →"}
+                {isGift ? "Explore the Traffic →" : "Open app →"}
               </Link>
             </div>
           );

@@ -5,7 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { SurfConsole } from "@/components/surf/SurfConsole";
 import { getActiveMonthlyTheme } from "@/lib/experience/monthly-theme";
 
-export const metadata: Metadata = { title: "Explore the Hits" };
+export const metadata: Metadata = { title: "Explore the Traffic" };
 
 export default async function SurfPage() {
   const session = await auth();
@@ -14,7 +14,7 @@ export default async function SurfPage() {
 
   return (
     <AppShell
-      title="Explore the Hits"
+      title="Explore the Traffic"
       subtitle={`${theme.discoveryLine} Watch each channel, collect Hits, get your sites seen — fair exchange, playful discovery.`}
     >
       <SurfConsole themeLine={theme.discoveryLine} />

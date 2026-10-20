@@ -26,7 +26,7 @@ export async function Footer() {
               <Link href="/browse">Directory</Link>
             </li>
             <li>
-              <Link href="/surf">Explore the Hits</Link>
+              <Link href="/surf">Explore the Traffic</Link>
             </li>
             <li>
               <Link href="/trending">Trending</Link>
