@@ -100,8 +100,32 @@ export const MONTHLY_THEMES: MonthlyTheme[] = [
   },
 ];
 
-/** Active default until admin/SystemSetting override is wired. */
+/** Fallback default until admin/SystemSetting override is wired. */
 export const DEFAULT_THEME_SLUG = "rainbow";
+
+/**
+ * Month-aware default rotation over the existing theme catalog (founder
+ * directive 2026-10-20: retire stale seasonal labels). A SystemSetting
+ * override (`experience.monthly_theme`) still wins over this map.
+ */
+export const MONTHLY_DEFAULT_SLUGS: Record<number, string> = {
+  1: "rainbow",
+  2: "camp",
+  3: "rainbow",
+  4: "weird-internet",
+  5: "space",
+  6: "rainbow",
+  7: "camp",
+  8: "alien",
+  9: "nostalgic-tv",
+  10: "mystery",
+  11: "weird-internet",
+  12: "space",
+};
+
+export function defaultThemeSlugForMonth(month: number): string {
+  return MONTHLY_DEFAULT_SLUGS[month] ?? DEFAULT_THEME_SLUG;
+}
 
 export function getThemeBySlug(slug?: string | null): MonthlyTheme {
   const found = MONTHLY_THEMES.find((t) => t.slug === slug);
@@ -119,9 +143,9 @@ export async function getActiveMonthlyTheme(): Promise<MonthlyTheme> {
       if (parsed.slug) return getThemeBySlug(parsed.slug);
     }
   } catch {
-    /* fall through — config file default */
+    /* fall through — month-aware default */
   }
-  return getThemeBySlug(DEFAULT_THEME_SLUG);
+  return getThemeBySlug(defaultThemeSlugForMonth(new Date().getUTCMonth() + 1));
 }
 
 export async function setActiveMonthlyTheme(params: {

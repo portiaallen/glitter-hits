@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { excludeHiddenDiscoverySites } from "@/lib/discovery/visibility";
 import { prisma } from "@/lib/db";
 import { PageHero } from "@/components/layout/PageHero";
 import { WebsiteCard } from "@/components/sites/WebsiteCard";
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default async function FeaturedPage() {
   const [featuredSites, placements] = await Promise.all([
     prisma.website.findMany({
-      where: { moderationStatus: "approved", isFeatured: true },
+      where: { moderationStatus: "approved", isFeatured: true, ...excludeHiddenDiscoverySites() },
       include: { category: true },
       orderBy: [{ discoverCount: "desc" }, { title: "asc" }],
     }),

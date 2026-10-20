@@ -6,10 +6,10 @@ export async function Footer() {
 
   return (
     <footer className="relative z-10 mt-auto border-t border-[var(--border-glass)] bg-[var(--bg-glass)]0">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:gap-8 sm:px-6 sm:py-12 md:grid-cols-4">
         <div className="md:col-span-2">
           <p className="font-[family-name:var(--font-syne)] text-xl font-bold">
-            Glitter <span className="gh-gradient-text">Hits</span>
+            Glitter <span className="gh-gradient-text">Traffic</span>
           </p>
           <p className="mt-2 max-w-md text-sm text-[var(--text-muted)]">
             Come play with us. Come get your traffic. Come discover something new.

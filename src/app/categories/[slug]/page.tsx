@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { excludeHiddenDiscoverySites } from "@/lib/discovery/visibility";
 import { prisma } from "@/lib/db";
 import { PageHero } from "@/components/layout/PageHero";
 import { WebsiteCard } from "@/components/sites/WebsiteCard";
@@ -24,7 +25,11 @@ export default async function CategoryPage({
   if (!category || !category.isActive) notFound();
 
   const websites = await prisma.website.findMany({
-    where: { categoryId: category.id, moderationStatus: "approved" },
+    where: {
+      categoryId: category.id,
+      moderationStatus: "approved",
+      ...excludeHiddenDiscoverySites(),
+    },
     include: { category: true },
     orderBy: { discoverCount: "desc" },
     take: 60,

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { excludeHiddenDiscoverySites } from "@/lib/discovery/visibility";
 import { prisma } from "@/lib/db";
 import { PageHero } from "@/components/layout/PageHero";
 import { WebsiteCard } from "@/components/sites/WebsiteCard";
@@ -11,7 +12,11 @@ export const metadata: Metadata = {
 
 export default async function QueerdomPicksPage() {
   const websites = await prisma.website.findMany({
-    where: { moderationStatus: "approved", isQueerdomPick: true },
+    where: {
+      moderationStatus: "approved",
+      isQueerdomPick: true,
+      ...excludeHiddenDiscoverySites(),
+    },
     include: { category: true },
     orderBy: [{ discoverCount: "desc" }, { title: "asc" }],
   });

@@ -89,7 +89,7 @@ export async function validateWebsiteUrl(url: string): Promise<SiteCheckResult> 
         method: "HEAD",
         redirect: "manual",
         signal: controller.signal,
-        headers: { "User-Agent": "GlitterHits-SiteChecker/1.0 (+https://glitterhits.online)" },
+        headers: { "User-Agent": "GlitterTraffic-SiteChecker/1.0 (+https://glitterhits.online)" },
       });
     } catch {
       res = await fetch(url, {

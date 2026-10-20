@@ -21,10 +21,10 @@ export async function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
         <Link href="/" className="group flex min-w-0 items-center gap-2">
           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-[var(--prism)] text-sm font-bold text-[#1a1028] shadow-[var(--shadow-lift)]">
-            GH
+            GT
           </span>
           <span className="truncate font-[family-name:var(--font-syne)] text-lg font-bold tracking-tight sm:text-xl">
-            Glitter <span className="gh-gradient-text">Hits</span>
+            Glitter <span className="gh-gradient-text">Traffic</span>
           </span>
         </Link>
 
@@ -51,7 +51,7 @@ export async function Header() {
                 Home
               </Link>
               <Link href="/surf" className="gh-btn gh-btn-primary px-3 py-2 text-sm">
-                Explore Hits
+                Explore Traffic
               </Link>
               <form action={logoutAction} className="hidden sm:block">
                 <button type="submit" className="gh-btn gh-btn-ghost px-3 py-2 text-sm">

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { excludeHiddenDiscoverySites } from "@/lib/discovery/visibility";
 import { prisma } from "@/lib/db";
 import { PageHero } from "@/components/layout/PageHero";
 import { WebsiteCard } from "@/components/sites/WebsiteCard";
@@ -30,6 +31,7 @@ export default async function BrowsePage({
   const websites = await prisma.website.findMany({
     where: {
       moderationStatus: "approved",
+      ...excludeHiddenDiscoverySites(),
       ...(category ? { categoryId: category.id } : {}),
       ...(q
         ? {

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { moveCredits } from "@/lib/credits/ledger";
 import { getEconomySettings } from "@/lib/settings/economy";
+import { excludeHiddenDiscoverySites } from "@/lib/discovery/visibility";
 
 function weekKey(d = new Date()): string {
   // ISO week key YYYY-Www
@@ -173,7 +174,7 @@ export async function getLeaderboards() {
       take: 20,
     }),
     prisma.website.findMany({
-      where: { moderationStatus: "approved" },
+      where: { moderationStatus: "approved", ...excludeHiddenDiscoverySites() },
       orderBy: { discoverCount: "desc" },
       take: 20,
       select: {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { excludeHiddenDiscoverySites, isHiddenFromDiscovery } from "@/lib/discovery/visibility";
 import { prisma } from "@/lib/db";
 import { estimateNetworkAvailability } from "@/lib/delivery/engine";
 import { getActiveMonthlyTheme } from "@/lib/experience/monthly-theme";
@@ -14,18 +15,29 @@ export default async function HomePage() {
       orderBy: { sortOrder: "asc" },
       take: 3,
     }),
-    prisma.website.count({ where: { isQueerdomPick: true, moderationStatus: "approved" } }),
+    prisma.website.count({
+      where: {
+        isQueerdomPick: true,
+        moderationStatus: "approved",
+        ...excludeHiddenDiscoverySites(),
+      },
+    }),
     prisma.brand.count({ where: { isEnabled: true, network: "founder" } }),
     getActiveMonthlyTheme(),
   ]);
 
+  const visibleSpotlights = spotlights.filter(
+    (s) =>
+      !isHiddenFromDiscovery(s.website?.url, s.website?.title) &&
+      !isHiddenFromDiscovery(s.targetUrl, s.title),
+  );
   const collectibles = collectiblesForTheme(theme.slug).slice(0, 3);
   const founding = await getFoundingStatus();
 
   return (
     <div>
       {/* Hero — one composition: brand, headline, support, CTAs, full-bleed atmosphere */}
-      <section className="relative min-h-[88vh] overflow-hidden">
+      <section className="relative min-h-[72svh] overflow-hidden sm:min-h-[88vh]">
         <div
           className="absolute inset-0"
           aria-hidden
@@ -48,7 +60,7 @@ export default async function HomePage() {
           style={{ background: "var(--theme-accent-2)", animationDelay: "1.2s" }}
         />
 
-        <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-4 py-16 sm:px-6">
+        <div className="relative mx-auto flex min-h-[72svh] max-w-7xl flex-col justify-center px-4 py-12 sm:min-h-[88vh] sm:px-6 sm:py-16">
           {founding.open && (
             <Link
               href="/founding"
@@ -79,7 +91,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-10 pt-4 sm:px-6 sm:py-14">
         <h2 className="font-[family-name:var(--font-syne)] text-3xl font-bold">
           Looks like a traffic exchange. Feels like something else.
         </h2>
@@ -118,7 +130,7 @@ export default async function HomePage() {
         </ol>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 sm:py-10">
         <div className="gh-prism-border relative overflow-hidden rounded-[1.5rem] p-8 sm:p-10">
           <p className="gh-theme-chip">{theme.name}</p>
           <h2 className="mt-4 font-[family-name:var(--font-syne)] text-2xl font-bold sm:text-3xl">
@@ -147,7 +159,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 sm:py-12">
         <h2 className="font-[family-name:var(--font-syne)] text-2xl font-bold">
           A growing playground — not a vanity metric
         </h2>
@@ -161,8 +173,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {spotlights.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+      {visibleSpotlights.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 sm:py-10">
           <h2 className="font-[family-name:var(--font-syne)] text-2xl font-bold">
             Today&apos;s spotlights
           </h2>
@@ -170,7 +182,7 @@ export default async function HomePage() {
             Curated promotional placements — discovery, not manufactured hype.
           </p>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {spotlights.map((s) => (
+            {visibleSpotlights.map((s) => (
               <a
                 key={s.id}
                 href={s.targetUrl || s.website?.url || "#"}
@@ -187,7 +199,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:py-16">
         <div className="relative overflow-hidden rounded-[1.5rem] border border-[var(--border-glass)] bg-white/70 p-8 shadow-[var(--shadow-soft)] sm:p-12">
           <div
             className="absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-30 blur-3xl"

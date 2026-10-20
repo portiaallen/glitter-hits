@@ -2,6 +2,7 @@ import type { PlacementType, MembershipTier } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { moveCredits } from "@/lib/credits/ledger";
 import { notifyUser } from "@/lib/notifications/service";
+import { isHiddenFromDiscovery } from "@/lib/discovery/visibility";
 
 export type PlacementOffer = {
   type: PlacementType;
@@ -188,7 +189,7 @@ export async function purchasePlacement(params: {
 
 export async function listActivePlacements(types?: PlacementType[]) {
   const now = new Date();
-  return prisma.featuredPlacement.findMany({
+  const placements = await prisma.featuredPlacement.findMany({
     where: {
       status: "active",
       ...(types?.length ? { type: { in: types } } : {}),
@@ -197,6 +198,13 @@ export async function listActivePlacements(types?: PlacementType[]) {
     include: { website: { include: { category: true } } },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });
+  // Founder directive 2026-10-20: hidden discovery sites never surface in
+  // public placements, banners, or sponsored rails.
+  return placements.filter(
+    (p) =>
+      !isHiddenFromDiscovery(p.website?.url, p.website?.title) &&
+      !isHiddenFromDiscovery(p.targetUrl, p.title),
+  );
 }
 
 export async function expireDuePlacements() {
