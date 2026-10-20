@@ -128,8 +128,8 @@ export default function PrivacyPage() {
           </h2>
           <p>
             Privacy questions:{" "}
-            <a href="mailto:hello@glitterhits.online" className="text-[var(--neon-cyan)] hover:underline">
-              hello@glitterhits.online
+            <a href="mailto:traffic@glitteruniverse.quest" className="text-[var(--neon-cyan)] hover:underline">
+              traffic@glitteruniverse.quest
             </a>
             .
           </p>

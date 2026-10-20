@@ -154,8 +154,8 @@ export default function TermsPage() {
           </h2>
           <p>
             Questions about these terms:{" "}
-            <a href="mailto:hello@glitterhits.online" className="text-[var(--neon-cyan)] hover:underline">
-              hello@glitterhits.online
+            <a href="mailto:traffic@glitteruniverse.quest" className="text-[var(--neon-cyan)] hover:underline">
+              traffic@glitteruniverse.quest
             </a>{" "}
             or the in-app Contact form.
           </p>

@@ -225,7 +225,7 @@ export async function requestPasswordResetAction(formData: FormData) {
     console.error("[password-reset]", e);
     return {
       error:
-        "Could not send reset email. Please try again later or contact hello@glitterhits.online.",
+        "Could not send reset email. Please try again later or contact traffic@glitteruniverse.quest.",
     };
   }
 }
