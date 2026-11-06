@@ -6,7 +6,7 @@ import { setEconomySettings, getEconomySettings } from "@/lib/settings/economy";
 import { setWebsiteModeration, listModerationQueue } from "@/lib/moderation/service";
 import { getAdminNetworkAnalytics } from "@/lib/analytics/service";
 import { z } from "zod";
-import { isStaffRole, MODERATOR_API_ACTIONS, MODERATOR_API_VIEWS } from "@/lib/admin-roles";
+import { canAssignUserRole, isStaffRole, MODERATOR_API_ACTIONS, MODERATOR_API_VIEWS } from "@/lib/admin-roles";
 import type { UserRole } from "@prisma/client";
 
 // Staff: moderator, admin, founder. Full admin: admin, founder only.
@@ -338,6 +338,46 @@ export async function POST(req: Request) {
         announceDays: data.announceDays,
       });
       return NextResponse.json({ gift });
+    }
+
+    if (action === "set_user_role") {
+      // Founder-only role management: least-privilege grants for staff
+      // accounts. Never assignable to or from the founder role.
+      if (staff.role !== "founder") {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      const data = z
+        .object({ userId: z.string(), role: z.enum(["member", "moderator", "admin"]) })
+        .parse(body);
+      const target = await prisma.user.findUnique({ where: { id: data.userId } });
+      if (!target) return NextResponse.json({ error: "User not found" }, { status: 404 });
+      const check = canAssignUserRole(staff.role, target.role, data.role);
+      if (!check.ok) {
+        return NextResponse.json({ error: check.reason ?? "Forbidden" }, { status: 403 });
+      }
+      const updated = await prisma.user.update({
+        where: { id: target.id },
+        data: { role: data.role },
+        select: { id: true, email: true, name: true, role: true },
+      });
+      const audit = await prisma.adminAuditLog.create({
+        data: {
+          actorId: user.id,
+          action: "user.role_change",
+          targetType: "user",
+          targetId: target.id,
+          detailsJson: JSON.stringify({
+            email: target.email,
+            before: target.role,
+            after: data.role,
+            authorization: "Founder directive 2026-11-05: Glitter Traffic admin access (least privilege)",
+          }),
+        },
+      });
+      return NextResponse.json({
+        user: updated,
+        audit: { id: audit.id, createdAt: audit.createdAt, before: target.role, after: data.role },
+      });
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

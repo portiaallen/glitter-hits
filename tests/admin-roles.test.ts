@@ -2,7 +2,7 @@
  * Role-tier gates for the admin console.
  * Pure helpers; no DB required.
  */
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import assert from "node:assert/strict";
 import {
   STAFF_ROLES,
@@ -11,6 +11,7 @@ import {
   isAdminRole,
   MODERATOR_API_VIEWS,
   MODERATOR_API_ACTIONS,
+  canAssignUserRole,
 } from "../src/lib/admin-roles";
 
 describe("admin role tiers", () => {
@@ -60,5 +61,28 @@ describe("admin role tiers", () => {
     ]) {
       assert.equal(MODERATOR_API_ACTIONS.has(action), false, `action ${action} must stay admin-only`);
     }
+  });
+});
+
+describe("founder-only role assignment", () => {
+  it("lets the founder move a member to moderator", () => {
+    assert.deepEqual(canAssignUserRole("founder", "member", "moderator"), { ok: true });
+  });
+
+  it("refuses non-founder actors", () => {
+    assert.equal(canAssignUserRole("admin", "member", "moderator").ok, false);
+    assert.equal(canAssignUserRole("moderator", "member", "member").ok, false);
+    assert.equal(canAssignUserRole(undefined, "member", "moderator").ok, false);
+  });
+
+  it("never grants or touches the founder role through this action", () => {
+    assert.equal(canAssignUserRole("founder", "member", "founder").ok, false);
+    assert.equal(canAssignUserRole("founder", "founder", "admin").ok, false);
+    assert.equal(canAssignUserRole("founder", "founder", "member").ok, false);
+  });
+
+  it("refuses no-ops and unknown target roles", () => {
+    assert.equal(canAssignUserRole("founder", "moderator", "moderator").ok, false);
+    assert.equal(canAssignUserRole("founder", "member", "superadmin").ok, false);
   });
 });

@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/db";
 import { formatCredits } from "@/lib/utils";
 import { UserSuspendControls } from "@/components/admin/UserSuspendControls";
+import { UserRoleControls } from "@/components/admin/UserRoleControls";
 import { requireStaffSession } from "@/lib/admin";
 
 export default async function AdminUsersPage() {
-  await requireStaffSession();
+  const session = await requireStaffSession();
+  const viewerRole = session?.user?.role;
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     take: 100,
@@ -31,7 +33,9 @@ export default async function AdminUsersPage() {
                 <div>{u.name}</div>
                 <div className="text-xs text-[var(--text-muted)]">{u.email}</div>
               </td>
-              <td className="p-2">{u.role}</td>
+              <td className="p-2">
+                <UserRoleControls userId={u.id} email={u.email} role={u.role} viewerRole={viewerRole} />
+              </td>
               <td className="p-2">{u.membership}</td>
               <td className="p-2">{formatCredits(u.creditBalance)}</td>
               <td className="p-2">{u.levelSlug}</td>
