@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/db";
 import { expireDuePlacements } from "@/lib/placements/service";
 import { PlacementAdminControls } from "@/components/admin/PlacementAdminControls";
+import { requireAdminSession } from "@/lib/admin";
 
 export default async function AdminPlacementsPage() {
+  await requireAdminSession();
   await expireDuePlacements();
   const placements = await prisma.featuredPlacement.findMany({
     include: { website: { select: { title: true, url: true, userId: true } } },

@@ -7,10 +7,12 @@ import { countActiveGiftPool } from "@/lib/experience/surprise-gift";
 import { MonthlyThemeAdminForm } from "@/components/admin/MonthlyThemeAdminForm";
 import { SurpriseGiftAdminForm } from "@/components/admin/SurpriseGiftAdminForm";
 import { prisma } from "@/lib/db";
+import { requireAdminSession } from "@/lib/admin";
 
 export const metadata: Metadata = { title: "Experience" };
 
 export default async function AdminExperiencePage() {
+  await requireAdminSession();
   const [active, poolSize, recentGifts] = await Promise.all([
     getActiveMonthlyTheme(),
     countActiveGiftPool(),

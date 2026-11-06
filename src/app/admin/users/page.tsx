@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/db";
 import { formatCredits } from "@/lib/utils";
 import { UserSuspendControls } from "@/components/admin/UserSuspendControls";
+import { requireStaffSession } from "@/lib/admin";
 
 export default async function AdminUsersPage() {
+  await requireStaffSession();
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     take: 100,

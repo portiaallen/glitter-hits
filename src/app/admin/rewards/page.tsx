@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
+import { requireAdminSession } from "@/lib/admin";
 
 export default async function AdminRewardsPage() {
+  await requireAdminSession();
   const [levels, achievements] = await Promise.all([
     prisma.levelDefinition.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.achievementDefinition.findMany(),

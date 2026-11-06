@@ -1,8 +1,10 @@
 import { getAdminNetworkAnalytics } from "@/lib/analytics/service";
 import { prisma } from "@/lib/db";
 import { formatCredits } from "@/lib/utils";
+import { requireStaffSession } from "@/lib/admin";
 
 export default async function AdminAnalyticsPage() {
+  await requireStaffSession();
   const [analytics, qualityGroups, recentVisits] = await Promise.all([
     getAdminNetworkAnalytics(),
     prisma.visit.groupBy({

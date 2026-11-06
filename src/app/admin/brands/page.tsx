@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/db";
 import { BrandEditor } from "@/components/admin/BrandEditor";
+import { requireAdminSession } from "@/lib/admin";
 
 export default async function AdminBrandsPage() {
+  await requireAdminSession();
   const brands = await prisma.brand.findMany({
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
   });

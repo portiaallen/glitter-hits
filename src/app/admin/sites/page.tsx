@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
+import { requireStaffSession } from "@/lib/admin";
 
 export default async function AdminSitesPage() {
+  await requireStaffSession();
   const sites = await prisma.website.findMany({
     include: { user: { select: { email: true, name: true } }, category: true },
     orderBy: { createdAt: "desc" },

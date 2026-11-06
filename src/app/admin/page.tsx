@@ -3,13 +3,16 @@ import Link from "next/link";
 import { getAdminNetworkAnalytics } from "@/lib/analytics/service";
 import { getEconomySettings } from "@/lib/settings/economy";
 import { formatCredits } from "@/lib/utils";
+import { requireStaffSession } from "@/lib/admin";
 
 export const metadata: Metadata = { title: "Admin overview" };
 
 export default async function AdminOverviewPage() {
+  const session = await requireStaffSession();
+  const showEconomy = session?.user?.role !== "moderator";
   const [analytics, economy] = await Promise.all([
     getAdminNetworkAnalytics(),
-    getEconomySettings(),
+    showEconomy ? getEconomySettings() : Promise.resolve(null),
   ]);
 
   return (
@@ -32,6 +35,7 @@ export default async function AdminOverviewPage() {
         ))}
       </div>
 
+      {economy && (
       <div className="gh-glass p-5">
         <h2 className="font-semibold">Economy snapshot</h2>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
@@ -51,6 +55,7 @@ export default async function AdminOverviewPage() {
           </Link>
         </div>
       </div>
+      )}
     </div>
   );
 }

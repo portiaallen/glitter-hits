@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { AdminNav } from "@/components/admin/AdminNav";
-import { requireAdminSession } from "@/lib/admin";
+import { requireStaffSession } from "@/lib/admin";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -8,7 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  await requireAdminSession();
+  const session = await requireStaffSession();
+  const role = session?.user?.role;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
@@ -23,7 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           Manage users, sites, campaigns, economy, and the Founder Network brand directory.
         </p>
       </header>
-      <AdminNav />
+      <AdminNav role={role} />
       {children}
     </div>
   );

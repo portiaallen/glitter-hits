@@ -1,8 +1,10 @@
 import { getLuckEngineConfig } from "@/lib/luck/config";
 import { prisma } from "@/lib/db";
 import { LuckEngineAdminForm } from "@/components/admin/LuckEngineAdminForm";
+import { requireAdminSession } from "@/lib/admin";
 
 export default async function AdminLuckPage() {
+  await requireAdminSession();
   const [config, levels, quests, segments, milestones] = await Promise.all([
     getLuckEngineConfig(),
     prisma.luckLevelDefinition.findMany({ orderBy: { sortOrder: "asc" } }),

@@ -1,7 +1,9 @@
 import { listModerationQueue } from "@/lib/moderation/service";
 import { ModerationControls } from "@/components/admin/ModerationControls";
+import { requireStaffSession } from "@/lib/admin";
 
 export default async function AdminModerationPage() {
+  await requireStaffSession();
   const { pendingSites, openReports } = await listModerationQueue();
 
   return (

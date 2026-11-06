@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
+import { requireStaffSession } from "@/lib/admin";
 
 export const metadata: Metadata = { title: "Contact inbox" };
 
 export default async function AdminContactPage() {
+  await requireStaffSession();
   const messages = await prisma.contactMessage.findMany({
     orderBy: { createdAt: "desc" },
     take: 100,

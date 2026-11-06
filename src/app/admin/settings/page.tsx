@@ -4,8 +4,10 @@ import { EconomyForm } from "@/components/admin/EconomyForm";
 import { MonetizationToggles } from "@/components/admin/MonetizationToggles";
 import { getActiveMonthlyTheme } from "@/lib/experience/monthly-theme";
 import Link from "next/link";
+import { requireAdminSession } from "@/lib/admin";
 
 export default async function AdminSettingsPage() {
+  await requireAdminSession();
   const [economy, features, theme] = await Promise.all([
     getEconomySettings(),
     prisma.monetizationFeature.findMany({ orderBy: { name: "asc" } }),

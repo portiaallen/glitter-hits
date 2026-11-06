@@ -6,26 +6,38 @@ import { setEconomySettings, getEconomySettings } from "@/lib/settings/economy";
 import { setWebsiteModeration, listModerationQueue } from "@/lib/moderation/service";
 import { getAdminNetworkAnalytics } from "@/lib/analytics/service";
 import { z } from "zod";
+import { isStaffRole, MODERATOR_API_ACTIONS, MODERATOR_API_VIEWS } from "@/lib/admin-roles";
 import type { UserRole } from "@prisma/client";
 
-async function requireAdmin() {
+// Staff: moderator, admin, founder. Full admin: admin, founder only.
+async function requireStaff() {
   const session = await auth();
   const role = session?.user?.role as UserRole | undefined;
-  if (!session?.user?.id || !role || !["admin", "founder", "moderator"].includes(role)) {
+  if (!session?.user?.id || !isStaffRole(role)) {
     return null;
   }
   return session.user;
 }
 
 export async function GET(req: Request) {
-  const user = await requireAdmin();
-  if (!user) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const staff = await requireStaff();
+  if (!staff) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const staffRole = staff.role as UserRole;
+  const moderator = staffRole === "moderator";
 
   const { searchParams } = new URL(req.url);
   const view = searchParams.get("view") || "overview";
 
+  if (!moderator && !MODERATOR_API_VIEWS.has(view)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   if (view === "overview") {
     const analytics = await getAdminNetworkAnalytics();
+    if (moderator) {
+      // Moderators get diagnostics and reports, not economy configuration.
+      return NextResponse.json({ analytics });
+    }
     const economy = await getEconomySettings();
     return NextResponse.json({ analytics, economy });
   }
@@ -65,11 +77,15 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const user = await requireAdmin();
-  if (!user) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-
+  const staff = await requireStaff();
+  if (!staff) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const body = await req.json();
   const action = body.action as string;
+
+  if (staff.role === "moderator" && !MODERATOR_API_ACTIONS.has(action)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  const user = staff;
 
   try {
     if (action === "moderate_website") {

@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/db";
 import { formatCredits } from "@/lib/utils";
+import { requireStaffSession } from "@/lib/admin";
 
 export default async function AdminCampaignsPage() {
+  await requireStaffSession();
   const campaigns = await prisma.campaign.findMany({
     include: {
       website: true,
