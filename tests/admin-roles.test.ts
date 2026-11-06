@@ -2,7 +2,7 @@
  * Role-tier gates for the admin console.
  * Pure helpers; no DB required.
  */
-import { describe, it } from "vitest";
+import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   STAFF_ROLES,
