@@ -109,7 +109,7 @@ export default async function HomePage() {
             {
               step: "02",
               title: "Collect Hits",
-              body: "Every fair visit earns integer Glitter Traffic — never fake popularity.",
+              body: "Every eligible, verified visit earns whole-number Hits. Exchange traffic is labeled honestly — never passed off as organic popularity.",
             },
             {
               step: "03",
