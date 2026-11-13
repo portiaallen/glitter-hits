@@ -7,6 +7,7 @@ import type {
   Website,
 } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { excludeHiddenDiscoverySites, isHiddenFromDiscovery } from "@/lib/discovery/visibility";
 import { getEconomySettings } from "@/lib/settings/economy";
 import { parseJsonArray, parseJsonObject } from "@/lib/utils";
 
@@ -115,7 +116,7 @@ export async function selectNextCampaign(
     where: {
       status: "active",
       creditBalance: { gte: economy.creditsChargedPerVisit },
-      website: { moderationStatus: "approved" },
+      website: { moderationStatus: "approved", ...excludeHiddenDiscoverySites() },
       NOT: { userId: ctx.userId },
       OR: [{ startAt: null }, { startAt: { lte: now } }],
       AND: [{ OR: [{ endAt: null }, { endAt: { gte: now } }] }],
@@ -127,6 +128,8 @@ export async function selectNextCampaign(
   const filtered: EligibleCampaign[] = [];
 
   for (const c of candidates) {
+    // Defense in depth: exclude hidden seeds even if URL/title variants bypass the DB filter.
+    if (isHiddenFromDiscovery(c.website.url, c.website.title)) continue;
     if (c.maxVisits != null && c.visitsDelivered >= c.maxVisits) continue;
     if (!deviceMatches(c.deviceTarget, ctx.deviceHint)) continue;
     if (!geoMatches(c.geoTargetsJson, ctx.countryCode)) continue;
@@ -151,7 +154,7 @@ export async function estimateNetworkAvailability(): Promise<{
 }> {
   const economy = await getEconomySettings();
   const active = await prisma.campaign.findMany({
-    where: { status: "active", creditBalance: { gt: 0 }, website: { moderationStatus: "approved" } },
+    where: { status: "active", creditBalance: { gt: 0 }, website: { moderationStatus: "approved", ...excludeHiddenDiscoverySites() } },
     select: { creditBalance: true },
   });
   const availableCredits = active.reduce((s, c) => s + c.creditBalance, 0);
