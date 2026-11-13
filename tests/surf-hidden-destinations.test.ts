@@ -12,6 +12,8 @@ test("all Founder-hidden seed destinations are excluded by Surf's shared query f
   const titleFilter = filter.AND[1];
   assert.ok(urlFilter, "expected hidden URL filter");
   assert.ok(titleFilter, "expected hidden title filter");
+  assert.ok(urlFilter.url, "expected URL exclusion condition");
+  assert.ok(titleFilter.title, "expected title exclusion condition");
   const excludedUrls = urlFilter.url.notIn;
   const excludedTitles = titleFilter.title.notIn;
   for (const site of HIDDEN_DISCOVERY_SITES) {
