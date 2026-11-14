@@ -8,8 +8,10 @@ import {
 
 test("all Founder-hidden seed destinations are excluded by Surf's shared query filter", () => {
   const filter = excludeHiddenDiscoverySites();
-  const urlFilter = filter.AND[0];
-  const titleFilter = filter.AND[1];
+  const conditions = filter.AND;
+  assert.ok(Array.isArray(conditions), "expected an array of hidden-site exclusions");
+  const urlFilter = conditions[0];
+  const titleFilter = conditions[1];
   assert.ok(urlFilter, "expected hidden URL filter");
   assert.ok(titleFilter, "expected hidden title filter");
   assert.ok(urlFilter.url, "expected URL exclusion condition");
