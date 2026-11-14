@@ -99,35 +99,27 @@ export default async function HomePage() {
           {theme.heroHint} You explore sites to collect Hits, then spend them so others discover
           yours — fair, labeled, and surprisingly entertaining.
         </p>
-        <ol className="mt-8 grid gap-6 sm:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3" aria-label="Explore the real Glitter Traffic member journey">
           {[
-            {
-              step: "01",
-              title: "Explore the Traffic",
-              body: "Flip through real websites like channels. Watch, discover, collect Hits.",
-            },
-            {
-              step: "02",
-              title: "Collect Hits",
-              body: "Every fair visit earns integer Glitter Traffic — never fake popularity.",
-            },
-            {
-              step: "03",
-              title: "Get seen",
-              body: "Put Hits on your campaigns and join the exchange the playful way.",
-            },
+            { step: "01", title: "Explore the Traffic", body: "Discover real websites in the exchange. Start browsing and see what is available.", link: "/surf", action: "Explore real websites" },
+            { step: "02", title: "Collect Hits", body: "Learn how qualifying visits earn Hits. Actual credits are awarded only by the existing exchange rules.", link: "/signup", action: "Join the exchange" },
+            { step: "03", title: "Get seen", body: "Add your website and use your earned Hits for campaign participation.", link: "/websites/new", action: "Add your website" },
           ].map((item) => (
-            <li key={item.step} className="relative pl-1">
-              <p className="font-[family-name:var(--font-syne)] text-sm font-bold text-[var(--theme-accent)]">
-                {item.step}
-              </p>
-              <h3 className="mt-2 font-[family-name:var(--font-syne)] text-xl font-semibold">
-                {item.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{item.body}</p>
-            </li>
+            <details key={item.step} className="group gh-prism-border rounded-2xl p-5 open:shadow-xl transition-shadow">
+              <summary className="cursor-pointer list-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]">
+                <span className="text-sm font-bold text-[var(--theme-accent)]">{item.step} · Tap to explore</span>
+                <span className="mt-2 flex items-center justify-between gap-3 font-[family-name:var(--font-syne)] text-xl font-semibold">
+                  {item.title}
+                  <span aria-hidden="true" className="text-[var(--theme-accent)] transition-transform duration-300 group-open:rotate-45">+</span>
+                </span>
+              </summary>
+              <div className="mt-4 border-t border-white/10 pt-4">
+                <p className="text-sm leading-relaxed text-[var(--text-muted)]">{item.body}</p>
+                <Link href={item.link} className="gh-btn gh-btn-primary mt-5 inline-flex">{item.action}</Link>
+              </div>
+            </details>
           ))}
-        </ol>
+        </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 sm:py-10">
