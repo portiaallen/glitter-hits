@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { isStaffRole } from "@/lib/admin-roles";
 import { AppShell } from "@/components/layout/AppShell";
 import { LuckMeter } from "@/components/luck/LuckMeter";
 import { GlitterDropClaim } from "@/components/luck/GlitterDropClaim";
@@ -67,6 +68,13 @@ export default async function DashboardPage() {
       title={`${user.persona?.icon || "✨"} ${user.name || "Discoverer"}`}
       subtitle={status.mantra}
     >
+      {isStaffRole(user.role) && (
+        <div className="mb-4">
+          <Link href="/admin" prefetch={false} className="gh-btn gh-btn-primary px-4 py-2 text-sm">
+            Admin Console
+          </Link>
+        </div>
+      )}
       <GlitterDropClaim drop={pendingDrop} />
 
       <div className="mb-6">
