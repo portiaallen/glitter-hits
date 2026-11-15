@@ -61,6 +61,45 @@ export async function setWebsiteModeration(params: {
   return website;
 }
 
+export async function deleteUnusedWebsite(websiteId: string, actorId: string) {
+  return prisma.$transaction(async (tx) => {
+    // Hold the parent row lock while checking relations. A concurrent insert
+    // of campaign, report, or placement history must wait for this transaction.
+    const locked = await tx.$queryRaw<{ id: string }[]>`
+      SELECT id FROM "Website" WHERE id = ${websiteId} FOR UPDATE
+    `;
+    if (!locked.length) return "missing";
+
+    const website = await tx.website.findUniqueOrThrow({
+      where: { id: websiteId },
+      select: {
+        title: true,
+        url: true,
+        moderationStatus: true,
+        _count: { select: { campaigns: true, reports: true, placements: true } },
+      },
+    });
+    const { campaigns, reports, placements } = website._count;
+    if (campaigns || reports || placements) return "has_history";
+
+    await tx.website.delete({ where: { id: websiteId } });
+    await tx.adminAuditLog.create({
+      data: {
+        actorId,
+        action: "website.delete",
+        targetType: "website",
+        targetId: websiteId,
+        detailsJson: JSON.stringify({
+          title: website.title,
+          url: website.url,
+          previousStatus: website.moderationStatus,
+        }),
+      },
+    });
+    return "deleted";
+  });
+}
+
 export async function reportWebsite(params: {
   websiteId: string;
   reporterId: string;
