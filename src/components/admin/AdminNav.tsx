@@ -25,8 +25,8 @@ export function AdminNav({ role }: { role?: string | null }) {
   const adminOnly = role !== "admin" && role !== "founder";
 
   return (
-    <nav className="gh-glass mb-8 overflow-x-auto p-2" aria-label="Admin sections">
-      <ul className="flex min-w-max gap-1">
+    <nav className="gh-glass mb-8 p-2" aria-label="Admin sections">
+      <ul className="flex flex-wrap gap-1">
         {LINKS.filter((link) => !adminOnly || !link.adminOnly).map((link) => {
           const active = link.exact
             ? pathname === link.href
@@ -35,6 +35,7 @@ export function AdminNav({ role }: { role?: string | null }) {
             <li key={link.href}>
               <Link
                 href={link.href}
+                aria-current={active ? "page" : undefined}
                 className={
                   active
                     ? "gh-btn gh-btn-primary px-4 py-2 text-sm"
