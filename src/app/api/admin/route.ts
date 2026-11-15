@@ -3,10 +3,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { moveCredits } from "@/lib/credits/ledger";
 import { setEconomySettings, getEconomySettings } from "@/lib/settings/economy";
-import { setWebsiteModeration, listModerationQueue } from "@/lib/moderation/service";
+import { deleteUnusedWebsite, setWebsiteModeration, listModerationQueue } from "@/lib/moderation/service";
 import { getAdminNetworkAnalytics } from "@/lib/analytics/service";
 import { z } from "zod";
-import { canAssignUserRole, isStaffRole, MODERATOR_API_ACTIONS, MODERATOR_API_VIEWS } from "@/lib/admin-roles";
+import { canAssignUserRole, isAdminRole, isStaffRole, MODERATOR_API_ACTIONS, MODERATOR_API_VIEWS } from "@/lib/admin-roles";
 import type { UserRole } from "@prisma/client";
 
 // Staff: moderator, admin, founder. Full admin: admin, founder only.
@@ -28,7 +28,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const view = searchParams.get("view") || "overview";
 
-  if (!moderator && !MODERATOR_API_VIEWS.has(view)) {
+  if (moderator && !MODERATOR_API_VIEWS.has(view)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -100,6 +100,31 @@ export async function POST(req: Request) {
         .parse(body);
       const website = await setWebsiteModeration({ ...data, actorId: user.id });
       return NextResponse.json({ website });
+    }
+
+    if (action === "delete_website") {
+      if (!isAdminRole(staff.role)) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      const currentActor = await prisma.user.findUnique({
+        where: { id: staff.id },
+        select: { role: true, isSuspended: true },
+      });
+      if (!currentActor || currentActor.isSuspended || !isAdminRole(currentActor.role)) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      const { websiteId } = z.object({ websiteId: z.string().min(1) }).parse(body);
+      const outcome = await deleteUnusedWebsite(websiteId, staff.id);
+      if (outcome === "missing") {
+        return NextResponse.json({ error: "Site not found." }, { status: 404 });
+      }
+      if (outcome === "has_history") {
+        return NextResponse.json(
+          { error: "This site has campaign, report, or placement history. Block it to remove it from discovery." },
+          { status: 409 },
+        );
+      }
+      return NextResponse.json({ deleted: true });
     }
 
     if (action === "adjust_credits") {
