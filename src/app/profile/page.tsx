@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { isStaffRole } from "@/lib/admin-roles";
 import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/layout/AppShell";
 import { formatCredits } from "@/lib/utils";
@@ -26,6 +28,18 @@ export default async function ProfilePage() {
         )}
         <p><span className="text-[var(--text-muted)]">Email:</span> {user.email}</p>
         <p><span className="text-[var(--text-muted)]">Role:</span> {user.role}</p>
+        {isStaffRole(user.role) && (
+          <div>
+            <Link href="/admin" prefetch={false} className="gh-btn gh-btn-ghost px-3 py-2 text-sm">
+              Admin Console
+            </Link>
+            {!isStaffRole(session.user.role) && (
+              <p className="mt-2 text-[var(--text-muted)]">
+                Sign out and back in to refresh your staff access.
+              </p>
+            )}
+          </div>
+        )}
         <p><span className="text-[var(--text-muted)]">Level:</span> {level?.name || user.levelSlug}</p>
         <p><span className="text-[var(--text-muted)]">Balance:</span> {formatCredits(user.creditBalance)} Hits</p>
         <p><span className="text-[var(--text-muted)]">Referral code:</span> {user.referralCode}</p>
